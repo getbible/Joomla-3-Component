@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.0" method="upgrade">
+	<name>Get Bible</name>
+	<author>Llewellyn van der Merwe</author>
+	<creationDate>February 2014</creationDate>
+	<copyright>(C) 2014 Vast Development Method. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later</license>
+	<authorEmail>llewellyn@vdm.io</authorEmail>
+	<authorUrl>www.getbible.net</authorUrl>
+	<version>1.0.0</version>
+	<description>The Get Bible API for Joomla</description>
+
+	<languages>
+		<language tag="en-GB">languages/site/en-GB.com_getbible.ini</language>
+	</languages>
+	
+	<scriptfile>file.script.php</scriptfile>
+
+	<media destination="com_getbible" folder="media">
+		<folder>js</folder>
+		<folder>fonts</folder>
+		<folder>css</folder>
+		<folder>images</folder>
+		<folder>json</folder>
+	</media>
+
+	<files folder="site">
+		<filename>controller.php</filename>
+		<filename>getbible.php</filename>
+		<filename>router.php</filename>
+		<filename>index.html</filename>
+		<folder>helpers</folder>
+		<folder>controllers</folder>
+		<folder>models</folder>
+		<folder>views</folder>
+	</files>
+	
+	<scriptfile>script.php</scriptfile>
+	
+	<install>
+		<sql>
+			<file charset="utf8" driver="mysql">sql/install.mysql.sql</file>
+		</sql>
+	</install>
+	<uninstall>
+		<sql>
+			<file charset="utf8" driver="mysql">sql/uninstall.mysql.sql</file>
+		</sql>
+	</uninstall>
+	<update>
+		<schemas>
+			<schemapath type="mysql">sql/updates/mysql</schemapath>
+		</schemas>
+	</update>
+
+	<administration>
+		<menu view="getbible" alt="COM_GETBIBLE">COM_GETBIBLE</menu>
+		<submenu>
+			<menu view="setbooks" alt="Set Books">COM_GETBIBLE_SET_BOOKS</menu>
+			<menu view="import" alt="Install">COM_GETBIBLE_IMPORT</menu>
+			<menu view="versions" alt="Versions Installed">COM_GETBIBLE_VERSIONS</menu>
+		</submenu>
+		<files folder="admin">
+			<filename>config.xml</filename>
+			<filename>access.xml</filename>
+			<filename>controller.php</filename>
+			<filename>getbible.php</filename>
+			<filename>index.html</filename>
+			<folder>controllers</folder>
+			<folder>models</folder>
+			<folder>helpers</folder>
+			<folder>tables</folder>
+			<folder>sql</folder>
+			<folder>views</folder>
+		</files>
+		<languages>
+			<language tag="en-GB">languages/admin/en-GB.com_getbible.sys.ini</language>
+			<language tag="en-GB">languages/admin/en-GB.com_getbible.ini</language>
+		</languages>
+	</administration>
+	<updateservers>
+		<server type="component" priority="1" element="com_getbible" name="Get Bible API">http://getbible.net/updates/joomla_three.xml</server>
+	</updateservers>
+</extension>

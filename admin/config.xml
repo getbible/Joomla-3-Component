@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<fieldset
+		name="component"
+		label="COM_GETBIBLE_CONFIG_COMPONENT_FIELDSET_LABEL"
+		description="COM_GETBIBLE_CONFIG_COMPONENT_FIELDSET_DESC">
+
+		<field
+			name="vdm_logo"
+			type="radio"
+			default="1"
+			label="COM_GETBIBLE_CONFIG_PROJECT_VDM_LOGO_LABEL"
+			description="COM_GETBIBLE_CONFIG_PROJECT_VDM_LOGO_DESC">
+			<option
+				value="0">JHIDE</option>
+			<option
+				value="1">JSHOW</option>
+		</field>
+		<field
+			name="vdm_link"
+			type="radio"
+			default="1"
+			label="COM_GETBIBLE_CONFIG_PROJECT_VDM_FRONT_LABEL"
+			description="COM_GETBIBLE_CONFIG_PROJECT_VDM_FRONT_DESC">
+			<option
+				value="0">JHIDE</option>
+			<option
+				value="1">JSHOW</option>
+		</field>
+		<field
+			name="vdm_name"
+			type="hidden"
+			default="getBible.net"
+			size="50"
+			readonly="true"
+			class="readonly">
+		</field>
+		<field
+			name="vdm_url"
+			type="hidden"
+			default="http://getbible.net/"
+			size="50"
+			readonly="true"
+			class="readonly">
+		</field>
+		<field
+			name="vdm_owner"
+			type="hidden"
+			default="Llewellyn van der Merwe"
+			size="50"
+			readonly="true"
+			class="readonly">
+		</field>
+	</fieldset>
+	
+	<fieldset
+		addfieldpath="/administrator/components/com_getbible/models/fields"
+		name="global"
+		label="COM_GETBIBLE_CONFIG_GLOBAL_FIELDSET_LABEL"
+		description="COM_GETBIBLE_CONFIG_GLOBAL_FIELDSET_DESC">
+		
+		
+		
+		<field name="jsonQueryOptions"
+			type="list"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_QUERY_OPTIONS_LABEL"
+			description="COM_GETBIBLE_CONFIG_QUERY_OPTIONS_DESC">
+			<option
+				value="0">COM_GETBIBLE_CONFIG_GET_BIBLE_API</option>
+			<option
+				value="2">COM_GETBIBLE_CONFIG_GET_BIBLE_API_SSL</option>
+			<option
+				value="1">COM_GETBIBLE_CONFIG_LOCAL_API</option>
+		</field>
+		
+		<field
+			name="jsonAPIaccess"
+			type="radio"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_JSON_API_ACCESS_LABEL"
+			description="COM_GETBIBLE_CONFIG_JSON_API_ACCESS_DESC">
+			<option
+				value="1">COM_GETBIBLE_CONFIG_PRIVATE</option>
+			<option
+				value="0">COM_GETBIBLE_CONFIG_PUBLIC</option>
+		</field>
+		
+		<field name="jsonAPIkey"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_JSON_API_KEY_LABEL"
+			description="COM_GETBIBLE_CONFIG_JSON_API_KEY_DESC"
+			size="60"
+			default=""
+		/>
+		
+		<!-- later we could setup a local install option and then we may need this
+		<field name="installOptions"
+			type="list"
+			default="1"
+			label="COM_GETBIBLE_CONFIG_INSTALL_OPTIONS_LABEL"
+			description="COM_GETBIBLE_CONFIG_INSTALL_OPTIONS_DESC">
+			<option
+				value="1">COM_GETBIBLE_CONFIG_VIA_GET_BIBLE</option>
+			<option
+				value="0">COM_GETBIBLE_CONFIG_VIA_LOCAL_FOLDER</option>
+		</field>
+		
+		<field name="localInstallFolder" 
+			type="text" 
+			default="scriptureinstall" 
+			label="COM_GETBIBLE_CONFIG_SELECT_LOCAL_FOLDER_LABEL"
+			description="COM_GETBIBLE_CONFIG_SELECT_LOCAL_FOLDER_DESC"
+			readonly="true"
+			class="readonly"
+
+		/>
+		-->
+		<field type="spacer" name="globacer_1" hr="true" />
+		<field name="defaultStartVersion" 
+			type="version" 
+			default="kjv"
+			label="COM_GETBIBLE_CONFIG_DEFAULT_STARTING_VERSION_LABEL"
+		/>
+		<field name="defaultStartBook"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_DEFAULT_STARTING_BOOK_LABEL"
+			description="COM_GETBIBLE_CONFIG_DEFAULT_STARTING_BOOK_DESC"
+			size="60"
+			default="John 1"
+		/>
+		<field name="defaultStartChapter"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_DEFAULT_STARTING_CHAPTER_LABEL"
+			description="COM_GETBIBLE_CONFIG_DEFAULT_STARTING_CHAPTER_DESC"
+			size="60"
+			default="1"
+		/>
+		
+		<field type="spacer" name="globalspacer_54" hr="true" />
+		<field
+			name="check_in"
+			type="list"
+			default="-1 day"
+			label="COM_GETBIBLE_CONFIG_CHECK_IN_TIME_LENGTH_LABEL"
+			description="COM_GETBIBLE_CONFIG_CHECK_IN_TIME_LENGTH_DESC">
+			<option
+				value="-5 hours">COM_GETBIBLE_CONFIG_CHECK_IN_EVERY_FIVE_HOURS</option>
+			<option
+				value="-12 hours">COM_GETBIBLE_CONFIG_CHECK_IN_EVERY_TWELVE_HOURS</option>
+			<option
+				value="-1 day">COM_GETBIBLE_CONFIG_CHECK_IN_ONCE_A_DAY</option>
+			<option
+				value="-2 day">COM_GETBIBLE_CONFIG_CHECK_IN_SECOND_DAY</option>
+			<option
+				value="0">COM_GETBIBLE_CONFIG_CHECK_IN_NEVER</option>
+		</field>
+		
+		<field type="spacer" name="globalspacer_1" hr="true" />
+		<field name="globalspacer_0"
+			type="spacer"
+			label="COM_GETBIBLE_CONFIG_GLOBAL_CONTACT"
+		/>
+	
+		<field name="nameGlobal"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_GLOBAL_NAME_LABEL"
+			description="COM_GETBIBLE_CONFIG_GLOBAL_NAME_DESC"
+			size="60"
+			default="Llewellyn van der Merwe"
+			readonly="true"
+			class="readonly"
+		/>
+		<field name="emailGlobal"
+			type="email"
+			label="COM_GETBIBLE_CONFIG_GLOBAL_EMAIL_LABEL"
+			description="COM_GETBIBLE_CONFIG_GLOBAL_EMAIL_DESC"
+			size="60"
+			default="info@getbible.net"
+			readonly="true"
+			class="readonly"
+		/>
+		
+		<field type="spacer" name="globalspacer0" hr="true" />
+		<field name="globalspacer1"
+			type="spacer"
+			label="COM_GETBIBLE_CONFIG_WORKER"
+		/>
+		
+		<field name="worker1"
+			type="spacer"
+			class="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_ONE"
+		/>
+		<field name="titleWorker1"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_TITLE_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_TITLE_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="nameWorker1"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_NAME_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_NAME_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="emailWorker1"
+			type="email"
+			label="COM_GETBIBLE_CONFIG_WORKER_EMAIL_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_EMAIL_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="linkWorker1"
+			type="url"
+			label="COM_GETBIBLE_CONFIG_WORKER_LINK_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_LINK_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="useWorker1"
+			type="list"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_WORKER_USE_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_USE_DESC">
+			<option value="0">COM_GETBIBLE_CONFIG_WORKER_USE_NONE</option>
+  			<option value="1">COM_GETBIBLE_CONFIG_WORKER_USE_EMAIL</option>
+  			<option value="2">COM_GETBIBLE_CONFIG_WORKER_USE_WWW</option>
+		</field>
+		<field name="showWorker1"
+			type="list"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_WORKER_SHOW_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_SHOW_DESC">
+			<option value="0">COM_GETBIBLE_CONFIG_WORKER_SHOW_NONE</option>
+  			<option value="1">COM_GETBIBLE_CONFIG_WORKER_SHOW_BACK</option>
+  			<option value="2">COM_GETBIBLE_CONFIG_WORKER_SHOW_FRONT</option>
+			<option value="3">COM_GETBIBLE_CONFIG_WORKER_SHOW_ALL</option>
+		</field>
+		<field type="spacer" name="globalspacer2" hr="true" />
+		
+		<field name="worker2"
+			type="spacer"
+			class="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_TWO"
+		/>
+		<field name="titleWorker2"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_TITLE_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_TITLE_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="nameWorker2"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_NAME_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_NAME_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="emailWorker2"
+			type="email"
+			label="COM_GETBIBLE_CONFIG_WORKER_EMAIL_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_EMAIL_DESC"
+			size="60"
+			default=""
+		/>		
+		<field name="linkWorker2"
+			type="url"
+			label="COM_GETBIBLE_CONFIG_WORKER_LINK_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_LINK_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="useWorker2"
+			type="list"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_WORKER_USE_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_USE_DESC">
+			<option value="0">COM_GETBIBLE_CONFIG_WORKER_USE_NONE</option>
+  			<option value="1">COM_GETBIBLE_CONFIG_WORKER_USE_EMAIL</option>
+  			<option value="2">COM_GETBIBLE_CONFIG_WORKER_USE_WWW</option>
+		</field>
+		<field name="showWorker2"
+			type="list"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_WORKER_SHOW_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_SHOW_DESC">
+			<option value="0">COM_GETBIBLE_CONFIG_WORKER_SHOW_NONE</option>
+  			<option value="1">COM_GETBIBLE_CONFIG_WORKER_SHOW_BACK</option>
+  			<option value="2">COM_GETBIBLE_CONFIG_WORKER_SHOW_FRONT</option>
+			<option value="3">COM_GETBIBLE_CONFIG_WORKER_SHOW_ALL</option>
+		</field>
+		<field type="spacer" name="globalspacer3" hr="true" />
+		
+		<field name="worker3"
+			type="spacer"
+			class="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_THREE"
+		/>
+		<field name="titleWorker3"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_TITLE_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_TITLE_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="nameWorker3"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_NAME_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_NAME_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="emailWorker3"
+			type="email"
+			label="COM_GETBIBLE_CONFIG_WORKER_EMAIL_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_EMAIL_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="linkWorker3"
+			type="url"
+			label="COM_GETBIBLE_CONFIG_WORKER_LINK_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_LINK_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="useWorker3"
+			type="list"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_WORKER_USE_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_USE_DESC">
+			<option value="0">COM_GETBIBLE_CONFIG_WORKER_USE_NONE</option>
+  			<option value="1">COM_GETBIBLE_CONFIG_WORKER_USE_EMAIL</option>
+  			<option value="2">COM_GETBIBLE_CONFIG_WORKER_USE_WWW</option>
+		</field>
+		<field name="showWorker3"
+			type="list"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_WORKER_SHOW_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_SHOW_DESC">
+			<option value="0">COM_GETBIBLE_CONFIG_WORKER_SHOW_NONE</option>
+  			<option value="1">COM_GETBIBLE_CONFIG_WORKER_SHOW_BACK</option>
+  			<option value="2">COM_GETBIBLE_CONFIG_WORKER_SHOW_FRONT</option>
+			<option value="3">COM_GETBIBLE_CONFIG_WORKER_SHOW_ALL</option>
+		</field>
+		<field type="spacer" name="globalspacer4" hr="true" />
+		
+		<field name="worker4"
+			type="spacer"
+			class="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_FOUR"
+		/>
+		<field name="titleWorker4"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_TITLE_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_TITLE_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="nameWorker4"
+			type="text"
+			label="COM_GETBIBLE_CONFIG_WORKER_NAME_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_NAME_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="emailWorker4"
+			type="email"
+			label="COM_GETBIBLE_CONFIG_WORKER_EMAIL_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_EMAIL_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="linkWorker4"
+			type="url"
+			label="COM_GETBIBLE_CONFIG_WORKER_LINK_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_LINK_DESC"
+			size="60"
+			default=""
+		/>
+		<field name="useWorker4"
+			type="list"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_WORKER_USE_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_USE_DESC">
+			<option value="0">COM_GETBIBLE_CONFIG_WORKER_USE_NONE</option>
+  			<option value="1">COM_GETBIBLE_CONFIG_WORKER_USE_EMAIL</option>
+  			<option value="2">COM_GETBIBLE_CONFIG_WORKER_USE_WWW</option>
+		</field>
+		<field name="showWorker4"
+			type="list"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_WORKER_SHOW_LABEL"
+			description="COM_GETBIBLE_CONFIG_WORKER_SHOW_DESC">
+			<option value="0">COM_GETBIBLE_CONFIG_WORKER_SHOW_NONE</option>
+  			<option value="1">COM_GETBIBLE_CONFIG_WORKER_SHOW_BACK</option>
+  			<option value="2">COM_GETBIBLE_CONFIG_WORKER_SHOW_FRONT</option>
+			<option value="3">COM_GETBIBLE_CONFIG_WORKER_SHOW_ALL</option>
+		</field>
+	</fieldset>
+	
+	<fieldset
+		name="permissions"
+		label="JCONFIG_PERMISSIONS_LABEL"
+		description="JCONFIG_PERMISSIONS_DESC"
+		>
+
+		<field
+			name="rules"
+			type="rules"
+			label="JCONFIG_PERMISSIONS_LABEL"
+			filter="rules"
+			validate="rules"
+			component="com_getbible"
+			section="component" />
+	</fieldset>
+</config>

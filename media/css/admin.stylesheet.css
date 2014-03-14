@@ -1,0 +1,131 @@
+/**
+* 
+* 	@version 	1.0.0 Feb 02, 2014
+* 	@package 	Get Bible API
+* 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
+* 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
+* 	@license	GNU General Public License <http://www.gnu.org/copyleft/gpl.html>
+*
+**/
+
+/* --- Books --- */
+.icon-48-book-edit {
+  background: url('../images/book-edit-48.png') 0 0 no-repeat;
+}
+.icon-48-book-add{
+  background: url('../images/book-add-48.png') 0 0 no-repeat;
+}
+.icon-48-books{
+  background: url('../images/books-48.png') 0 0 no-repeat;
+}
+
+/* --- Categories --- */
+.icon-48-category-edit {
+  background: url('../images/icon-48-category-add.png') 0 0 no-repeat;
+}
+.icon-48-category-add{
+  background: url('../images/icon-48-category-add.png') 0 0 no-repeat;
+}
+.icon-48-categories{
+  background: url('../images/icon-48-category.png') 0 0 no-repeat;
+}
+
+/* --- Pages --- */
+.icon-48-page-edit {
+  background: url('../images/icon-48-article-edit.png') 0 0 no-repeat;
+}
+.icon-48-page-add{
+  background: url('../images/icon-48-article-add.png') 0 0 no-repeat;
+}
+.icon-48-pages{
+  background: url('../images/icon-48-article.png') 0 0 no-repeat;
+}
+
+/* --- Update --- */
+.icon-48-update-edit{
+  background: url('../images/mount-48.jpg') 0 0 no-repeat;
+}
+
+/* --- MAIN OVERVIEW --- */
+.icon-48-main{
+  background: url('../images/mount-48.jpg') 0 0 no-repeat;
+}
+#jmcrm h2 {
+	padding: 0 12px;
+	font-size:19px;
+	color:#0D3379;
+}
+#jmcrm h3 {
+	padding: 0 20px;
+	font-size:17px;
+	color:#0D3379;
+	background: none;
+}
+
+/* --- MAIN OVERVIEW ICONS --- */
+#jmcrm div.icon {
+    float: left;
+    margin-bottom: 15px;
+    margin-right: 15px;
+    text-align: center;
+}
+#jmcrm div.icon a{
+	background-color: #FFFFFF;
+    background-position: -30px center;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px 5px 5px 5px;
+    color: #565656;
+    display: block;
+    float: left;
+    height: 97px;
+    text-decoration: none;
+    transition-duration: 0.8s;
+    transition-property: background-position, -moz-border-radius-bottomleft, -moz-box-shadow;
+    vertical-align: middle;
+    width: 108px;
+}
+#jmcrm div.icon a:hover, 
+#jmcrm div.icon a:focus, 
+#jmcrm div.icon a:active {
+    background-position: 0 center;
+    border-bottom-left-radius: 50% 20px;
+    box-shadow: -5px 10px 15px rgba(0, 0, 0, 0.25);
+    position: relative;
+    z-index: 10;
+}
+#jmcrm .icon img {
+	float: none;
+    margin: 0 auto;
+    padding: 10px 0;
+}
+#jmcrm .icon span {
+    display: block;
+    text-align: center;
+}
+
+/* --- Vertical menu --- */
+#jmcrm .menuList{
+        padding:0;
+        margin:0;
+        list-style-type:none;
+        font-size:15px;
+        color:#717171;
+        width:60%;
+}
+#jmcrm .menuList li{
+        border-bottom:1px solid #eeeeee;
+        padding:7px 10px 7px 10px;
+}
+#jmcrm .menuList li:hover{
+        background-color:#D6D6D6;
+}
+#jmcrm .menuList li:hover a{
+        color:White;
+}
+#jmcrm .menuList a:link{
+        color:#717171;
+        text-decoration:none;
+}
+#jmcrm .menuList a:hover{
+        color:White;
+}
