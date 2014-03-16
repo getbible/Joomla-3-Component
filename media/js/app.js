@@ -92,11 +92,13 @@ function getData(request,addTo) {
 		 }
 		 jQuery('#b_loader').hide();
 		 jQuery('#t_loader').hide();
+		 jQuery('#more').show();
 		 jQuery("#scripture").removeClass('text_loading');
      },
      error:function(){
 		 	jQuery('#b_loader').hide();
 		 	jQuery('#t_loader').hide();
+			jQuery('#more').show();
 		 	jQuery('#scripture').removeClass('text_loading');
 			if(!addTo){ 
 				jQuery('#scripture').html('<h2>No scripture was returned, please try again!</h2>'); // <---- this is the div id we update
@@ -264,11 +266,17 @@ function loadTimer1(){
 	timerInterval_1 = setInterval(function() {
 		if ( didScroll ) {
 			if (jQuery(window).scrollTop() >= jQuery(document).height() - jQuery(window).height() - 10) {
-				jQuery('#b_loader').show();
-				BIBLE_CHAPTER++;
-				getData('p='+BIBLE_BOOK+BIBLE_CHAPTER+'&v='+BIBLE_VERSION,true);
+				nextChapter();
 				didScroll = false;
 			 }
 		}
 	}, 250);
+}
+
+// get next chapter with next button
+function nextChapter(){
+	jQuery('#more').hide();
+	jQuery('#b_loader').show();
+	BIBLE_CHAPTER++;
+	getData('p='+BIBLE_BOOK+BIBLE_CHAPTER+'&v='+BIBLE_VERSION,true);
 }

@@ -43,5 +43,5 @@ $versions = $this->cpanel;
     <div id="scripture"></div>
 	<button class="uk-button uk-button-primary button" type="button" style="display:none; position: fixed; bottom: 0px; z-index: 3;" onClick="showChapters(true)"><?php echo JText::_('COM_GETBIBLE_SELECT_ANOTHER'); ?></button>
 </div>
-
+<div id="more" style="text-align:center;"><a href="javascript:void(0)" onClick="nextChapter()"><?php echo JText::_('COM_GETBIBLE_NEXT_CHAPTER'); ?></a></div>
 <div id="b_loader" style="display:none; text-align:center;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div>
