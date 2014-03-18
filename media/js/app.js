@@ -177,8 +177,6 @@ function setSearchBook(newBook,lastBook){
 		jQuery('#search_type').val(bookNew[2]);
 	}
 }
-
-FoundTheVerse = false;
 // load the chapter where the search verse is found 
 function loadFoundChapter(call, setGlobal){
 	loadTimer1();
@@ -199,9 +197,14 @@ function loadFoundChapter(call, setGlobal){
 	jQuery('#cPanel').show();
 	gotoTop();
 }
+
+// set the found verse page next chapter load text
+FoundTheVerse = false;
 // Ajax Call to get Data
-function getData(request,addTo, FoundTheVerse) {
-	
+function getData(request,addTo, Found) {
+	if(Found){
+		FoundTheVerse = Found;
+	}
 	if (typeof appKey !== 'undefined') {
      	request = request+'&appKey='+appKey;
 	}
