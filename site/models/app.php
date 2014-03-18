@@ -65,13 +65,37 @@ class GetbibleModelApp extends JModelList
 
 	}
 	
-	public function getBookdefaults()
+	public function getAppDefaults()
 	{
-		$defaultVersion 		= $this->app_params->get('defaultStartVersion');
-		$defaultStartBook 		= $this->app_params->get('defaultStartBook');	
-		$defaults 				= $this->bookDefaults($defaultStartBook,$defaultVersion);
-				
-		return $defaults;
+		// check if search form is used
+		$jinput = JFactory::getApplication()->input;
+		$search_app = $jinput->post->get('search_app', false, 'BOOL');
+		
+		if($search_app){
+			// Load the results
+			$result 			= new stdClass();
+			$result->app 		= $search_app;
+			$result->search 	= $jinput->post->get('search', 'repent', 'SAFE_HTML');
+			$result->version 	= $jinput->post->get('search_version', 'kjv', 'ALNUM');
+			// ensure the criteria is set correctly
+			$crit 				= $jinput->post->get('search_crit', '1_1_1', 'CMD');
+			$result->crit 		= (string) preg_replace('/[^0-9_]/i', '', $crit);
+			// check to see if its a book name
+			$result->type 		= $jinput->post->get('search_type', 'all', 'ALNUM');
+			if($result->type == 'ot' || $result->type == 'nt' || $result->type == 'all'){
+				$result->book_ref = NULL;
+			} else {
+				$result->book_ref = $result->type;
+			}
+			
+			return $result;
+		} else {
+			$defaultVersion 		= $this->app_params->get('defaultStartVersion');
+			$defaultStartBook 		= $this->app_params->get('defaultStartBook');	
+			$defaults 				= $this->bookDefaults($defaultStartBook,$defaultVersion);
+					
+			return $defaults;
+		}
 		
 	}
 	

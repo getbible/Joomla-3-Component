@@ -18,7 +18,7 @@ class GetbibleViewApp extends JViewLegacy
 	 */
 	protected $params;
 	protected $cpanel;
-	protected $bookdefaults;
+	protected $AppDefaults;
 
 	/**
 	 * Display the view
@@ -28,7 +28,7 @@ class GetbibleViewApp extends JViewLegacy
 		// Initialise variables.
 		$this->cpanel	= $this->get('Cpanel');
 		// get the Book Defaults
-		$this->bookdefaults = $this->get('Bookdefaults');
+		$this->AppDefaults = $this->get('AppDefaults');
 		// Get app Params
 		$this->params = JFactory::getApplication()->getParams();
 		
@@ -79,7 +79,7 @@ class GetbibleViewApp extends JViewLegacy
 			$this->document->addStyleSheet(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'uikit.css');
 		}
 		$this->document->addStyleSheet(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'offline.css');
-		//$this->document->addStyleDeclaration( $style );
+		
 		// The JS
 		// Load jQuery check
 		if (!HeaderCheck::js_loaded('jquery')) {
@@ -87,15 +87,39 @@ class GetbibleViewApp extends JViewLegacy
 			JHtml::_('jquery.ui');
 		}
 		// set defaults
-		$setApp .= 	'var BIBLE_BOOK = "'.$this->bookdefaults->book_ref.'";';
-		$setApp .= 	'var BIBLE_CHAPTER = "'.$this->bookdefaults->chapter.'";';
-		$setApp .= 	'var BIBLE_VERSION = "'.$this->bookdefaults->version.'";';
-		$setApp .= 	'var defaultVersion = "'.$this->bookdefaults->version.'";';
-		$setApp .= 	'var defaultBook = "'.$this->bookdefaults->book_ref.'";';
-		$setApp .= 	'var defaultBookNr = "'.$this->bookdefaults->book_nr.'";';
-		$setApp .= 	'var defaultChapter = "'.$this->bookdefaults->chapter.'";';
-		$setApp .= 	'var setQuery = "p="+defaultBook+defaultChapter+"&v="+defaultVersion;';
-		$setApp .= 	'var jsonUrl = '.$jsonUrl.';';
+		if($this->AppDefaults->app){
+			// set the search styles
+			if($this->params->get('highlight_padding')){
+				$padding = 'padding: 0 3px 0 3px;';
+			} else {
+				$padding = '';
+			}
+			$searchStyles = '.highlight { color: '.$this->params->get('highlight_textcolor').'; border-bottom: 1px '.$this->params->get('highlight_linetype').' '.$this->params->get('highlight_linecolor').'; background-color: '.$this->params->get('highlight_background').'; '. $padding .' }';
+			$this->document->addStyleDeclaration( $searchStyles );
+			$setApp .= 	'var BIBLE_VERSION = "'.$this->AppDefaults->version.'";';
+			$setApp .= 	'var BIBLE_CHAPTER = "'.$this->AppDefaults->chapter.'";';
+			$setApp .= 	'var BIBLE_BOOK = "'.$this->AppDefaults->book_ref.'";';			
+			$setApp .= 	'var defaultVersion = "'.$this->AppDefaults->version.'";';
+			$setApp .= 	'var defaultBook = "'.$this->AppDefaults->book_ref.'";';
+			$setApp .= 	'var defaultBookNr = "'.$this->AppDefaults->book_nr.'";';
+			$setApp .= 	'var searchFor = "'.$this->AppDefaults->search.'";';
+			$setApp .= 	'var searchCrit = "'.$this->AppDefaults->crit.'";';
+			$setApp .= 	'var searchType = "'.$this->AppDefaults->type.'";';
+			$setApp .= 	'var setQuery = "s="+searchFor+"&crit="+searchCrit+"&t="+searchType+"&v="+defaultVersion;';
+			$setApp .= 	'var jsonUrl = '.$jsonUrl.';';
+			$setApp .= 	'var searchApp = '.$this->AppDefaults->app.';';
+			$this->document->addScript(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'highlight.js');
+		} else {
+			$setApp .= 	'var BIBLE_BOOK = "'.$this->AppDefaults->book_ref.'";';
+			$setApp .= 	'var BIBLE_CHAPTER = "'.$this->AppDefaults->chapter.'";';
+			$setApp .= 	'var BIBLE_VERSION = "'.$this->AppDefaults->version.'";';
+			$setApp .= 	'var defaultVersion = "'.$this->AppDefaults->version.'";';
+			$setApp .= 	'var defaultBook = "'.$this->AppDefaults->book_ref.'";';
+			$setApp .= 	'var defaultBookNr = "'.$this->AppDefaults->book_nr.'";';
+			$setApp .= 	'var defaultChapter = "'.$this->AppDefaults->chapter.'";';
+			$setApp .= 	'var setQuery = "p="+defaultBook+defaultChapter+"&v="+defaultVersion;';
+			$setApp .= 	'var jsonUrl = '.$jsonUrl.';';
+		}
 		$this->document->addScriptDeclaration($setApp);  
 		$this->document->addScript(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'app.js');
 		

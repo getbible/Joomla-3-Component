@@ -44,14 +44,208 @@ class GetbibleModelGetbible extends JModelList
 			// load request
 			$version = $this->getV();
 			$request = $this->getP($version);
+			$search  = $this->searchFor();
 			if ($request) {
 				$answer = $this->getPassage($request,$version);
+				return $answer;
+			} elseif ($search){
+				$type 	= $this->searchType();
+				$answer = $this->getSearch($search, $type, $version);
 				return $answer;
 			} else {
 				return NULL;
 			}
 		} return NULL;
 		
+	}
+	
+	protected function getSearch($search, $type, $version)
+	{
+		$how = $this->searchCriteria();
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		// set default version
+		if (!$version){
+			$version = 'kjv';
+		}
+		// case sensitive swith
+		if($how['case'] == 2){ 
+			$case = 'BINARY';
+		} else {
+			$case = ' ';
+		}
+		
+		// Create a new query object.
+		$query = $db->getQuery(true);
+			
+		// Set Query.
+		$query->select($db->quoteName(array('a.verse','a.verse_nr','a.chapter_nr','a.book_nr')));
+		$query->from('#__getbible_verses AS a');	
+		$query->where($db->quoteName('a.version') . ' = '. $db->quote($version));
+		
+		if($how['search'] == 2){ // 2 = ANY WORDS
+			if($how['match'] == 2){
+				// 2 = partial match
+				if (strpos($search,' ') !== false) {
+					$words = explode(' ', $search);
+					$dbSearch = '('.$case.' a.verse LIKE ';
+					$i = 0;
+					foreach ($words as $word){
+						if (!$i){
+							$dbSearch .= $db->quote('%' . $db->escape($word, true) . '%');
+						} else {
+							$dbSearch .= ' OR '.$case.' a.verse LIKE '.$db->quote('%' . $db->escape($word, true) . '%');
+						}
+						$i++;
+					}
+					$dbSearch .= ')';
+					$query->where($dbSearch);
+				} else {
+					$dbSearch = $db->quote('%' . $db->escape($search, true) . '%');	
+					$query->where('( '.$case.' a.verse LIKE ' . $dbSearch . ')');
+				}		
+			} elseif($how['match'] == 1) {
+				// 1 = exact match
+				if (strpos($search,' ') !== false) {
+					$words = explode(' ', $search);
+					$dbSearch = '( ' . $case . ' a.verse  REGEXP ';
+					$i = 0;
+					foreach ($words as $word){
+						if (!$i){
+							$dbSearch .=  $db->quote('[[:<:]]' . $db->escape($word, true). '[[:>:]]');
+						} else {
+							$dbSearch .= ' OR '.$case.' a.verse REGEXP '. $db->quote('[[:<:]]' . $db->escape($word, true). '[[:>:]]');
+						}
+						$i++;
+					}
+					$dbSearch .= ')';
+					$query->where($dbSearch);
+				} else {
+					$dbSearch_1 = $case . ' a.verse LIKE ' . $db->quote('% ' . $db->escape($search, true) . ' %');
+					$dbSearch_2 = 'OR '. $case . ' a.verse LIKE ' . $db->quote($db->escape($search, true) . ' %');
+					$dbSearch_3 = 'OR '. $case . ' a.verse LIKE ' . $db->quote('% ' . $db->escape($search, true));
+					$query->where('( '. $dbSearch_1 . $dbSearch_2 . $dbSearch_3 . ')');	
+				}			
+			}
+		} elseif ($how['search'] == 3){ // 3 = EXACT PHRASE
+			if($how['match'] == 2){
+				// 2 = partial match
+				$dbSearch = $db->quote('%' . $db->escape($search, true) . '%');	
+				$query->where('( '.$case.' a.verse LIKE ' . $dbSearch . ')');		
+			} elseif($how['match'] == 1) {
+				// exact match
+				$dbSearch =  $case . ' a.verse  REGEXP ' . $db->quote('[[:<:]]' . $db->escape($search, true). '[[:>:]]');
+				$query->where('( '. $dbSearch . ')');			
+			}
+		} elseif ($how['search'] == 1){ // 1 = ALL WORDS
+			if($how['match'] == 2){
+				// 2 = partial match
+				if (strpos($search,' ') !== false) {
+					$words = explode(' ', $search);
+					foreach ($words as $word){
+						$dbSearch = $db->quote('%' . $db->escape($word, true) . '%');	
+						$query->where('( '.$case.' a.verse LIKE ' . $dbSearch . ')');
+					}
+				} else {
+					$dbSearch = $db->quote('%' . $db->escape($search, true) . '%');	
+					$query->where('( '.$case.' a.verse LIKE ' . $dbSearch . ')');
+				}		
+			} elseif($how['match'] == 1) {
+				// 1 = exact match
+				if (strpos($search,' ') !== false) {
+					$words = explode(' ', $search);
+					foreach ($words as $word){
+						$dbSearch	=  $case.' a.verse REGEXP '. $db->quote('[[:<:]]' . $db->escape($word, true). '[[:>:]]');
+						$query->where('( '. $dbSearch . ')');
+					}
+				} else {
+					$dbSearch	=  $case.' a.verse REGEXP '. $db->quote('[[:<:]]' . $db->escape($search, true). '[[:>:]]');
+					$query->where('( '. $dbSearch . ')');
+				}			
+			}
+		}
+		// set default type
+		if (!$type){
+			$type = 'all';
+		}
+		// load as per type option	
+		if($type == 'all'){  
+			// if search the whole bible
+		} elseif($type == 'ot'){  
+			// if search the old Testament
+			$books = range(1, 39);
+			$query->where($db->quoteName('a.book_nr') . ' IN ('.implode(',', $books).')');
+			
+		} elseif($type == 'nt'){  
+			//if search the new Testament
+			$books = range(40, 66);
+			$query->where($db->quoteName('a.book_nr') . ' IN ('.implode(',', $books).')');
+			
+		} else {  
+			// if search only a book
+			$found = false;
+			// load all books
+			$books = $this->setBooks($version);
+			// set query book number and name
+			foreach ($books as $book){
+				if(!$found){						
+					$name = mb_strtoupper(preg_replace('/\s+/', '', $type), 'UTF-8');
+					foreach($book['book_names'] as $key => $value){
+						if ($value){
+							$value = mb_strtoupper(preg_replace('/\s+/', '', $value), 'UTF-8');
+							if ($name == $value){
+								$book_nr = $book['nr']; $found = true; break;					
+							} else {
+								$found = false;
+							}
+						}
+					}
+				}
+				if ($found){
+					break;	
+				}
+			}
+			
+			if($found){
+				$query->where($db->quoteName('a.book_nr') . ' = ' . $db->quote($book_nr));
+			}
+		}
+		
+		$query->where($db->quoteName('a.access') . ' = 1');
+		$query->where($db->quoteName('a.published') . ' = 1');
+		$query->order($db->quoteName('a.book_nr') . ' ASC');
+		
+		// echo nl2br(str_replace('#__','api_',$query)); die;
+		$db->setQuery($query);
+		// Load the results
+		$verses = $db->loadAssocList();
+		$counter = 0;
+		if($verses){
+			foreach($verses as $verse){
+				$key 		= $verse['book_nr'].'_'.$verse['chapter_nr'];
+				// group verses
+				$chapters[$key][$verse['verse_nr']] = array('verse_nr'=>$verse['verse_nr'], 'verse'=>$verse['verse']);
+				$counter++;
+				
+			}
+			foreach($chapters as $key => $chapter){
+				list($book_nr,$chapter_nr,) = explode('_',$key);
+				// get book name
+				$book_name 	= $this->getBook($book_nr,$version);
+				$book_ref	= $this->getBookRef($book_nr,$version);
+				// load in to result set
+				$returns['book'][] = array('book_name'=>$book_name, 'book_ref'=>$book_ref, 'book_nr'=>$book_nr, 'chapter_nr'=>$chapter_nr, 'chapter'=>$chapter);
+				
+			}
+			// load direction
+			$direction = $this->getDirection($version);
+			$returns['direction'] 	= $direction;
+			// set the number of results
+			$returns['counter'] 	= $counter;
+			// set type
+			$returns['type'] 		= 'search';
+			return json_encode($returns);
+		} return false;
 	}
 	
 	protected function getPassage($req,$version)
@@ -138,9 +332,10 @@ class GetbibleModelGetbible extends JModelList
 			return json_encode($returns);
 		} return false;
 	}
-	// user_id 
+	
 	protected function getVerses($req,$ver)
 	{
+
 		// Get a db connection.
 		$db = JFactory::getDbo();
 		if ($req['verse_nr'][1]){
@@ -188,7 +383,7 @@ class GetbibleModelGetbible extends JModelList
 		$query->select($db->quoteName('bidi'));
 		$query->from($db->quoteName('#__getbible_versions'));
 		$query->where($db->quoteName('version') . ' = '. $db->quote($version));
-		//echo nl2br(str_replace('#__','api_',$query)); die;
+		// echo nl2br(str_replace('#__','api_',$query)); die;
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
 		
@@ -440,6 +635,89 @@ class GetbibleModelGetbible extends JModelList
 		return $request;
 	}
 	
+	protected function searchFor()
+	{
+		// Get the input data
+		$jinput = JFactory::getApplication()->input;
+		
+		$search = $jinput->get('s', NULL, 'SAFE_HTML');
+		if (!$search){
+			$search = $jinput->get('for', NULL, 'SAFE_HTML');
+			if (!$search){
+				$search = $jinput->get('search', NULL, 'SAFE_HTML');
+				if (!$search){
+					$search = $jinput->get('lookup', NULL, 'SAFE_HTML');
+					if (!$search){
+						$search = $jinput->get('find', NULL, 'SAFE_HTML');
+						if (!$search){
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return ($search);
+	}
+	
+	protected function searchType()
+	{
+		// Get the input data
+		$jinput = JFactory::getApplication()->input;
+		
+		$type = $jinput->get('t', NULL, 'ALNUM');
+		if (!$type){
+			$type = $jinput->get('in', NULL, 'ALNUM');
+			if (!$type){
+				$type = $jinput->get('type', NULL, 'ALNUM');
+				if (!$type){
+					return false;
+				}
+			}
+		}
+		return strtolower($type);
+	}
+	
+	protected function searchCriteria()
+	{
+		// Get the input data
+		$jinput = JFactory::getApplication()->input;
+		
+		$criteria = $jinput->get('crit', NULL, 'CMD');
+		if (!$criteria){
+			$criteria = $jinput->get('criteria', NULL, 'CMD');
+			if (!$criteria){
+				$criteria = $jinput->get('way', NULL, 'CMD');
+			}
+		}
+		$criteria = (string) preg_replace('/[^0-9_]/i', '', $criteria);
+		// set criteria
+		if (strpos($criteria,'_') !== false) {
+			list($search,$match,$case)  =  explode('_', $criteria);
+		}
+		// set the way search is to be made 1 = ALL WORDS, 2 = ANY WORDS, 3 = EXACT PHRASE
+		if($search){
+			$crit['search'] = (int)$search;
+		} elseif ((int)$criteria <= 3){
+			$crit['search'] = (int)$criteria;
+		} else {
+			$crit['search'] = (int)1;
+		}
+		// set the way match is made 1 = EXACT MATCH, 2 = PARTIAL MATCH
+		if((int)$match <= 2){
+			$crit['match'] = (int)$match;
+		} else {
+			$crit['match'] = (int)1;
+		}
+		// set the case sentisitivity is handled 1 = CASE INSENSITIVE, 2 = CASE SENSITIVE	 
+		if((int)$case <= 2){
+			$crit['case'] = (int)$case;
+		} else {
+			$crit['case'] = (int)1;
+		}
+		
+		return $crit;
+	}
+	
 	protected function setBooks($version = NULL, $retry = false, $default = 'kjv')
 	{
 		// Get a db connection.
@@ -467,7 +745,7 @@ class GetbibleModelGetbible extends JModelList
 					$books[$book['book_nr']]['nr'] 			= $book['book_nr'];
 					$books[$book['book_nr']]['book_names'] 	= (array)json_decode($book['book_names']);
 					// if retry do't change name
-					$books[$book['book_nr']]['name'] 	= $book['book_name'];
+					$books[$book['book_nr']]['name'] 		= $book['book_name'];
 				}
 			}
 		}
@@ -563,6 +841,41 @@ class GetbibleModelGetbible extends JModelList
 			return $book;
 		}
 		return false;
+	}
+	
+	protected function getBookRef($book_nr,$version,$tryAgain = false)
+	{
+		
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		
+		$query->select('a.book_names');
+		$query->from('#__getbible_setbooks AS a');		
+		$query->where($db->quoteName('a.access') . ' = 1');
+		$query->where($db->quoteName('a.published') . ' = 1');
+		if($tryAgain){
+			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($tryAgain));
+			$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
+		} else {
+			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($version));
+			$query->where($db->quoteName('a.book_name') . ' = ' . $book_nr);
+		}
+			 
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		$db->execute();
+		$num_rows = $db->getNumRows();
+		 if($num_rows){
+			// Load the results
+			$result 			= $db->loadObject();
+			return json_decode($result->book_names)->name2;
+		} else {
+			// fall back on default
+			return $this->getBookRef($book_nr,$version,'kjv');
+		}
 	}
 	
 	

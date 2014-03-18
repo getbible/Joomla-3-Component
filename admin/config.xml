@@ -54,6 +54,50 @@
 	</fieldset>
 	
 	<fieldset
+		name="app"
+		label="COM_GETBIBLE_CONFIG_APP_FIELDSET_LABEL"
+		description="COM_GETBIBLE_CONFIG_APP_FIELDSET_DESC">
+
+		<field name="highlight_textcolor" type="color" default="#515456"
+        label="COM_GETBIBLE_CONFIG_HIGHLIGHT_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_HIGHLIGHT_TEXTCOLOR_DESC" />
+		
+		<field name="highlight_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_HIGHLIGHT_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_HIGHLIGHT_BACKGROUND_DESC" />
+		
+		<field name="highlight_linecolor" type="color" default="#FF0000"
+        label="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINECOLOR_DESC" />
+		
+		<field name="highlight_linetype"
+			type="list"
+			default="dashed"
+			label="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_HIGHLIGHT_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_HIGHLIGHT_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_HIGHLIGHT_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_HIGHLIGHT_LINENONE</option>
+		</field>
+		
+		<field name="highlight_padding"
+			type="list"
+			default="1"
+			label="COM_GETBIBLE_CONFIG_HIGHLIGHT_PADDING_LABEL"
+        	description="COM_GETBIBLE_CONFIG_HIGHLIGHT_PADDINGE_DESC">
+			<option
+				value="1">COM_GETBIBLE_CONFIG_YES</option>
+			<option
+				value="0">COM_GETBIBLE_CONFIG_NO</option>
+		</field>		
+	</fieldset>
+	
+	<fieldset
 		addfieldpath="/administrator/components/com_getbible/models/fields"
 		name="global"
 		label="COM_GETBIBLE_CONFIG_GLOBAL_FIELDSET_LABEL"
