@@ -65,8 +65,7 @@ class GetbibleModelImport extends JModelLegacy
 		// get instilation opstion set in params
 		$installOptions = $this->app_params->get('installOptions');
 		// reload version list for app
-		$this->_cpanel();
-		
+				
 		$available = $this->availableVersionsList;
 		$alreadyin = $this->installedVersions;
 		if($available){
@@ -261,6 +260,12 @@ class GetbibleModelImport extends JModelLegacy
 				$db->query();
 				
 				JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_GETBIBLE_MESSAGE_BIBLE_INSTALLED_SUCCESSFULLY', $versionName));
+				// reset the local version list.
+				$this->_cpanel();
+				// if first Bible is installed change the application to load localy with that Bible as the default
+				$this->setLocal();
+				// clean cache to insure the dropdown removes this installed version.
+				$this->cleanCache('_system');
 				return true;
 			} else {
 				return false;
@@ -359,7 +364,7 @@ class GetbibleModelImport extends JModelLegacy
 
 			$query .= $columns."  VALUES  ";
 			$query .= $values;
-			// echo nl2br(str_replace('#__','giz_',$query)); die;
+			// echo nl2br(str_replace('#__','api_',$query)); die;
 			// Set the query using our newly populated query object and execute it.
 			$db->setQuery($query);
 			$db->query();
@@ -410,7 +415,7 @@ class GetbibleModelImport extends JModelLegacy
 				->insert($db->quoteName('#__getbible_books'))
 				->columns($db->quoteName($columns))
 				->values(implode(',', $values));
-			//echo nl2br(str_replace('#__','giz_',$query)); die;
+			//echo nl2br(str_replace('#__','api_',$query)); die;
 			// Set the query using our newly populated query object and execute it.
 			$db->setQuery($query);
 			$db->query();
@@ -601,5 +606,161 @@ class GetbibleModelImport extends JModelLegacy
 		require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'cpanel.php';
 		$cpanel_model = new GetbibleModelCpanel;
 		return $cpanel_model->setCpanel();
+	}
+	
+	protected function setLocal()
+	{
+		$this->getInstalledVersions();
+		$versions 	= $this->installedVersions;
+		$number 	= count($versions);
+		// only change to local API on install of first Bible
+		if ($number == 1){
+			// get default Book Name
+			$defaultStartBook = $this->app_params->get('defaultStartBook');
+			// make sure it is set to the correct name avaliable in this new default version
+			// first get book number
+			$book_nr = $this->getLocalBookNR($defaultStartBook, $versions[0]);
+			// second check if this version has this book and return the book number it has
+			$book_nr = $this->checkVersionBookNR($book_nr, $versions[0]);
+			// third set the book name
+			$defaultStartBook = $this->getLocalDefaultBook($defaultStartBook, $versions[0], $book_nr);
+			// Update Global Settings
+			$params = JComponentHelper::getParams('com_getbible');
+			$params->set('defaultStartVersion', $versions[0]);
+			$params->set('defaultStartBook', $defaultStartBook);
+			$params->set('jsonQueryOptions', 1);
+			
+			// Get a new database query instance
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+			
+			// Build the query
+			$query->update('#__extensions AS a');
+			$query->set('a.params = ' . $db->quote((string)$params));
+			$query->where('a.element = "com_getbible"');
+			
+			// Execute the query
+			// echo nl2br(str_replace('#__','api_',$query)); die;
+			$db->setQuery($query);
+			$db->query();
+			
+			return true;
+		}
+		return false;
+	}
+	
+	protected function getLocalBookNR($defaultStartBook,$defaultVersion,$tryAgain = false)
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		
+		$query->select('a.book_nr');
+		$query->from('#__getbible_setbooks AS a');		
+		$query->where($db->quoteName('a.access') . ' = 1');
+		$query->where($db->quoteName('a.published') . ' = 1');
+		if($tryAgain){
+			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($tryAgain));
+			$query->where($db->quoteName('a.book_name') . ' = ' . $db->quote($defaultStartBook));
+		} else {
+			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($defaultVersion));
+			$query->where($db->quoteName('a.book_name') . ' = ' . $db->quote($defaultStartBook));
+		}
+			 
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		$db->execute();
+		$num_rows = $db->getNumRows();
+		 if($num_rows){
+			// Load the results
+			return $db->loadResult();
+		} else {
+			// fall back on default
+			return $this->getLocalBookNR($defaultStartBook,$defaultVersion,'kjv');
+		}
+	}
+	
+	protected function checkVersionBookNR($book_nr, $defaultVersion)
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		
+		$query->select('a.book_nr');
+		$query->from('#__getbible_books AS a');		
+		$query->where($db->quoteName('a.access') . ' = 1');
+		$query->where($db->quoteName('a.published') . ' = 1');
+		$query->where($db->quoteName('a.version') . ' = ' . $db->quote($defaultVersion));
+		$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
+			 
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		$db->execute();
+		$num_rows = $db->getNumRows();
+		 if($num_rows){
+			// Load the results
+			return $book_nr;
+		} else {
+			// Run the default 
+			// Create a new query object.
+			$query = $db->getQuery(true);
+			
+			$query->select('a.book_nr');
+			$query->from('#__getbible_books AS a');		
+			$query->where($db->quoteName('a.access') . ' = 1');
+			$query->where($db->quoteName('a.published') . ' = 1');
+			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($defaultVersion));
+			
+			// Reset the query using our newly populated query object.
+			$db->setQuery($query);
+			// Load the results
+			$results = $db->loadColumn();
+			// set book array
+			$results = array_unique($results);
+			// set book for Old Testament (Psalms) or New Testament (John)
+			if (in_array(43,$results)){
+				return 43;
+			} elseif(in_array(19,$results)) {
+				return 19;
+			} 
+			return false;
+		}
+	}
+	
+	protected function getLocalDefaultBook($defaultStartBook,$defaultVersion,$book_nr,$tryAgain = false)
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		
+		$query->select('a.book_name');
+		$query->from('#__getbible_setbooks AS a');		
+		$query->where($db->quoteName('a.access') . ' = 1');
+		$query->where($db->quoteName('a.published') . ' = 1');
+		if($tryAgain){
+			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($tryAgain));
+			$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
+		} else {
+			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($defaultVersion));
+			$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
+		}
+			 
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		$db->execute();
+		$num_rows = $db->getNumRows();
+		 if($num_rows){
+			// Load the results
+			return $db->loadResult();
+		} else {
+			// fall back on default
+			return $this->getLocalDefaultBook($defaultStartBook,$defaultVersion,$book_nr,'kjv');
+		}
 	}
 }
