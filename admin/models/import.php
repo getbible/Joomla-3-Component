@@ -649,7 +649,7 @@ class GetbibleModelImport extends JModelLegacy
 		return false;
 	}
 	
-	protected function getLocalBookNR($defaultStartBook,$defaultVersion,$tryAgain = false)
+	protected function getLocalBookNR($defaultStartBook,$version,$retry = false)
 	{
 		// Get a db connection.
 		$db = JFactory::getDbo();
@@ -661,13 +661,8 @@ class GetbibleModelImport extends JModelLegacy
 		$query->from('#__getbible_setbooks AS a');		
 		$query->where($db->quoteName('a.access') . ' = 1');
 		$query->where($db->quoteName('a.published') . ' = 1');
-		if($tryAgain){
-			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($tryAgain));
-			$query->where($db->quoteName('a.book_name') . ' = ' . $db->quote($defaultStartBook));
-		} else {
-			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($defaultVersion));
-			$query->where($db->quoteName('a.book_name') . ' = ' . $db->quote($defaultStartBook));
-		}
+		$query->where($db->quoteName('a.version') . ' = ' . $db->quote($version));
+		$query->where($db->quoteName('a.book_name') . ' = ' . $db->quote($defaultStartBook));
 			 
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
@@ -678,7 +673,10 @@ class GetbibleModelImport extends JModelLegacy
 			return $db->loadResult();
 		} else {
 			// fall back on default
-			return $this->getLocalBookNR($defaultStartBook,$defaultVersion,'kjv');
+			if($retry){
+				return 43;
+			}
+			return $this->getLocalBookNR($defaultStartBook,'kjv',true);
 		}
 	}
 	
