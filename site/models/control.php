@@ -110,7 +110,7 @@ class GetbibleModelControl extends JModelList
 			 
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
-		//echo nl2br(str_replace('#__','api_',$query)); die;
+		// echo nl2br(str_replace('#__','api_',$query)); die;
 		$db->execute();
 		$num_rows = $db->getNumRows();
 		
@@ -123,7 +123,7 @@ class GetbibleModelControl extends JModelList
 			return $results;
 		} else {
 			// fall back on default
-			return $this->getBooks('kjv');
+			return $this->getSetBooks('kjv');
 		}
 				
 	}
