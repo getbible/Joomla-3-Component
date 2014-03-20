@@ -76,7 +76,7 @@ class GetbibleViewApp extends JViewLegacy
 		// The css
 		$this->document->addStyleSheet(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'app.css');
 		if (!HeaderCheck::css_loaded('uikit')) {
-			$this->document->addStyleSheet(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'uikit.css');
+			$this->document->addStyleSheet(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'uikit.min.css');
 		}
 		$this->document->addStyleSheet(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'offline.css');
 		
