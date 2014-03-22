@@ -9,7 +9,7 @@ What is this?
 
 What is getBible?
 ---------------------
-* getBible! is a **Bible Component** (API) which enables you to deliver the Holy Scripture in many languges on your Joomla website.
+* getBible! is a **Bible Component** (API) which enables you to deliver the Holy Scripture in many languages on your Joomla website.
 * It's a **free and OpenSource software**, distributed under the GNU General Public License version 2 or later
 * This is a simple and powerful addon to Joomla and it requires a server with PHP and MySQL with the Joomla 3.x framework installed to run it.
 More [details here about Joomla](http://www.joomla.org/about-joomla.html)
