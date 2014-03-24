@@ -194,7 +194,7 @@ class GetbibleModelGetbible extends JModelList
 			$books = range(40, 66);
 			$query->where($db->quoteName('a.book_nr') . ' IN ('.implode(',', $books).')');
 			
-		} else {  
+		} else {
 			// if search only a book
 			$found = false;
 			// load all books
@@ -207,7 +207,7 @@ class GetbibleModelGetbible extends JModelList
 						if ($value){
 							$value = mb_strtoupper(preg_replace('/\s+/', '', $value), 'UTF-8');
 							if ($name == $value){
-								$book_nr = $book['nr']; $found = true; break;					
+								$book_nr = (int)$book['nr']; $found = true; break;					
 							} else {
 								$found = false;
 							}
@@ -220,7 +220,7 @@ class GetbibleModelGetbible extends JModelList
 			}
 			
 			if($found){
-				$query->where($db->quoteName('a.book_nr') . ' = ' . $db->quote($book_nr));
+				$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
 			}
 		}
 		
