@@ -195,6 +195,8 @@ function loadFoundChapter(call, setGlobal){
 	jQuery('#button_top').hide();
 	jQuery('#versions').val(BIBLE_VERSION);
 	jQuery('#cPanel').show();
+	// set the search book ref
+	jQuery('#search_book').val(BIBLE_BOOK);
 	gotoTop();
 }
 
