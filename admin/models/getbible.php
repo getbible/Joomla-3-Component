@@ -15,6 +15,9 @@ jimport('joomla.application.component.helper');
 class GetbibleModelGetbible extends JModelList
 {
 	protected $app_params;
+	protected $request_query;
+	protected $request_type;
+	protected $request_version;
 	
 	public function __construct() 
 	{		
@@ -59,6 +62,16 @@ class GetbibleModelGetbible extends JModelList
 		
 	}
 	
+	public function getRequest()
+	{
+		// start setup of Request Object
+		$request 			= new StdClass;
+		$request->query 	= $this->request_query;
+		$request->type 		= $this->request_type;
+		$request->version 	= $this->request_version;
+		
+		return $request;
+	}
 	protected function getSearch($search, $type, $version)
 	{
 		$how = $this->searchCriteria();
@@ -412,7 +425,11 @@ class GetbibleModelGetbible extends JModelList
 				}
 			}
 		}
-		return strtolower($version);
+		$version = strtolower($version);
+		// set request log values
+		$this->request_version = $version;
+		
+		return $version;
 	}
 	
 	protected function getP($version)
@@ -436,11 +453,15 @@ class GetbibleModelGetbible extends JModelList
 					}
 				}
 			}
-		}
-		
+		}	
 		// proces query string
 		$passage = (string) preg_replace('/[^A-Z0-9:;, \-]/i', '', $passage);
 		$passage = ltrim($passage, '.');
+		
+		// set request log values
+		$this->request_query = $passage;
+		$this->request_type = 'passage';
+		
 		if (strpos($passage,';') !== false) {
 			$passage = explode(';',$passage);
 		} else {
@@ -656,7 +677,11 @@ class GetbibleModelGetbible extends JModelList
 				}
 			}
 		}
-		return ($search);
+		// set request log values
+		$this->request_query = $search;
+		$this->request_type = 'search';		
+		// return search value
+		return $search;
 	}
 	
 	protected function searchType()
@@ -858,11 +883,10 @@ class GetbibleModelGetbible extends JModelList
 		$query->where($db->quoteName('a.published') . ' = 1');
 		if($tryAgain){
 			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($tryAgain));
-			$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
 		} else {
 			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($version));
-			$query->where($db->quoteName('a.book_name') . ' = ' . $book_nr);
 		}
+		$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
 			 
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
