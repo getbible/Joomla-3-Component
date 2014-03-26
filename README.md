@@ -31,7 +31,7 @@ What are the limits of getBible?
 
 Is it easy to change the layout display?
 ---------------------
-* There are style changes you can make in the componet's global settings.
+* There are style changes you can make in the component's global settings.
 * The layout is controlled by templates that you can edit if you like.
 
 Updates are free!
@@ -41,11 +41,11 @@ Updates are free!
 Where can you get support and help?
 ---------------------
 * [Visit our Support Desk](http://getbible.net/support)
-* Report and issue [issue](https://github.com/getbible/Joomla-3/issues)
+* Report and [issue](https://github.com/getbible/Joomla-3/issues)
 * Make a [function request](https://github.com/getbible/Joomla-3/issues)
 
 Copyright:
 ---------------------
-* Copyright (C) 2013 Vast Development Method. All rights reserved.
+* Copyright (C) 2013 Vast Development Method. All rights reserved. 
 * Distributed under the GNU General Public License version 2 or later
 * See [License details](http://getbible.net/license)
