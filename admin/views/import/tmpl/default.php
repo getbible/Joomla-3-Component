@@ -128,8 +128,8 @@ JHtml::_('bootstrap.tooltip');
                                     <input class="btn btn-primary" type="button" value="<?php echo JText::_('COM_GETBIBLE_INSTALL_BIBLE'); ?>" onclick="submitbutton()"  disabled="disabled"/>
                                 </div>
                                 <div class="alert alert-warning">
-                                    <p><?php echo JText::_('COM_GETBIBLE_TRY_AGAIN_LATER'); ?></p>
-                                    <p><?php echo JText::_('COM_GETBIBLE_CONTACT_ME_FURTHER_QUESTIONS'); ?></p>
+                                    <p>Please try again later!</p>
+                                    <p>Please contact me at <a href="mailto:<?php echo $this->params->get('emailGlobal'); ?>" title="<?php echo $this->params->get('nameGlobal'); ?>"><?php echo $this->params->get('emailGlobal'); ?></a> if you have any further questions.</p>
                                 </div>
                             </fieldset>
                         </form>

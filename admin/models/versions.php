@@ -106,10 +106,16 @@ class GetbibleModelVersions extends JModelList
 			$query->where('a.access = ' . (int) $access);
 		}
 		
-		// Filter by Version.
+		// Filter by Language.
 		if ($language = $this->getState('filter.language'))
 		{
 			$query->where('a.language = ' . $db->quote($db->escape($language, true)));
+		}
+		
+		// Filter by Version.
+		if ($version = $this->getState('filter.version'))
+		{
+			$query->where('a.version = ' . $db->quote($db->escape($version, true)));
 		}
 
 		// Implement View Level Access
@@ -197,7 +203,7 @@ class GetbibleModelVersions extends JModelList
 		$this->setState('filter.created_by', $created_by);
 
 		$created_on = $this->getUserStateFromRequest($this->context . '.filter.created_on', 'filter_created_on');
-		$this->setState('filter.created_on', $categoryId);
+		$this->setState('filter.created_on', $created_on);
 
 		// List state information.
 		parent::populateState('id', 'ASC');

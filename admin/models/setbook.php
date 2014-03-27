@@ -103,13 +103,24 @@ class GetbibleModelSetbook extends JModelAdmin
 	public function save($data)
 	{
 		$app = JFactory::getApplication();
-
+		
+		// Set the Book Names to json
 		if (isset($data['book_names']) && is_array($data['book_names']))
 		{
 			$registry = new JRegistry;
 			$registry->loadArray($data['book_names']);
 			$data['book_names'] = (string) $registry;
 		}
+		
+		// Alter the title for save as copy
+		if ($app->input->get('task') == 'save2copy')
+		{
+			list($title, $alias) = $this->generateNewTitle($data['catid'], $data['alias'], $data['title']);
+			$data['title'] = $title;
+			$data['alias'] = $alias;
+			$data['state'] = 0;
+		}
+		
 		if (parent::save($data))
 		{
 			return true;

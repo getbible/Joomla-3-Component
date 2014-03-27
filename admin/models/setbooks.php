@@ -178,7 +178,7 @@ class GetbibleModelSetbooks extends JModelList
 		$this->setState('filter.access', $access);
 
 		$book_name = $app->getUserStateFromRequest($this->context . '.filter.book_name', 'filter_book_name');
-		$this->setState('filter.book_name', $authorId);
+		$this->setState('filter.book_name', $book_name);
 
 		$book_nr = $app->getUserStateFromRequest($this->context . '.filter.book_nr', 'filter_book_nr');
 		$this->setState('filter.book_nr', $book_nr);
@@ -186,14 +186,14 @@ class GetbibleModelSetbooks extends JModelList
 		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
 
-		$categoryId = $this->getUserStateFromRequest($this->context . '.filter.version', 'filter_version');
-		$this->setState('filter.version', $categoryId);
+		$version = $this->getUserStateFromRequest($this->context . '.filter.version', 'filter_version');
+		$this->setState('filter.version', $version);
 		
 		$created_by = $this->getUserStateFromRequest($this->context . '.filter.created_by', 'filter_created_by', '');
 		$this->setState('filter.created_by', $created_by);
 
 		$created_on = $this->getUserStateFromRequest($this->context . '.filter.created_on', 'filter_created_on');
-		$this->setState('filter.created_on', $categoryId);
+		$this->setState('filter.created_on', $created_on);
 
 		// List state information.
 		parent::populateState('id', 'ASC');
