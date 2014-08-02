@@ -32,7 +32,7 @@ class JFormFieldVersion extends JFormFieldList
 			$path 		= JPATH_SITE.DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'json'.DIRECTORY_SEPARATOR.'cpanel.json';
 			$cpanel 	= @file_get_contents($path);
 			
-			if($cpanel === FALSE){
+			if($cpanel === FALSE || $cpanel === NULL || $cpanel == ''){
 				$setVersions[]  = JHtml::_('select.option', 'kjv', 'Please Install Local Versions');
 			} else {
 			
@@ -49,15 +49,16 @@ class JFormFieldVersion extends JFormFieldList
 			$path 		= 'https://getbible.net/media/com_getbible/json/cpanel.json';
 			$cpanel 	= @file_get_contents($path);
 			
-			if($cpanel === FALSE){
+			if($cpanel === FALSE || $cpanel === NULL || $cpanel == ''){
 				$setVersions[]  = JHtml::_('select.option', 'kjv', 'Get Bible is Offline');
-			}
+			} else {
 			
-			$options = json_decode($cpanel);
+				$options = json_decode($cpanel);
 			
-			foreach ($options as $key => $values){
-				$name = $values->version_name. ' ('.$values->language.')';
-				$setVersions[]  = JHtml::_('select.option', $values->version, $name);
+				foreach ($options as $key => $values){
+					$name = $values->version_name. ' ('.$values->language.')';
+					$setVersions[]  = JHtml::_('select.option', $values->version, $name);
+				}
 			}
 			
 		} else {
@@ -65,15 +66,15 @@ class JFormFieldVersion extends JFormFieldList
 			$path 		= 'http://getbible.net/media/com_getbible/json/cpanel.json';
 			$cpanel 	= @file_get_contents($path);
 			
-			if($cpanel === FALSE){
+			if($cpanel === FALSE || $cpanel === NULL || $cpanel == ''){
 				$setVersions[]  = JHtml::_('select.option', 'kjv', 'Get Bible is Offline');
-			}
+			} else {
+				$options = json_decode($cpanel);
 			
-			$options = json_decode($cpanel);
-			
-			foreach ($options as $key => $values){
-				$name = $values->version_name. ' ('.$values->language.')';
-				$setVersions[]  = JHtml::_('select.option', $values->version, $name);
+				foreach ($options as $key => $values){
+					$name = $values->version_name. ' ('.$values->language.')';
+					$setVersions[]  = JHtml::_('select.option', $values->version, $name);
+				}
 			}
 			
 		}

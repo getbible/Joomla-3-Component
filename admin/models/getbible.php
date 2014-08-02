@@ -367,6 +367,7 @@ class GetbibleModelGetbible extends JModelList
 		$query->where($db->quoteName('verse_nr') . ' IN ('.implode(',', $verses).')');
 		$query->where($db->quoteName('access') . ' = 1');
 		$query->where($db->quoteName('published') . ' = 1');
+		$query->order('verse_nr ASC');
 		//echo nl2br(str_replace('#__','api_',$query)); die;
 		 
 		// Reset the query using our newly populated query object.

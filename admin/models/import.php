@@ -476,7 +476,7 @@ class GetbibleModelImport extends JModelLegacy
 		// check the available versions on getBible
 		$xml 				= 'http://www.getbible.net/scriptureinstall/xml/version.xml.php/versions.xml';
 		if(@fopen($xml, 'r')){
-				if (($response_xml_data = file_get_contents($xml))===false){
+			if (($response_xml_data = file_get_contents($xml))===false){
 				$this->availableVersions 		= false;
 				$this->availableVersionsList 	= false;
 				return false;
