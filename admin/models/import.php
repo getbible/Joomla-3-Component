@@ -128,9 +128,17 @@ class GetbibleModelImport extends JModelLegacy
 					foreach ($books as $book){
 						$verse[0] = strtoupper(preg_replace('/\s+/', '', $verse[0]));
 						if ($book['nr'] <= 39) {
-							$search_value = sprintf("%02s", $book['nr']).'O';
+							if (strpos($verse[0],'O') !== false) {
+								$search_value = sprintf("%02s", $book['nr']).'O';
+							} else {
+								$search_value = sprintf("%02s", $book['nr']);
+							}
 						} else {
-							$search_value = $book['nr'].'N';
+							if (strpos($verse[0],'N') !== false) {
+								$search_value = $book['nr'].'N';
+							} else {
+								$search_value = $book['nr'];
+							}
 						}
 						if ($verse[0] == $search_value){
 							$verse[0] 	= $book['nr'];
