@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.0 Feb 02, 2014
+* 	@version 	1.0.1  August 16, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -62,8 +62,6 @@ class GetbibleModelImport extends JModelLegacy
 	
 	public function getVersions()
 	{
-		// get instilation opstion set in params
-		$installOptions = $this->app_params->get('installOptions');
 		// reload version list for app
 				
 		$available = $this->availableVersionsList;
@@ -103,8 +101,17 @@ class GetbibleModelImport extends JModelLegacy
 			//check input
 			if ($this->checkTranslation($version) && $this->checkFileName($versionFileName)){
 
-				// get the file
-				$filename 			= 'http://getbible.net/scriptureinstall/'.$versionFileName.'.txt';
+				// get instilation opstion set in params
+				$installOptions = $this->app_params->get('installOptions');
+				
+				if($installOptions){
+					// get the file
+					$filename	= 'https://getbible.net/scriptureinstall/'.$versionFileName.'.txt';
+				} else {
+					// get localInstallFolder set in params
+					$filename = JPATH_SITE.DIRECTORY_SEPARATOR.rtrim(ltrim($this->app_params->get('localInstallFolder'),'/'),'/').DIRECTORY_SEPARATOR.$versionFileName.'.txt';
+				}
+				
 				
 				// parse data to array of srings
 				$lines = file($filename, FILE_IGNORE_NEW_LINES);
@@ -459,30 +466,65 @@ class GetbibleModelImport extends JModelLegacy
 
 	}
 	
-	/*protected function getVersionAvailable()
+	protected function setLocalXML()
 	{
-		$path = JPATH_SITE.'/scriptureinstall';
-		$recurse = false;
-		$fullpath = false;
-		$exclude = array('.svn', 'CVS', '.DS_Store', '__MACOSX', 'index.html', '.htaccess');
-		if (JFolder::exists($path)){
-			$files = JFolder::files($path, $filter = '.', $recurse, $fullpath , $exclude);
-			foreach ($files as $file){
-				$found[] = JFile::stripExt($file);
-			}
-			echo '<pre>';
-			var_dump($found);exit;
-			return $found;
+		jimport( 'joomla.filesystem.folder' );
+		// get localInstallFolder set in params
+		$path = rtrim(ltrim($this->app_params->get('localInstallFolder'),'/'),'/');
+		// creat folder
+		JFolder::create(JPATH_SITE.DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.'xml');
+		// set the file name
+		$filepath = JPATH_SITE.DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.'xml'.DIRECTORY_SEPARATOR.'version.xml.php'; 
+		// set folder path 
+		$folderpath = JPATH_SITE.DIRECTORY_SEPARATOR.$path;
+		$fh = fopen($filepath, "w");
+		if (!is_resource($fh)) {
+			return false;
 		}
-		return false;
+		$data = $this->setPHPforXML($folderpath);
+		if(!fwrite($fh, $data)){
+			// close file.	
+			fclose($fh);
+			return false;
+		}
+		// close file.	
+		fclose($fh);
+		
+		// return local file path
+		return JURI::root().$path.DIRECTORY_SEPARATOR.'xml'.DIRECTORY_SEPARATOR.'version.xml.php'.DIRECTORY_SEPARATOR.'versions.xml';
+	}
+	
+	protected function setPHPforXML($path)
+	{
+		return "<?php
 
-	}*/
+foreach (glob(\"".$path."/*.txt\") as \$filename) {
+    \$available[] = str_replace('.txt', '', basename(\$filename));
+    // do something with $filename
+}
+
+\$xml = new SimpleXMLElement('<versions/>');
+
+foreach (\$available as \$version) {
+   \$xml->addChild('name', \$version);
+   }
+
+Header('Content-type: text/xml');
+print(\$xml->asXML());
+?>";
+	}
 	
 	protected function getVersionAvailable()
 	{
+		// get instilation opstion set in params
+		$installOptions = $this->app_params->get('installOptions');
 		
-		// check the available versions on getBible
-		$xml 				= 'http://www.getbible.net/scriptureinstall/xml/version.xml.php/versions.xml';
+		if($installOptions){
+			// check the available versions on getBible
+			$xml	= 'http://www.getbible.net/scriptureinstall/xml/version.xml.php/versions.xml';
+		} else {
+			$xml	= $this->setLocalXML();
+		}
 		if(@fopen($xml, 'r')){
 			if (($response_xml_data = file_get_contents($xml))===false){
 				$this->availableVersions 		= false;
@@ -491,6 +533,7 @@ class GetbibleModelImport extends JModelLegacy
 			} else {
 			   libxml_use_internal_errors(true);
 			   $data = simplexml_load_string($response_xml_data);
+			   // echo'<pre>';var_dump($data);exit;
 			   if (!$data) {
 					$this->availableVersions 		= false;
 					$this->availableVersionsList 	= false;
@@ -513,6 +556,37 @@ class GetbibleModelImport extends JModelLegacy
 					$this->availableVersionsList 	= $version_list;
 					return true;
 			   }
+			}
+		} elseif(function_exists('curl_init')){
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_URL, $xml);    // get the url contents
+			$response_xml_data = curl_exec($ch); // execute curl request
+			curl_close($ch);
+
+			$data = simplexml_load_string($response_xml_data);
+			// echo'<pre>';var_dump($data);exit;
+			if (!$data) {
+				$this->availableVersions 		= false;
+				$this->availableVersionsList 	= false;
+				return false;
+			} else {
+				$data 	= json_encode($data);
+				$data 	= json_decode($data,TRUE);
+				foreach ($data['name'] as $version){
+					
+					$versionfix = str_replace("___", "'", $version);
+					list($versionLang,$versionName,$versionCode) = explode('__', $versionfix);
+					$versionName = str_replace("_", " ", $versionName);
+					$versions[$versionCode]['fileName'] = $version;
+					$versions[$versionCode]['versionName'] = $versionName;
+					$versions[$versionCode]['versionLang'] = $versionLang;
+					$versions[$versionCode]['versionCode'] = $versionCode;
+					$version_list[] = $versionCode;				
+				}
+				$this->availableVersions 		= $versions;
+				$this->availableVersionsList 	= $version_list;
+				return true;
 			}
 		} else {
 			$this->availableVersions 		= false;

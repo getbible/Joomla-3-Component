@@ -2,12 +2,12 @@
 <extension type="component" version="3.0" method="upgrade">
 	<name>Get Bible</name>
 	<author>Llewellyn van der Merwe</author>
-	<creationDate>February 2014</creationDate>
+	<creationDate>August 2014</creationDate>
 	<copyright>(C) 2014 Vast Development Method. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later</license>
 	<authorEmail>llewellyn@vdm.io</authorEmail>
 	<authorUrl>www.getbible.net</authorUrl>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<description>The Get Bible API for Joomla</description>
 
 	<languages>

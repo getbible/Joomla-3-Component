@@ -86,10 +86,23 @@
 		</field>
 		
 		<field name="highlight_padding"
-			type="list"
+			type="radio"
+			class="btn-group btn-group-yesno"
 			default="1"
 			label="COM_GETBIBLE_CONFIG_HIGHLIGHT_PADDING_LABEL"
         	description="COM_GETBIBLE_CONFIG_HIGHLIGHT_PADDINGE_DESC">
+			<option
+				value="1">COM_GETBIBLE_CONFIG_YES</option>
+			<option
+				value="0">COM_GETBIBLE_CONFIG_NO</option>
+		</field>
+		
+		<field name="auto_loading_chapter"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="1"
+			label="COM_GETBIBLE_CONFIG_AUTO_LOADING_CHAPTERS_LABEL"
+        	description="COM_GETBIBLE_CONFIG_AUTO_LOADING_CHAPTERS_DESC">
 			<option
 				value="1">COM_GETBIBLE_CONFIG_YES</option>
 			<option
@@ -138,7 +151,6 @@
 			default=""
 		/>
 		
-		<!-- later we could setup a local install option and then we may need this
 		<field name="installOptions"
 			type="list"
 			default="1"
@@ -147,7 +159,7 @@
 			<option
 				value="1">COM_GETBIBLE_CONFIG_VIA_GET_BIBLE</option>
 			<option
-				value="0">COM_GETBIBLE_CONFIG_VIA_LOCAL_FOLDER</option>
+				value="0">COM_GETBIBLE_CONFIG_VIA_LOCAL</option>
 		</field>
 		
 		<field name="localInstallFolder" 
@@ -155,11 +167,8 @@
 			default="scriptureinstall" 
 			label="COM_GETBIBLE_CONFIG_SELECT_LOCAL_FOLDER_LABEL"
 			description="COM_GETBIBLE_CONFIG_SELECT_LOCAL_FOLDER_DESC"
-			readonly="true"
-			class="readonly"
-
 		/>
-		-->
+		
 		<field type="spacer" name="globacer_1" hr="true" />
 		<field name="defaultStartVersion" 
 			type="version" 

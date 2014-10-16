@@ -1,6 +1,6 @@
 /**
 * 
-* 	@version 	1.0.0 Feb 02, 2014
+* 	@version 	1.0.1  August 16, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -435,7 +435,7 @@ jQuery(window).scroll(function() {
 // Get next chapter as you scroll down
 function loadTimer1(){
 	timerInterval_1 = setInterval(function() {
-		if ( didScroll ) {
+		if ( (autoLoadChapter === 1) && didScroll) {
 			if (jQuery(window).scrollTop() >= jQuery(document).height() - jQuery(window).height() - 10) {
 				nextChapter();
 				didScroll = false;
