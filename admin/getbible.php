@@ -10,7 +10,12 @@
 **/
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
-JLoader::register('ContentHelper', __DIR__ . '/helpers/content.php');
+// Added for Joomla 3.0
+if(!defined('DS')){
+	define('DS',DIRECTORY_SEPARATOR);
+};
+
+JLoader::register('ContentHelper', __DIR__ . DS.'helpers'.DS.'content.php');
 
 // No access check.
 $controller	= JControllerAdmin::getInstance('Getbible');

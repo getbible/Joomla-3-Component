@@ -69,21 +69,21 @@ class GetbibleViewApp extends JViewLegacy
 		}
 		
 		// Get app settings
-		//require_once( JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'jquery_app.php' );
-		//require_once( JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'css_app.php' );
+		//require_once( JPATH_COMPONENT.DS.'helpers'.DS.'jquery_app.php' );
+		//require_once( JPATH_COMPONENT.DS.'helpers'.DS.'css_app.php' );
 		
-		require_once( JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'script_checker.php' );
+		require_once( JPATH_COMPONENT.DS.'helpers'.DS.'script_checker.php' );
 		// The css
-		$this->document->addStyleSheet(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'app.css');
+		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'app.css');
 		if (!HeaderCheck::css_loaded('uikit')) {
-			$this->document->addStyleSheet(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'uikit.min.css');
+			$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'uikit.min.css');
 		}
-		$this->document->addStyleSheet(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'offline.css');
+		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'offline.css');
 		
 		// The JS
 		// Load jQuery check
 		if (!HeaderCheck::js_loaded('jquery')) {
-			//$this->document->addScript(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'jquery-1.10.2.min.js');
+			//$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jquery-1.10.2.min.js');
 			JHtml::_('jquery.ui');
 		}
 		// set defaults
@@ -108,7 +108,7 @@ class GetbibleViewApp extends JViewLegacy
 			$setApp .= 	'var setQuery = "s="+searchFor+"&crit="+searchCrit+"&t="+searchType+"&v="+defaultVersion;';
 			$setApp .= 	'var jsonUrl = '.$jsonUrl.';';
 			$setApp .= 	'var searchApp = '.$this->AppDefaults->app.';';
-			$this->document->addScript(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'highlight.js');
+			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'highlight.js');
 		} else {
 			$setApp .= 	'var BIBLE_BOOK = "'.$this->AppDefaults->book_ref.'";';
 			$setApp .= 	'var BIBLE_CHAPTER = "'.$this->AppDefaults->chapter.'";';
@@ -122,16 +122,16 @@ class GetbibleViewApp extends JViewLegacy
 			$setApp .= 	'var jsonUrl = '.$jsonUrl.';';
 		}
 		$this->document->addScriptDeclaration($setApp);  
-		$this->document->addScript(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'app.js');
+		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'app.js');
 		
 		// Load Uikit check
 		if (!HeaderCheck::js_loaded('uikit')) {
-			$this->document->addScript(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'uikit.min.js');
+			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'uikit.min.js');
 		}
-		$this->document->addScript(JURI::base( true ) .DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'offline.min.js');
+		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'offline.min.js');
 		
 		// to check in app is online
-		$offline	= "Offline.options = {checks: {image: {url: '" . JURI::base( true ) .DIRECTORY_SEPARATOR."media".DIRECTORY_SEPARATOR."com_getbible".DIRECTORY_SEPARATOR."images".DIRECTORY_SEPARATOR."vdm.png'}}};
+		$offline	= "Offline.options = {checks: {image: {url: '" . JURI::base( true ) .DS."media".DS."com_getbible".DS."images".DS."vdm.png'}}};
 						var run = function(){
 						  if (Offline.state === 'up')
 							Offline.check();

@@ -907,7 +907,7 @@ class GetbibleModelGetbible extends JModelList
 	public function getAvailableVersions()
 	{
 		// Base this model on the backend version.
-		require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'import.php';
+		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_getbible'.DS.'models'.DS.'import.php';
 		$versions_model 		= new GetbibleModelImport;
 		$availableVersions 		= $versions_model->availableVersions;
 		$availableVersionsList 	= $versions_model->availableVersionsList;

@@ -11,6 +11,11 @@
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
+// Added for Joomla 3.0
+if(!defined('DS')){
+	define('DS',DIRECTORY_SEPARATOR);
+};
+
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
@@ -29,7 +34,7 @@ class JFormFieldVersion extends JFormFieldList
 		
 		if ($params->get('jsonQueryOptions') == 1){
 			
-			$path 		= JPATH_SITE.DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'json'.DIRECTORY_SEPARATOR.'cpanel.json';
+			$path 		= JPATH_ROOT.DS.'media'.DS.'com_getbible'.DS.'json'.DS.'cpanel.json';
 			$cpanel 	= @file_get_contents($path);
 			
 			if($cpanel === FALSE || $cpanel === NULL || $cpanel == ''){

@@ -56,7 +56,7 @@ class GetbibleViewImport extends JViewLegacy
 		// Get the toolbar object instance
 		$bar = JToolBar::getInstance('toolbar');
 		
-		JHtml::stylesheet('com_getbible'.DIRECTORY_SEPARATOR.'admin.stylesheet.css', array(), true, false, false);
+		JHtml::stylesheet('com_getbible'.DS.'admin.stylesheet.css', array(), true, false, false);
 		
 		JToolBarHelper::title(JText::_('COM_GETBIBLE_IMPORT'), 'box-add import');
 		

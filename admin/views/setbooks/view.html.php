@@ -20,7 +20,7 @@ class GetbibleViewSetbooks extends JViewLegacy
 	
 	public function display($tpl = null)
 	{	
-		$manifestUrl = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR."components".DIRECTORY_SEPARATOR."com_getbible".DIRECTORY_SEPARATOR."getbible.xml";
+		$manifestUrl = JPATH_ADMINISTRATOR.DS."components".DS."com_getbible".DS."getbible.xml";
 		$this->xml = simplexml_load_file($manifestUrl);
 		
 		if ($this->getLayout() !== 'modal')
@@ -59,7 +59,7 @@ class GetbibleViewSetbooks extends JViewLegacy
 		// Get the toolbar object instance
 		$bar = JToolBar::getInstance('toolbar');
 		
-		JHtml::stylesheet('com_getbible'.DIRECTORY_SEPARATOR.'admin.stylesheet.css', array(), true, false, false);
+		JHtml::stylesheet('com_getbible'.DS.'admin.stylesheet.css', array(), true, false, false);
 		
 		JToolBarHelper::title(JText::_('COM_GETBIBLE_SETBOOKS_TITLE'), 'equalizer setbooks');
 		

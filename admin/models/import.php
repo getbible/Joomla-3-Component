@@ -21,6 +21,8 @@ class GetbibleModelImport extends JModelLegacy
 	protected 	$dateSql;
 	protected 	$book_counter;
 	protected 	$app_params;
+	protected	$local 		= false;
+	protected	$curlError	= false;
 	
 	public 		$availableVersions;
 	public 		$availableVersionsList;
@@ -86,7 +88,20 @@ class GetbibleModelImport extends JModelLegacy
 			JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_ALL_BIBLES_ALREADY_INSTALLED'), 'success');
 			return false;
 		}
-		JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_GETBIBLE_OFFLINE'), 'error'); return false;
+		if($this->curlError){
+			JFactory::getApplication()->enqueueMessage(JText::_($this->curlError), 'error'); return false;
+		} else {
+			if($this->local){
+				JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_LOCAL_OFFLINE'), 'error'); return false;
+			} else {
+				JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_GETBIBLE_OFFLINE'), 'error'); return false;
+			}
+		}
+	}
+	
+	public function rutime($ru, $rus, $index) {
+		return ($ru["ru_$index.tv_sec"]*1000 + intval($ru["ru_$index.tv_usec"]/1000))
+		 -  ($rus["ru_$index.tv_sec"]*1000 + intval($rus["ru_$index.tv_usec"]/1000));
 	}
 	
 	public function getImport()
@@ -109,19 +124,34 @@ class GetbibleModelImport extends JModelLegacy
 					$filename	= 'https://getbible.net/scriptureinstall/'.$versionFileName.'.txt';
 				} else {
 					// get localInstallFolder set in params
-					$filename = JPATH_SITE.DIRECTORY_SEPARATOR.rtrim(ltrim($this->app_params->get('localInstallFolder'),'/'),'/').DIRECTORY_SEPARATOR.$versionFileName.'.txt';
+					$filename = JPATH_ROOT.DS.rtrim(ltrim($this->app_params->get('localInstallFolder'),'/'),'/').DS.$versionFileName.'.txt';
 				}
 				
-				
-				// parse data to array of srings
-				$lines = file($filename, FILE_IGNORE_NEW_LINES);
-				// split strings into arrays
-				foreach ($lines as $line){
-					//$line = str_replace ("||", "##",$line );
-					//$line = str_replace ("|", "##",$line );
-					$verses[] = explode("||",$line );
-				}
-				
+				$FileError = false;
+				$handle = @fopen($filename, "r");
+				if ($handle) {
+					while (($line = fgets($handle)) !== false) {
+						// process the line read.
+						$verses[] = explode("||",$line );
+					}
+				} else {
+					$FileError = true;
+				} 
+				fclose($handle);
+				// if fopen did not work try file
+				if($FileError){
+					// parse data to array of srings
+					$lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+					// split strings into arrays
+					foreach ($lines as $nr => &$line){
+						//$line = str_replace ("||", "##",$line );
+						//$line = str_replace ("|", "##",$line );
+						$verses[] = explode("||",$line );
+						unset($lines[$nr]);
+					}
+					// clear from memory
+					unset($lines);
+				}			
 				// start up database
 				$db = JFactory::getDbo();
 				// load all books
@@ -220,6 +250,8 @@ class GetbibleModelImport extends JModelLegacy
 						$db->query();
 					}					
 				}
+				// clear from memory
+				unset($verses);
 				// save complete books & chapters
 				foreach ($books as $book){
 					
@@ -227,6 +259,8 @@ class GetbibleModelImport extends JModelLegacy
 					$this->saveBooks($version, $book["nr"], $Bible[$book["nr"]]);
 					
 				}
+				// clear from memory
+				unset($books);
 				
 				// Set version details
 				if(is_array($this->book_counter)){
@@ -307,7 +341,15 @@ class GetbibleModelImport extends JModelLegacy
 			}
 			JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_VERSION_NOT_FOUND_ON_GETBIBLE'), 'error'); return false;
 		}
-		JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_GETBIBLE_OFFLINE'), 'error'); return false;
+		if($this->curlError){
+			JFactory::getApplication()->enqueueMessage(JText::_($this->curlError), 'error'); return false;
+		} else {
+			if($this->local){
+				JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_LOCAL_OFFLINE'), 'error'); return false;
+			} else {
+				JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_GETBIBLE_OFFLINE'), 'error'); return false;
+			}
+		}
 	}
 	
 	protected function checkFileName($versionFileName)
@@ -328,7 +370,16 @@ class GetbibleModelImport extends JModelLegacy
 			} else {
 				return $found;
 			}
-		}JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_GETBIBLE_OFFLINE'), 'error'); return false;
+		}
+		if($this->curlError){
+			JFactory::getApplication()->enqueueMessage(JText::_($this->curlError), 'error'); return false;
+		} else {
+			if($this->local){
+				JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_LOCAL_OFFLINE'), 'error'); return false;
+			} else {
+				JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_GETBIBLE_OFFLINE'), 'error'); return false;
+			}
+		}
 	}
 	
 	protected function saveChapter($version, $book_nr, $chapters)
@@ -361,6 +412,8 @@ class GetbibleModelImport extends JModelLegacy
 				$values .= '('.$db->quote($version).', '.$db->quote((int)$book_nr).', '.$db->quote((int)$chapter_nr).', '.$db->quote($scripture).', 1, 1, '.$this->user->id.', '.$db->quote($this->dateSql).')';
 				$chapter_nr++;
 			}
+			// clear from memory
+			unset($chapters);
 			// Insert columns.
 			$columns = '('
 							.$db->quoteName('version').', '
@@ -390,7 +443,7 @@ class GetbibleModelImport extends JModelLegacy
 	
 	protected function saveBooks($version, $book_nr, $book)
 	{
-		if ( $book ){
+		if (is_array($book) && count($book)){
 			//set book number
 			$this->book_counter[] = $book_nr;
 			// start up database
@@ -414,6 +467,8 @@ class GetbibleModelImport extends JModelLegacy
 				$setupChapter[$chapter_nr] = array('chapter_nr'=>$chapter_nr,'chapter'=>$text);
 				$chapter_nr++;
 			}
+			// clear from memory
+			unset($book);
 			$setup = array('book'=>$setupChapter);
 			$saveBook = json_encode($setup);
 			// Create a new query object for this verstion
@@ -464,6 +519,7 @@ class GetbibleModelImport extends JModelLegacy
 		}
 		return false;
 
+
 	}
 	
 	protected function setLocalXML()
@@ -472,11 +528,12 @@ class GetbibleModelImport extends JModelLegacy
 		// get localInstallFolder set in params
 		$path = rtrim(ltrim($this->app_params->get('localInstallFolder'),'/'),'/');
 		// creat folder
-		JFolder::create(JPATH_SITE.DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.'xml');
+		JFolder::create(JPATH_ROOT.DS.$path.DS.'xml');
 		// set the file name
-		$filepath = JPATH_SITE.DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.'xml'.DIRECTORY_SEPARATOR.'version.xml.php'; 
+		$filepath = JPATH_ROOT.DS.$path.DS.'xml'.DS.'version.xml.php'; 
 		// set folder path 
-		$folderpath = JPATH_SITE.DIRECTORY_SEPARATOR.$path;
+		$folderpath = JPATH_ROOT.DS.$path;
+
 		$fh = fopen($filepath, "w");
 		if (!is_resource($fh)) {
 			return false;
@@ -491,7 +548,7 @@ class GetbibleModelImport extends JModelLegacy
 		fclose($fh);
 		
 		// return local file path
-		return JURI::root().$path.DIRECTORY_SEPARATOR.'xml'.DIRECTORY_SEPARATOR.'version.xml.php'.DIRECTORY_SEPARATOR.'versions.xml';
+		return JURI::root().$path.DS.'xml'.DS.'version.xml.php'.DS.'versions.xml';
 	}
 	
 	protected function setPHPforXML($path)
@@ -509,7 +566,10 @@ foreach (\$available as \$version) {
    \$xml->addChild('name', \$version);
    }
 
-Header('Content-type: text/xml');
+header('Content-type: text/xml');
+header('Pragma: public');
+header('Cache-control: private');
+header('Expires: -1');
 print(\$xml->asXML());
 ?>";
 	}
@@ -519,11 +579,12 @@ print(\$xml->asXML());
 		// get instilation opstion set in params
 		$installOptions = $this->app_params->get('installOptions');
 		
-		if($installOptions){
+		if(!$installOptions){
+			$xml			= $this->setLocalXML();
+			$this->local 	= true;
+		} else {
 			// check the available versions on getBible
 			$xml	= 'http://www.getbible.net/scriptureinstall/xml/version.xml.php/versions.xml';
-		} else {
-			$xml	= $this->setLocalXML();
 		}
 		if(@fopen($xml, 'r')){
 			if (($response_xml_data = file_get_contents($xml))===false){
@@ -533,15 +594,12 @@ print(\$xml->asXML());
 			} else {
 			   libxml_use_internal_errors(true);
 			   $data = simplexml_load_string($response_xml_data);
-			   // echo'<pre>';var_dump($data);exit;
 			   if (!$data) {
 					$this->availableVersions 		= false;
 					$this->availableVersionsList 	= false;
 					return false;
 			   } else {
-					$data 	= json_encode($data);
-					$data 	= json_decode($data,TRUE);
-					foreach ($data['name'] as $version){
+					foreach ($data->name as $version){
 						
 						$versionfix = str_replace("___", "'", $version);
 						list($versionLang,$versionName,$versionCode) = explode('__', $versionfix);
@@ -559,9 +617,13 @@ print(\$xml->asXML());
 			}
 		} elseif(function_exists('curl_init')){
 			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)');
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_URL, $xml);    // get the url contents
-			$response_xml_data = curl_exec($ch); // execute curl request
+			curl_setopt($ch, CURLOPT_URL,$xml);
+			$response_xml_data = curl_exec($ch);
+			if(curl_error($ch)){
+				$this->curlError = curl_error($ch);
+			}
 			curl_close($ch);
 
 			$data = simplexml_load_string($response_xml_data);
@@ -571,9 +633,7 @@ print(\$xml->asXML());
 				$this->availableVersionsList 	= false;
 				return false;
 			} else {
-				$data 	= json_encode($data);
-				$data 	= json_decode($data,TRUE);
-				foreach ($data['name'] as $version){
+				foreach ($data->name as $version){
 					
 					$versionfix = str_replace("___", "'", $version);
 					list($versionLang,$versionName,$versionCode) = explode('__', $versionfix);
@@ -625,6 +685,7 @@ print(\$xml->asXML());
 					// if retry do't change name
 					$books[$book['book_nr']]['name'] 	= $book['book_name'];
 				}
+				
 			}
 		}
 		if(!isset($books)){
@@ -685,7 +746,7 @@ print(\$xml->asXML());
 	protected function _cpanel()
 	{
 		// Base this model on the backend version.
-		require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'cpanel.php';
+		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_getbible'.DS.'models'.DS.'cpanel.php';
 		$cpanel_model = new GetbibleModelCpanel;
 		return $cpanel_model->setCpanel();
 	}

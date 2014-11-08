@@ -12,7 +12,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 // No access check.
 jimport('joomla.application.component.controller');
- 
+
+// Added for Joomla 3.0
+if(!defined('DS')){
+	define('DS',DIRECTORY_SEPARATOR);
+};
+
 $controller = JControllerAdmin::getInstance('Getbible');
 $controller->execute(JRequest::getCmd('task'));
 $controller->redirect();

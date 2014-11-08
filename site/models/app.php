@@ -17,6 +17,8 @@ class GetbibleModelApp extends JModelList
 {
 	protected $app_params;
 	
+	protected $bookNameCounter = 0;
+	
 	public function __construct() 
 	{		
 		parent::__construct();
@@ -30,7 +32,7 @@ class GetbibleModelApp extends JModelList
 	{	
 		if ($this->app_params->get('jsonQueryOptions') == 1){
 			
-			$path 		= JPATH_SITE.DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.'com_getbible'.DIRECTORY_SEPARATOR.'json'.DIRECTORY_SEPARATOR.'cpanel.json';
+			$path 		= JPATH_SITE.DS.'media'.DS.'com_getbible'.DS.'json'.DS.'cpanel.json';
 			$cpanel 	= @file_get_contents($path);
 			
 			if($cpanel === FALSE){
@@ -91,7 +93,7 @@ class GetbibleModelApp extends JModelList
 			return $result;
 		} else {
 			$defaultVersion 		= $this->app_params->get('defaultStartVersion');
-			$defaultStartBook 		= $this->app_params->get('defaultStartBook');	
+			$defaultStartBook 		= $this->app_params->get('defaultStartBook');
 			$defaults 				= $this->bookDefaults($defaultStartBook,$defaultVersion);
 					
 			return $defaults;
@@ -101,7 +103,7 @@ class GetbibleModelApp extends JModelList
 	
 	protected function bookDefaults($defaultStartBook,$defaultVersion,$tryAgain = false)
 	{
-		
+		$this->bookNameCounter++;
 		// Get a db connection.
 		$db = JFactory::getDbo();
 		
@@ -134,8 +136,12 @@ class GetbibleModelApp extends JModelList
 			unset($result->book_names);
 			return $result;
 		} else {
-			// fall back on default
-			return $this->bookDefaults($defaultStartBook,$defaultVersion,'kjv');
+			if($this->bookNameCounter > 2){
+				JFactory::getApplication()->enqueueMessage(JText::_('Check the spelling of the (Default Starting Book) that it correspondence with the (Default App Version) in the getBible global settings'), 'error'); return false;
+			} else {
+				// fall back on default
+				return $this->bookDefaults($defaultStartBook,$defaultVersion,'kjv');
+			}
 		}
 	}
 }
