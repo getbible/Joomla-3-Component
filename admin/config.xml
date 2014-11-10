@@ -107,6 +107,18 @@
 				value="1">COM_GETBIBLE_CONFIG_YES</option>
 			<option
 				value="0">COM_GETBIBLE_CONFIG_NO</option>
+		</field>
+		
+		<field name="app_mode"
+			type="radio"
+			class="btn-group"
+			default="1"
+			label="COM_GETBIBLE_CONFIG_APP_MODE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_APP_MODE_DESC">
+			<option
+				value="1">COM_GETBIBLE_CONFIG_STREAM</option>
+			<option
+				value="2">COM_GETBIBLE_CONFIG_BOOK</option>
 		</field>		
 	</fieldset>
 	
@@ -115,8 +127,6 @@
 		name="global"
 		label="COM_GETBIBLE_CONFIG_GLOBAL_FIELDSET_LABEL"
 		description="COM_GETBIBLE_CONFIG_GLOBAL_FIELDSET_DESC">
-		
-		
 		
 		<field name="jsonQueryOptions"
 			type="list"

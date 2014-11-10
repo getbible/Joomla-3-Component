@@ -184,10 +184,11 @@ function loadFoundChapter(call, setGlobal){
 	jQuery('#t_loader').show();
 	getData(call, false, true);
 	var result = setGlobal.split('__');
-	BIBLE_BOOK 		= result[0];
-	BIBLE_BOOK_NR 	= result[1];
-	BIBLE_CHAPTER 	= result[2];
-	BIBLE_VERSION	= result[3];
+	BIBLE_BOOK 			= result[0];
+	BIBLE_BOOK_NR 		= result[1];
+	BIBLE_CHAPTER 		= result[2];
+	BIBLE_LAST_CHAPTER 	= --result[2];
+	BIBLE_VERSION		= result[3];
 	jQuery('.button').show();
 	getDataBo(BIBLE_VERSION,BIBLE_VERSION+'__'+BIBLE_BOOK_NR+'__'+BIBLE_BOOK);
 	getDataCh(BIBLE_VERSION+'__'+BIBLE_BOOK_NR+'__'+BIBLE_BOOK);
@@ -197,6 +198,9 @@ function loadFoundChapter(call, setGlobal){
 	jQuery('#cPanel').show();
 	// set the search book ref
 	jQuery('#search_book').val(BIBLE_BOOK);
+	if(BIBLE_LAST_CHAPTER == 0){
+		jQuery('#prev').hide();
+	}
 	gotoTop();
 }
 
@@ -238,7 +242,7 @@ function getData(request,addTo, Found) {
 		 jQuery('#b_loader').hide();
 		 jQuery('#t_loader').hide();
 		 if(typeof searchApp === 'undefined' || FoundTheVerse){
-		 	jQuery('#more').show();
+		 	jQuery('.navigation').show();
 		 }
 		 jQuery("#scripture").removeClass('text_loading');
      },
@@ -246,10 +250,10 @@ function getData(request,addTo, Found) {
 		 	jQuery('#b_loader').hide();
 		 	jQuery('#t_loader').hide();
 			if(typeof searchApp === 'undefined' || FoundTheVerse){
-				jQuery('#more').show();
+				jQuery('.navigation').show();
 			}
 		 	jQuery('#scripture').removeClass('text_loading');
-			if(!addTo){ 
+			if(!addTo && appMode == 1){
 				jQuery('#scripture').html('<h2>No scripture was returned, please try again!</h2>'); // <---- this is the div id we update
 			}
 		 },
@@ -417,13 +421,17 @@ function showChapters(slideup) {
 function getScripture(call,setGlobal) {
 	jQuery('#t_loader').show();
 	var result = setGlobal.split('__');
-	BIBLE_BOOK 		= result[0];
-	BIBLE_CHAPTER 	= result[1];
-	BIBLE_VERSION	= result[2];
+	BIBLE_BOOK 			= result[0];
+	BIBLE_CHAPTER 		= result[1];
+	BIBLE_LAST_CHAPTER 	= -- result[1];
+	BIBLE_VERSION		= result[2];
 	getData(call);
 	jQuery('#chapters').slideUp( "slow" );
 	jQuery('.button').show();
 	gotoTop();
+	if(BIBLE_LAST_CHAPTER == 0){
+		jQuery('#prev').hide();
+	}
 }
 
 // Set window scroll
@@ -435,7 +443,7 @@ jQuery(window).scroll(function() {
 // Get next chapter as you scroll down
 function loadTimer1(){
 	timerInterval_1 = setInterval(function() {
-		if ( (autoLoadChapter === 1) && didScroll) {
+		if ((autoLoadChapter === 1) && didScroll) {
 			if (jQuery(window).scrollTop() >= jQuery(document).height() - jQuery(window).height() - 10) {
 				nextChapter();
 				didScroll = false;
@@ -446,8 +454,35 @@ function loadTimer1(){
 
 // get next chapter with next button
 function nextChapter(){
-	jQuery('#more').hide();
-	jQuery('#b_loader').show();
+	BIBLE_LAST_CHAPTER = BIBLE_CHAPTER;
 	BIBLE_CHAPTER++;
-	getData('p='+BIBLE_BOOK+BIBLE_CHAPTER+'&v='+BIBLE_VERSION,true);
+	if(appMode == 1){
+		addTo = true;
+	} else if(appMode == 2){
+		addTo = false;
+		gotoTop();
+		if(BIBLE_CHAPTER > 1){
+			jQuery('#prev').show();
+		}
+	}
+	jQuery('.navigation').hide();
+	jQuery('#b_loader').show();
+	getData('p='+BIBLE_BOOK+BIBLE_CHAPTER+'&v='+BIBLE_VERSION,addTo);
+}
+// get previous chapter with prev button
+function prevChapter(){
+	addTo = false;
+	gotoTop();
+	if(BIBLE_LAST_CHAPTER == 0){
+		
+	} else {
+		jQuery('.navigation').hide();
+		jQuery('#b_loader').show();
+		getData('p='+BIBLE_BOOK+BIBLE_LAST_CHAPTER+'&v='+BIBLE_VERSION,addTo);
+		BIBLE_CHAPTER--;
+		BIBLE_LAST_CHAPTER--;
+		if(BIBLE_LAST_CHAPTER == 0){
+			jQuery('#prev').hide();
+		}
+	}
 }

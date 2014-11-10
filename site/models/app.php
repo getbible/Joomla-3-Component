@@ -128,10 +128,11 @@ class GetbibleModelApp extends JModelList
 		$num_rows = $db->getNumRows();
 		 if($num_rows){
 			// Load the results
-			$result 			= $db->loadObject();
-			$result->book_ref 	= json_decode($result->book_names)->name2;
-			$result->chapter 	= $this->app_params->get('defaultStartChapter');
-			$result->version 	= $defaultVersion;
+			$result 				= $db->loadObject();
+			$result->book_ref 		= json_decode($result->book_names)->name2;
+			$result->chapter 		= $this->app_params->get('defaultStartChapter');
+			$result->lastchapter 	= $this->app_params->get('defaultStartChapter') - 1;
+			$result->version 		= $defaultVersion;
 			// remove books from result set
 			unset($result->book_names);
 			return $result;
