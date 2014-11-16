@@ -96,8 +96,9 @@ class GetbibleViewApp extends JViewLegacy
 		$setApp .= 	'var defaultBookNr 		= "'.$this->AppDefaults->book_nr.'";';
 		$setApp .= 	'var autoLoadChapter 	= '.$this->params->get('auto_loading_chapter').';';
 		$setApp .= 	'var appMode 			= '.$this->params->get('app_mode').';';
+		$setApp .= 	'var mode				= '.($this->params->get('mode_set') - 1).';';
 		$setApp .= 	'var jsonUrl 			= '.$jsonUrl.';';
-		if($this->AppDefaults->app){
+		if($this->AppDefaults->search == 1){
 			// set the search styles
 			if($this->params->get('highlight_padding')){
 				$padding = 'padding: 0 3px 0 3px;';
@@ -107,10 +108,10 @@ class GetbibleViewApp extends JViewLegacy
 			$searchStyles = '.highlight { color: '.$this->params->get('highlight_textcolor').'; border-bottom: 1px '.$this->params->get('highlight_linetype').' '.$this->params->get('highlight_linecolor').'; background-color: '.$this->params->get('highlight_background').'; '. $padding .' }';
 			$this->document->addStyleDeclaration( $searchStyles );
 			
-			$setApp .= 	'var searchFor 		= "'.$this->AppDefaults->search.'";';
+			$setApp .= 	'var searchFor 		= "'.$this->AppDefaults->searchFor.'";';
 			$setApp .= 	'var searchCrit 	= "'.$this->AppDefaults->crit.'";';
 			$setApp .= 	'var searchType 	= "'.$this->AppDefaults->type.'";';
-			$setApp .= 	'var searchApp 		= '.$this->AppDefaults->app.';';
+			$setApp .= 	'var searchApp 		= '.$this->AppDefaults->search.';';
 			$setApp .= 	'var setQuery 		= "s="+searchFor+"&crit="+searchCrit+"&t="+searchType+"&v="+defaultVersion;';
 			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'highlight.js');
 		} else {

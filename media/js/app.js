@@ -18,7 +18,7 @@ jQuery(function() {
 	if(typeof searchApp === 'undefined'){
 		getDataBo(defaultVersion,defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
 		getDataCh(defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
-	} else {
+	} else if(typeof loadApp === 'undefined'){
 		jQuery('#cPanel').hide();
 		jQuery('.searchbuttons').show();
 	}
@@ -30,10 +30,13 @@ jQuery(window).bind("load", function() {
 	jQuery('#getbible').show();
 	if(typeof searchApp === 'undefined'){
 		jQuery('.button').show();
-		loadTimer1();
-	} else {
+		if(autoLoadChapter === 1){
+			loadTimer1();
+		}
+	} else if(typeof loadApp === 'undefined'){
 		jQuery('#button_top').show();
 	}
+		
 });
 		
 jQuery(document).ready(function() {
@@ -55,26 +58,29 @@ jQuery(document).ready(function() {
 		});
 	
 	var preSV;
+	var activePassage;
 	
 	jQuery('#versions').focus(function () {
 		// Store the current value on focus, before it changes
-		preSV = this.value;
+		preSV 			= this.value;
 		}).change(function() {
+			activePassage 	= jQuery("#books option:selected").val();
 			var newSV = this.value;
 			jQuery('#books').hide();
 			jQuery('.button').hide();
 			jQuery('#chapters').hide();
 			jQuery('#books').empty();
-			getDataBo(newSV);
-			jQuery('#search_version').val(newSV);
+			getDataBo(newSV, activePassage);
+			jQuery('.search_version').val(newSV);
 			// update global version
 			BIBLE_VERSION = newSV;
+			
 		}); 
 		
 	/*******************************************\
 	*			Search Scripture Here			*
 	\*******************************************/
-	
+	setMode();
 	// set the criteria for the search
 	var crit1 = 1;
 	var crit2 = 1;
@@ -92,21 +98,52 @@ jQuery(document).ready(function() {
 		setCrit();
 	});
 	function setCrit(){
-		jQuery('#search_crit').val(crit1+'_'+crit2+'_'+crit3);
+		jQuery('.search_crit').val(crit1+'_'+crit2+'_'+crit3);
 	}
 	// set the type of search
-	jQuery('.search_type').click(function() {
-		jQuery('#search_type').val(jQuery(this).attr("value"));
+	jQuery('.search_type_select').click(function() {
+		jQuery('.search_type').val(jQuery(this).attr("value"));
 	});
 	
 	// set the search version
-	jQuery('#search_version').val(BIBLE_VERSION);
+	jQuery('.search_version').val(BIBLE_VERSION);
 	// set the search book ref
-	jQuery('#search_book').val(BIBLE_BOOK);
-	
+	jQuery('.search_book').val(BIBLE_BOOK);
+	// get the mode selected
+	jQuery('.mode').click(function() {
+		mode = jQuery(this).attr("value");
+		setMode();
+	});
 	
 });
 
+
+// function to change search mode
+function setMode(){
+	if(mode == 1){
+		jQuery('.search_field').hide();
+		jQuery('.submit_search').hide();
+		jQuery('.search_crit1').hide();
+		jQuery('.search_crit2').hide();
+		jQuery('.search_crit3').hide();
+		jQuery('.search_type_select').hide();
+		jQuery('.search_app').val(0);
+		jQuery('.load_app').val(1);
+		jQuery('.passage').show();
+		jQuery('.submit_load').show();
+	} else if(mode == 0){
+		jQuery('.passage').hide();
+		jQuery('.submit_load').hide();
+		jQuery('.search_app').val(1);
+		jQuery('.load_app').val(0);	
+		jQuery('.search_field').show();
+		jQuery('.submit_search').show();
+		jQuery('.search_crit1').show();
+		jQuery('.search_crit2').show();
+		jQuery('.search_crit3').show();
+		jQuery('.search_type_select').show();		
+	}
+}
 // set highlight option on or off
 var setHight = false;
 function highScripture(){
@@ -171,15 +208,17 @@ function highScripture(){
 // set the search book when a book is changed
 function setSearchBook(newBook,lastBook){
 	var bookNew = newBook.split('__');
-	jQuery('#search_book').val(bookNew[2]);
+	jQuery('.search_book').val(bookNew[2]);
 	var bookLast = lastBook.split('__');
-	if(jQuery('#search_type').val() == bookLast[2]){
-		jQuery('#search_type').val(bookNew[2]);
+	if(jQuery('.search_type').val() == bookLast[2]){
+		jQuery('.search_type').val(bookNew[2]);
 	}
 }
 // load the chapter where the search verse is found 
 function loadFoundChapter(call, setGlobal){
-	loadTimer1();
+	if(autoLoadChapter === 1){
+		loadTimer1();
+	}
 	//  Call to get scripture
 	jQuery('#t_loader').show();
 	getData(call, false, true);
@@ -197,7 +236,7 @@ function loadFoundChapter(call, setGlobal){
 	jQuery('#versions').val(BIBLE_VERSION);
 	jQuery('#cPanel').show();
 	// set the search book ref
-	jQuery('#search_book').val(BIBLE_BOOK);
+	jQuery('.search_book').val(BIBLE_BOOK);
 	if(BIBLE_LAST_CHAPTER == 0){
 		jQuery('#prev').hide();
 	}
@@ -249,7 +288,7 @@ function getData(request,addTo, Found) {
      error:function(){
 		 	jQuery('#b_loader').hide();
 		 	jQuery('#t_loader').hide();
-			if(typeof searchApp === 'undefined' || FoundTheVerse){
+			if((typeof searchApp === 'undefined' && typeof loadApp === 'undefined') || FoundTheVerse){
 				jQuery('.navigation').show();
 			}
 		 	jQuery('#scripture').removeClass('text_loading');
@@ -399,7 +438,27 @@ function getDataBo(version, first) {
 				jQuery('#books').append(op);
         });
 			if(first){
-				jQuery('#books').val(first);
+				var active = first.split('__');
+				var option = '';
+				var loadthis = '';
+				jQuery("#books option").each(function(){
+					option = this.value;
+					var check = option.split('__');
+					if(check[1] == active[1]){
+						 jQuery("#books").val(option);
+						 loadthis = option;
+						 breakOut = true;
+						 return false;
+					}
+				});
+				if(loadthis && breakOut){
+					jQuery('#books').val(loadthis);
+					var builder 	= loadthis.split('__');
+					var calling 	= 'p='+builder[2]+BIBLE_CHAPTER+'&v='+builder[0];
+					var globalSet 	= builder[2]+'__'+BIBLE_CHAPTER+'__'+builder[0];
+					getDataCh(loadthis);
+					getScripture(calling,globalSet);
+				}
 			}
 			jQuery('#f_loader').hide();
 			jQuery('#books').show();
