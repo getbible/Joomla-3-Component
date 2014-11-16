@@ -70,7 +70,7 @@ jQuery(document).ready(function() {
 			jQuery('.button').hide();
 			jQuery('#chapters').hide();
 			jQuery('#books').empty();
-			getDataBo(newSV, activePassage);
+			getDataBo(newSV, activePassage, 1);
 			jQuery('.search_version').val(newSV);
 			// update global version
 			BIBLE_VERSION = newSV;
@@ -407,7 +407,7 @@ function getDataCh(call) {
 }
 
 // Ajax Call to get Books
-function getDataBo(version, first) {
+function getDataBo(version, first,versionChange) {
 	jQuery('#books').hide();
 	jQuery('#f_loader').show();
 	if (typeof cPanelUrl !== 'undefined') {
@@ -438,26 +438,30 @@ function getDataBo(version, first) {
 				jQuery('#books').append(op);
         });
 			if(first){
-				var active = first.split('__');
-				var option = '';
-				var loadthis = '';
-				jQuery("#books option").each(function(){
-					option = this.value;
-					var check = option.split('__');
-					if(check[1] == active[1]){
-						 jQuery("#books").val(option);
-						 loadthis = option;
-						 breakOut = true;
-						 return false;
+				if(versionChange == 1){
+					var active = first.split('__');
+					var option = '';
+					var loadthis = '';
+					jQuery("#books option").each(function(){
+						option = this.value;
+						var check = option.split('__');
+						if(check[1] == active[1]){
+							 jQuery("#books").val(option);
+							 loadthis = option;
+							 breakOut = true;
+							 return false;
+						}
+					});
+					if(loadthis && breakOut){
+						jQuery('#books').val(loadthis);
+						var builder 	= loadthis.split('__');
+						var calling 	= 'p='+builder[2]+BIBLE_CHAPTER+'&v='+builder[0];
+						var globalSet 	= builder[2]+'__'+BIBLE_CHAPTER+'__'+builder[0];
+						getDataCh(loadthis);
+						getScripture(calling,globalSet);
 					}
-				});
-				if(loadthis && breakOut){
-					jQuery('#books').val(loadthis);
-					var builder 	= loadthis.split('__');
-					var calling 	= 'p='+builder[2]+BIBLE_CHAPTER+'&v='+builder[0];
-					var globalSet 	= builder[2]+'__'+BIBLE_CHAPTER+'__'+builder[0];
-					getDataCh(loadthis);
-					getScripture(calling,globalSet);
+				} else {
+					jQuery('#books').val(first);
 				}
 			}
 			jQuery('#f_loader').hide();

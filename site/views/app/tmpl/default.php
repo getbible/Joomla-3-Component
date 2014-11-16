@@ -196,7 +196,7 @@ if($this->params->get('search_mode') == 2){
             </select>
             <select id="books" class="uk-margin-small-top"  style="display:none;">
             </select>
-            <button class="uk-button button" type="button" style="display:none;" onClick="showChapters()"><i class="uk-icon-plus"></i> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></button>
+            <button class="uk-button button" type="button" style="display:none;" onClick="showChapters()"><i class="uk-icon-list-ol"></i> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></button>
         </fieldset>
     </form>
 </div>
@@ -219,13 +219,13 @@ if($this->params->get('search_mode') == 2){
         <?php endif; ?>
         <div class="navigation uk-panel uk-width-1-2 uk-container-center uk-text-center" style="display:none;">
             <div class="uk-button-group">
-                <a class="uk-button button" type="button"  onClick="showChapters(true)"><i class="uk-icon-plus"></i> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></a>
+                <a class="uk-button button" type="button"  onClick="showChapters(true)"><i class="uk-icon-list-ol"></i> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></a>
                 <a id="prev" class="uk-button" href="javascript:void(0)" onClick="prevChapter()"><i class="uk-icon-fast-backward"></i> <?php echo JText::_('COM_GETBIBLE_PREV'); ?></a>
                 <a class="uk-button" href="javascript:void(0)" onClick="nextChapter()"><?php echo JText::_('COM_GETBIBLE_NEXT'); ?> <i class="uk-icon-fast-forward"></i></a>
             </div>
         </div>
     <?php else: ?>
-	<button class="uk-button uk-button-primary button" type="button" style="display:none; position: fixed; bottom: 0px; z-index: 3;" onClick="showChapters(true)"><i class="uk-icon-plus"></i> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></button>
+	<button class="uk-button uk-button-primary button" type="button" style="display:none; position: fixed; bottom: 0px; z-index: 3;" onClick="showChapters(true)"><i class="uk-icon-list-ol"></i> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></button>
     <?php if($this->params->get('up_button') == 1): ?>
         <button id="button_top" class="uk-button uk-button-primary" type="button" style="display:none; position: fixed; bottom: 0px; z-index: 3;" onClick="gotoTop()"><?php echo JText::_('COM_GETBIBLE_GO_TOP'); ?> <i class="uk-icon-arrow-up"></i></button>
 	<?php elseif($this->params->get('up_button') == 2): ?>
