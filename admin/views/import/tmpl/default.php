@@ -86,6 +86,10 @@ JHtml::_('bootstrap.tooltip');
                                 <div class="alert alert-info">
                                   <i class="icon-home"></i> <?php echo JText::_('COM_GETBIBLE_NOTE_BIBLES_HOSTED_WITH_GETBIBLE'); ?>
                                 </div>
+                                <div class="alert alert-info">
+                                  <i class="icon-support"></i> <?php echo JText::_('COM_GETBIBLE_NOTE_INSTALL_ERROR_WITH_GETBIBLE'); ?>
+                                </div>
+                                
                             </fieldset>
                             <?php echo JHtml::_('form.token'); ?>
                         </form>
