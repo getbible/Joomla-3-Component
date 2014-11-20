@@ -127,31 +127,8 @@ class GetbibleModelImport extends JModelLegacy
 					$filename = JPATH_ROOT.DS.rtrim(ltrim($this->app_params->get('localInstallFolder'),'/'),'/').DS.$versionFileName.'.txt';
 				}
 				
-				$FileError = false;
-				$handle = @fopen($filename, "r");
-				if ($handle) {
-					while (($line = fgets($handle)) !== false) {
-						// process the line read.
-						$verses[] = explode("||",$line );
-					}
-				} else {
-					$FileError = true;
-				} 
-				fclose($handle);
-				// if fopen did not work try file
-				if($FileError){
-					// parse data to array of srings
-					$lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-					// split strings into arrays
-					foreach ($lines as $nr => &$line){
-						//$line = str_replace ("||", "##",$line );
-						//$line = str_replace ("|", "##",$line );
-						$verses[] = explode("||",$line );
-						unset($lines[$nr]);
-					}
-					// clear from memory
-					unset($lines);
-				}			
+				// load the file
+				$file = new SplFileObject($filename);
 				// start up database
 				$db = JFactory::getDbo();
 				// load all books
@@ -159,99 +136,102 @@ class GetbibleModelImport extends JModelLegacy
 				
 				$i = 1;
 				// build query to save
-				foreach ($verses as $verse){
-					$found = false;
-					// rename books
-					foreach ($books as $book){
-						$verse[0] = strtoupper(preg_replace('/\s+/', '', $verse[0]));
-						if ($book['nr'] <= 39) {
-							if (strpos($verse[0],'O') !== false) {
-								$search_value = sprintf("%02s", $book['nr']).'O';
-							} else {
-								$search_value = sprintf("%02s", $book['nr']);
-							}
-						} else {
-							if (strpos($verse[0],'N') !== false) {
-								$search_value = $book['nr'].'N';
-							} else {
-								$search_value = $book['nr'];
-							}
-						}
-						if ($verse[0] == $search_value){
-							$verse[0] 	= $book['nr'];
-							$book_nr 	= $book['nr'];
-							$book_name 	= $book['name'];
-							$found 		= true;
-							break;					
-						}
-					}
-					if(!$found){
+				if (is_object($file)) {
+					while (! $file->eof()) {
+						$verse = explode("||",$file->fgets());
+						$found = false;
+						// rename books
 						foreach ($books as $book){
 							$verse[0] = strtoupper(preg_replace('/\s+/', '', $verse[0]));
-							foreach($book['book_names'] as $key => $value){
-								if ($value){
-									$value = strtoupper(preg_replace('/\s+/', '', $value));
-									if ($verse[0] == $value){
-										$verse[0] 	= $book['nr'];
-										$book_nr 	= $book['nr'];
-										$book_name 	= $book['name'];
-										$found 		= true;
-										break;					
+							if ($book['nr'] <= 39) {
+								if (strpos($verse[0],'O') !== false) {
+									$search_value = sprintf("%02s", $book['nr']).'O';
+								} else {
+									$search_value = sprintf("%02s", $book['nr']);
+								}
+							} else {
+								if (strpos($verse[0],'N') !== false) {
+									$search_value = $book['nr'].'N';
+								} else {
+									$search_value = $book['nr'];
+								}
+							}
+							if ($verse[0] == $search_value){
+								$verse[0] 	= $book['nr'];
+								$book_nr 	= $book['nr'];
+								$book_name 	= $book['name'];
+								$found 		= true;
+								break;					
+							}
+						}
+						if(!$found){
+							foreach ($books as $book){
+								$verse[0] = strtoupper(preg_replace('/\s+/', '', $verse[0]));
+								foreach($book['book_names'] as $key => $value){
+									if ($value){
+										$value = strtoupper(preg_replace('/\s+/', '', $value));
+										if ($verse[0] == $value){
+											$verse[0] 	= $book['nr'];
+											$book_nr 	= $book['nr'];
+											$book_name 	= $book['name'];
+											$found 		= true;
+											break;					
+										}
 									}
 								}
 							}
 						}
-					}
-					if(!$found){
-						// load all books again as KJV
-						$books = $this->setBooks($version, true);
-						foreach ($books as $book){
-							foreach($book['book_names'] as $key => $value){
-								if ($value){
-									$value = strtoupper(preg_replace('/\s+/', '', $value));
-									if ($verse[0] == $value){
-										$verse[0] 	= $book['nr'];
-										$book_nr 	= $book['nr'];
-										$found 		= true;
-										break;					
+						if(!$found){
+							// load all books again as KJV
+							$books = $this->setBooks($version, true);
+							foreach ($books as $book){
+								foreach($book['book_names'] as $key => $value){
+									if ($value){
+										$value = strtoupper(preg_replace('/\s+/', '', $value));
+										if ($verse[0] == $value){
+											$verse[0] 	= $book['nr'];
+											$book_nr 	= $book['nr'];
+											$found 		= true;
+											break;					
+										}
 									}
 								}
 							}
 						}
+						// set data
+						if($verse[3]){
+							$Bible[$verse[0]][$verse[1]][$verse[2]] = $verse[3];
+									
+							// Create a new query object for this verse
+							$query = $db->getQuery(true);
+							// Insert columns
+							$columns = array( 'version', 'book_nr', 'chapter_nr', 'verse_nr', 'verse', 'access', 'published', 'created_by', 'created_on');
+							// Insert values.
+							$values	= array( 
+											$db->quote($version), 
+											$db->quote($book_nr), 
+											$db->quote($verse[1]), 
+											$db->quote($verse[2]), 
+											$db->quote($verse[3]), 
+											1,
+											1,
+											$this->user->id, 
+											$db->quote($this->dateSql)
+											);
+							// Prepare the insert query.
+							$query
+								->insert($db->quoteName('#__getbible_verses'))
+								->columns($db->quoteName($columns))
+								->values(implode(',', $values));
+							 
+							// Set the query using our newly populated query object and execute it.
+							$db->setQuery($query);
+							$db->query();
+						}					
 					}
-					// set data
-					if($verse[3]){
-						$Bible[$verse[0]][$verse[1]][$verse[2]] = $verse[3];
-								
-						// Create a new query object for this verse
-						$query = $db->getQuery(true);
-						// Insert columns
-						$columns = array( 'version', 'book_nr', 'chapter_nr', 'verse_nr', 'verse', 'access', 'published', 'created_by', 'created_on');
-						// Insert values.
-						$values	= array( 
-										$db->quote($version), 
-										$db->quote($book_nr), 
-										$db->quote($verse[1]), 
-										$db->quote($verse[2]), 
-										$db->quote($verse[3]), 
-										1,
-										1,
-										$this->user->id, 
-										$db->quote($this->dateSql)
-										);
-						// Prepare the insert query.
-						$query
-							->insert($db->quoteName('#__getbible_verses'))
-							->columns($db->quoteName($columns))
-							->values(implode(',', $values));
-						 
-						// Set the query using our newly populated query object and execute it.
-						$db->setQuery($query);
-						$db->query();
-					}					
 				}
 				// clear from memory
-				unset($verses);
+				unset($file);
 				// save complete books & chapters
 				foreach ($books as $book){
 					
