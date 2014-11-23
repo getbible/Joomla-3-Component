@@ -128,6 +128,51 @@ class GetbibleModelApp extends JModelList
 		
 	}
 	
+	public function getBooksDate()
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		
+		$query->select($db->quoteName('a.created_on').' AS date');
+		$query->select($db->quoteName('a.version'));
+		$query->from('#__getbible_setbooks AS a');		
+		$query->where($db->quoteName('a.access') . ' = 1');
+		$query->where($db->quoteName('a.published') . ' = 1');
+		$query->order($db->quoteName('a.created_on') . ' DESC');
+			 
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		$date[] = $db->loadObject();
+		
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		
+		$query->select($db->quoteName('a.modified_on').' AS date');
+		$query->select($db->quoteName('a.version'));
+		$query->from('#__getbible_setbooks AS a');		
+		$query->where($db->quoteName('a.access') . ' = 1');
+		$query->where($db->quoteName('a.published') . ' = 1');
+		$query->order($db->quoteName('a.modified_on') . ' DESC');
+			 
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		$date[] = $db->loadObject();
+		// get highest date;
+		$topDate = 0;
+		foreach($date as $value){
+			$checkDate = strtotime($value->date);
+			if($checkDate > $topDate){
+				$topDate = strtotime($value->date);
+				$result = $value->version.'_'.$topDate;
+			}
+		}		
+		return $result;
+		
+	}
+	
 	protected function getLoadDefaults($passage)
 	{
 		// proces query string
@@ -312,7 +357,7 @@ class GetbibleModelApp extends JModelList
 			if($results){
 				foreach ($results as $book){
 					$books[$book['book_nr']]['nr'] 			= $book['book_nr'];
-					$books[$book['book_nr']]['book_names'] 	= (array)json_decode($book['book_names']);
+					$books[$book['book_nr']]['book_names'] 	= json_decode($book['book_names'],true);
 					// if retry do't change name
 					$books[$book['book_nr']]['name'] 		= $book['book_name'];
 				}
@@ -361,6 +406,8 @@ class GetbibleModelApp extends JModelList
 			foreach ($results as $book){
 				$books[$book['book_nr']]['nr'] 			= $book['book_nr'];
 				$books[$book['book_nr']]['book_names'] 	= json_decode($book['book_names'],true);
+				// if retry do't change name
+				$books[$book['book_nr']]['name'] 		= $book['book_name'];
 			}
 		}
 		return $books;		

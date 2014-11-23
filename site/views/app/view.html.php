@@ -29,6 +29,8 @@ class GetbibleViewApp extends JViewLegacy
 		$this->cpanel	= $this->get('Cpanel');
 		// get the Book Defaults
 		$this->AppDefaults = $this->get('AppDefaults');
+		// get the last date a book name was changed
+		$this->booksDate = $this->get('BooksDate');
 		// Get app Params
 		$this->params = JFactory::getApplication()->getParams();
 		
@@ -98,6 +100,7 @@ class GetbibleViewApp extends JViewLegacy
 		$setApp .= 	'var appMode 			= '.$this->params->get('app_mode').';';
 		$setApp .= 	'var mode				= '.($this->params->get('mode_set') - 1).';';
 		$setApp .= 	'var jsonUrl 			= '.$jsonUrl.';';
+		$setApp .= 	'var booksDate 			= "'.$this->booksDate.'";';
 		if($this->AppDefaults->search == 1){
 			// set the search styles
 			if($this->params->get('highlight_padding')){
@@ -126,7 +129,18 @@ class GetbibleViewApp extends JViewLegacy
 		if (!HeaderCheck::js_loaded('uikit')) {
 			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'uikit.min.js');
 		}
-		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'offline.min.js');
+		// Load Json check
+		if (!HeaderCheck::js_loaded('json')) {
+			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jquery.json.min.js');
+		}
+		// Load Jstorage check
+		if (!HeaderCheck::js_loaded('jstorage')) {
+			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jstorage.min.js');
+		}
+		// Load Offline check
+		if (!HeaderCheck::js_loaded('offline')) {
+			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'offline.min.js');
+		}
 		
 		// to check in app is online
 		$offline	= "Offline.options = {checks: {image: {url: '" . JURI::base( true ) .DS."media".DS."com_getbible".DS."images".DS."vdm.png'}}};
@@ -135,7 +149,6 @@ class GetbibleViewApp extends JViewLegacy
 							Offline.check();
 						}
 						setInterval(run, 3000);";
-		$this->document->addScriptDeclaration($offline);  
-		//$this->document->addScriptDeclaration($settings); 
+		$this->document->addScriptDeclaration($offline);
 	}
 }

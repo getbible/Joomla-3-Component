@@ -52,22 +52,17 @@ class GetbibleModelControl extends JModelList
 	
 	public function getBooks($version)
 	{
-		// get book names
-		$bookNames = $this->getSetBooks($version);
-		// get book for this translaton
+		// get book for this translation
 		$savedBooks = $this->getSavedBooks($version);
 
-		if($savedBooks){
-			foreach($savedBooks as $book){
-				foreach($bookNames as $name){
-					if($name->book_nr == $book){
-						$books[] 	= $name;
-					}
-				}
-			} return $books;
+		if(is_array($savedBooks) && count($savedBooks)){
+			foreach($savedBooks as $book_nr){
+				// load the book details for this translation or that of KJV if none is found
+				$books[] 	= $this->getSetBook($version,$book_nr);
+			}
+			return $books;
 		}
 		return false;
-				
 	}
 	
 	public function getSavedBooks($version)
@@ -93,7 +88,7 @@ class GetbibleModelControl extends JModelList
 				
 	}
 	
-	public function getSetBooks($version)
+	public function getSetBook($version,$book_nr)
 	{
 		// Get a db connection.
 		$db = JFactory::getDbo();
@@ -106,7 +101,7 @@ class GetbibleModelControl extends JModelList
 		$query->where($db->quoteName('a.version') . ' = ' . $db->quote($version));		
 		$query->where($db->quoteName('a.access') . ' = 1');
 		$query->where($db->quoteName('a.published') . ' = 1');
-		$query->order('a.book_nr ASC');
+		$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
 			 
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
@@ -116,14 +111,13 @@ class GetbibleModelControl extends JModelList
 		
 		if($num_rows){
 			// Load the results
-			$results =  $db->loadObjectList();
-			foreach($results as $result){
-				$result->ref 	= json_decode($result->ref)->name2;
-			}
-			return $results;
+			$result 		= $db->loadObject();
+			$result->ref 	= json_decode($result->ref)->name2;
+			// return result
+			return $result;
 		} else {
 			// fall back on default
-			return $this->getSetBooks('kjv');
+			return $this->getSetBook('kjv',$book_nr);
 		}
 				
 	}
