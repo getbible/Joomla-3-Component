@@ -21,6 +21,9 @@ jQuery(function() {
 		jQuery('#cPanel').hide();
 		jQuery('.searchbuttons').show();
 	}
+	if(BIBLE_LAST_CHAPTER < 1){
+		jQuery('#prev').hide();
+	}
 	getData(setQuery);
 	
 });
@@ -235,7 +238,7 @@ function loadFoundChapter(call, setGlobal){
 	jQuery('#cPanel').show();
 	// set the search book ref
 	jQuery('.search_book').val(BIBLE_BOOK);
-	if(BIBLE_LAST_CHAPTER == 0){
+	if(BIBLE_LAST_CHAPTER < 1){
 		jQuery('#prev').hide();
 	}
 	getData(call, false, true);
@@ -624,7 +627,7 @@ function getScripture(call,setGlobal) {
 	jQuery('#chapters').slideUp( "slow" );
 	jQuery('.button').show();
 	gotoTop();
-	if(BIBLE_LAST_CHAPTER == 0){
+	if(BIBLE_LAST_CHAPTER < 1){
 		jQuery('#prev').hide();
 	}
 }
@@ -668,15 +671,16 @@ function nextChapter(){
 function prevChapter(){
 	addTo = false;
 	gotoTop();
-	if(BIBLE_LAST_CHAPTER == 0){
-		
+	if(BIBLE_LAST_CHAPTER < 1){
+		// this should not happen... since it should be hidden.
+		jQuery('#prev').hide();
 	} else {
 		jQuery('.navigation').hide();
 		jQuery('#b_loader').show();
 		getData('p='+BIBLE_BOOK+BIBLE_LAST_CHAPTER+'&v='+BIBLE_VERSION,addTo);
 		BIBLE_CHAPTER--;
 		BIBLE_LAST_CHAPTER--;
-		if(BIBLE_LAST_CHAPTER == 0){
+		if(BIBLE_LAST_CHAPTER < 1){
 			jQuery('#prev').hide();
 		}
 	}
