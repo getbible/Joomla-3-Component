@@ -17,13 +17,11 @@ class GetbibleViewVersion extends JViewLegacy
 	protected $item;
 	protected $form;
 	protected $state;
-	protected $xml;
 	
 	public function display($tpl = null)
 	{	
-		/*$manifestUrl = JPATH_ADMINISTRATOR."/components/com_getbible/manifest.xml";
-		$this->xml = simplexml_load_file($manifestUrl);*/
-		
+		// check for updates
+		GetHelper::update();		
 		// Get data from the model
 		$this->item 	= $this->get('Item');
 		$this->form 	= $this->get('Form');

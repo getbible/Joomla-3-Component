@@ -26,6 +26,8 @@ class GetbibleViewGetbible extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
+		// check for updates
+		GetHelper::update();
 		// Initialise variables.
 		$this->versions	= $this->get('AvailableVersions');
 		// Get app Params

@@ -15,7 +15,14 @@ if(!defined('DS')){
 	define('DS',DIRECTORY_SEPARATOR);
 };
 
-JLoader::register('ContentHelper', __DIR__ . DS.'helpers'.DS.'content.php');
+// Access check.
+if (!JFactory::getUser()->authorise('core.manage', 'com_getbible')){
+	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+};
+
+// require helper files
+JLoader::register('GetHelper', dirname(__FILE__) . DS . 'helpers' . DS . 'get.php');
+JLoader::register('ContentHelper', dirname(__FILE__) . DS.'helpers'.DS.'content.php');
 
 // No access check.
 $controller	= JControllerAdmin::getInstance('Getbible');

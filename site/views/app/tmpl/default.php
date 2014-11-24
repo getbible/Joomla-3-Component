@@ -357,6 +357,15 @@ if($this->params->get('search_mode') == 2){
         </div>
     </div>
 </div>
+<?php if ($this->params->get('vdm_logo') == 1): ?>
+	<?php if ($this->params->get('vdm_link') == 1): ?><a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank"><?php endif; ?>
+    	<span class="uk-align-right" data-uk-tooltip="{pos:'left'}" title="Powered by" ><img src="/media/com_getbible/images/icon.png" /></span>
+    <?php if ($this->params->get('vdm_link') == 1): ?></a><?php endif; ?>
+<?php else: ?>
+	<?php if ($this->params->get('vdm_link') == 1): ?><a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
+    	<span class="uk-align-right" data-uk-tooltip="{pos:'left'}" title="Powered by" ><?php echo $this->params->get('vdm_name');  ?></span>
+    </a><?php endif; ?>
+<?php endif; ?>
 <?php if($this->params->get('highlight_option') == 1): ?>
 <script type="application/javascript">
 	jQuery(window).bind("load", function() {

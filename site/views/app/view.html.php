@@ -141,14 +141,20 @@ class GetbibleViewApp extends JViewLegacy
 		if (!HeaderCheck::js_loaded('offline')) {
 			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'offline.min.js');
 		}
+		// debug offline status
+		// $this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'offline-simulate-ui.min.js');
 		
 		// to check in app is online
-		$offline	= "Offline.options = {checks: {image: {url: '" . JURI::base( true ) .DS."media".DS."com_getbible".DS."images".DS."vdm.png'}}};
-						var run = function(){
-						  if (Offline.state === 'up')
-							Offline.check();
-						}
-						setInterval(run, 3000);";
+		$offline	= '	jQuery(document).ready(function(){ 
+							Offline.options = {checks: { image: {url: "/media/com_getbible/images/vdm.png"}, active: "image"}};
+							window.setInterval(function() {
+								
+								if (Offline.state === "up"){
+									Offline.check();				
+								}
+								
+							}, 3000);
+						});';
 		$this->document->addScriptDeclaration($offline);
 	}
 }

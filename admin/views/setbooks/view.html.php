@@ -15,13 +15,12 @@ class GetbibleViewSetbooks extends JViewLegacy
 	protected $items;
 	protected $pagination;
 	protected $state;
-	protected $xml;
 	protected $user;
 	
 	public function display($tpl = null)
 	{	
-		$manifestUrl = JPATH_ADMINISTRATOR.DS."components".DS."com_getbible".DS."getbible.xml";
-		$this->xml = simplexml_load_file($manifestUrl);
+		// check for updates
+		GetHelper::update();
 		
 		if ($this->getLayout() !== 'modal')
 		{

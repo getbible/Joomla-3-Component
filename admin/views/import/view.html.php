@@ -26,6 +26,8 @@ class GetbibleViewImport extends JViewLegacy
 	 */
 	function display($tpl = null)
 	{
+		// check for updates
+		GetHelper::update();
 		// Initialise variables.
 		$this->import	= $this->get('Import');
 		$this->versions	= $this->get('Versions');// Get app Params

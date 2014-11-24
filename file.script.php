@@ -66,7 +66,15 @@ class com_getbibleInstallerScript {
 				</a>';
 		} 
 		if ($type == 'update') {
-			
+				// fix update string in db
+				$db = JFactory::getDBO();
+				$query = $db->getQuery(true);
+				$query->update('#__update_sites');
+				$query->set("type =  'extension'");
+				$query->where("location = 'http://getbible.net/updates/joomla_three.xml'"); 
+				$db->setQuery($query);
+				$db->query();
+				
 		echo '	<p>'.JText::_('Congratulations! Now you can start using Get Bible!').'</p>
 				<a target="_blank" href="http://getbible.net/" title="Get Bible">
 				<img src="../media/com_getbible/images/Bible.jpg"/>
