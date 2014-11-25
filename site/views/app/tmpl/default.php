@@ -13,40 +13,17 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 $versions = $this->cpanel;
-if($this->params->get('search_mode') == 2){
-	switch($this->params->get('mode_set')){
-		case 1:
-		$submit_search 	= '';
-		$submit_load	= 'style="display:none;"';
-		$search_button 	= 'uk-active';
-		$load_button	= '';
-		
-		break;
-		case 2:
-		$submit_search 	= 'style="display:none;"';
-		$submit_load	= '';
-		$search_button 	= '';
-		$load_button	= 'uk-active';
-		break;
-		
-	}
-} else {
-	$submit_search 	= '';
-	$submit_load	= 'style="display:none;"';
-}
+
 ?>
 <div class="searchbuttons" style="display:none;">
 <?php if($this->params->get('search_display') == 1): ?>
 <form class="uk-form">
     <fieldset data-uk-margin="">
-		<button class="uk-button submit_search" data-uk-offcanvas="{target:'#search_scripture'}" <?php echo $submit_search; ?>><i class="uk-icon-search"></i> <?php echo $this->params->get('search_button'); ?></button>
-        <?php if($this->params->get('search_mode') == 2): ?>
-		<button class="uk-button submit_load" data-uk-offcanvas="{target:'#search_scripture'}" <?php echo $submit_load; ?>><i class="uk-icon-book"></i> <?php echo $this->params->get('load_button'); ?></button>
-        <?php endif; ?>
+		<button class="uk-button submit_search" data-uk-offcanvas="{target:'#search_scripture'}"><i class="uk-icon-search"></i> <?php echo $this->params->get('search_button'); ?></button>
 <?php elseif($this->params->get('search_display') == 2):?>
 <form class="uk-form uk-search" id="search_form" method="post">
 	<fieldset data-uk-margin="">
-        <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>" <?php echo $submit_search; ?>>
+        <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
         <input type="submit" style="display:none;" >
         <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
         value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
@@ -56,12 +33,8 @@ if($this->params->get('search_mode') == 2){
 <?php elseif($this->params->get('search_display') == 3):?>
 <form class="uk-form uk-search" id="search_form" method="post">
 	<fieldset data-uk-margin="">
-		<?php if($this->params->get('search_mode') == 2): ?>
-        <input class="passage uk-search-field" type="input" name="passage" placeholder="<?php echo $this->params->get('load_phrase'); ?>" <?php echo $submit_load; ?>>
-        <input class="uk-button submit_load" type="submit"  value="<?php echo $this->params->get('load_button'); ?>" <?php echo $submit_load; ?>>
-        <?php endif; ?>
-        <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>" <?php echo $submit_search; ?>>
-        <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>" <?php echo $submit_search; ?>>
+        <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
+        <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>">
         <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
         value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
         <input class="uk-hidden search_type" type="hidden" name="search_type" value="<?php echo $this->params->get('search_type'); ?>">
@@ -70,13 +43,9 @@ if($this->params->get('search_mode') == 2){
 <?php elseif($this->params->get('search_display') == 4):?>
 <form class="uk-form uk-search" id="search_form" method="post">
 	<fieldset data-uk-margin="">
-		<?php if($this->params->get('search_mode') == 2): ?>
-        <input class="passage uk-search-field" type="input" name="passage" placeholder="<?php echo $this->params->get('load_phrase'); ?>" <?php echo $submit_load; ?>>
-        <input class="uk-button submit_load" type="submit"  value="<?php echo $this->params->get('load_button'); ?>" <?php echo $submit_load; ?>>
-        <?php endif; ?>
-        <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>" <?php echo $submit_search; ?>>
-        <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>" <?php echo $submit_search; ?>>
-        <?php if($this->params->get('search_options') == 1 || $this->params->get('search_mode') == 2): ?>
+        <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
+        <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>">
+        <?php if($this->params->get('search_options') == 1): ?>
         <button class="uk-button" data-uk-offcanvas="{target:'#search_scripture'}"><?php echo $this->params->get('advanced_button'); ?></button>
         <?php endif; ?>
         <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
@@ -87,12 +56,9 @@ if($this->params->get('search_mode') == 2){
 <?php elseif($this->params->get('search_display') == 5):?>
 <form class="uk-form uk-search" id="search_form" method="post">
 	<fieldset data-uk-margin="">
-		<?php if($this->params->get('search_mode') == 2): ?>
-        <input class="passage uk-search-field" type="input" name="passage" placeholder="<?php echo $this->params->get('load_phrase'); ?>" <?php echo $submit_load; ?>>
-        <?php endif; ?>
-        <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>" <?php echo $submit_search; ?>>
+        <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
         <input type="submit" style="display:none;" >
-        <?php if($this->params->get('search_options') == 1 || $this->params->get('search_mode') == 2): ?>
+        <?php if($this->params->get('search_options') == 1): ?>
         <button class="uk-button" data-uk-offcanvas="{target:'#search_scripture'}"><?php echo $this->params->get('advanced_button'); ?></button>
         <?php endif; ?>
         <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
@@ -115,46 +81,33 @@ if($this->params->get('search_mode') == 2){
 	<?php if($this->params->get('search_display') == 1): ?>
     <form class="uk-form">
         <fieldset data-uk-margin="">
-            <button class="uk-button submit_search" data-uk-offcanvas="{target:'#search_scripture'}" <?php echo $submit_search; ?>><i class="uk-icon-search"></i> <?php echo $this->params->get('search_button'); ?></button>
-            <?php if($this->params->get('search_mode') == 2): ?>
-			<button class="uk-button submit_load" data-uk-offcanvas="{target:'#search_scripture'}" <?php echo $submit_load; ?>><i class="uk-icon-book"></i> <?php echo $this->params->get('load_button'); ?></button>
-            <?php endif; ?>
+            <button class="uk-button submit_search" data-uk-offcanvas="{target:'#search_scripture'}"><i class="uk-icon-search"></i> <?php echo $this->params->get('search_button'); ?></button>
     <?php elseif($this->params->get('search_display') == 2):?>
     <form class="uk-form uk-search" id="search_form" method="post">
         <fieldset data-uk-margin="">
-            <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>" <?php echo $submit_search; ?>>
+            <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
             <input type="submit" style="display:none;" >
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
             value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
             <input class="uk-hidden search_type" type="hidden" name="search_type" value="<?php echo $this->params->get('search_type'); ?>">
             <input class="uk-hidden search_version" type="hidden" name="search_version" value="<?php echo $this->params->get('version'); ?>">
-            <input class="uk-hidden search_app" type="hidden" name="search_app" value="1"> 
-            <input class="uk-hidden load_app" type="hidden" name="load_app" value="0"> 
+            <input class="uk-hidden search_app" type="hidden" name="search_app" value="1">
     <?php elseif($this->params->get('search_display') == 3):?>
     <form class="uk-form uk-search" id="search_form" method="post">
         <fieldset data-uk-margin="">
-			<?php if($this->params->get('search_mode') == 2): ?>
-            <input class="passage uk-search-field" type="input" name="passage" placeholder="<?php echo $this->params->get('load_phrase'); ?>" <?php echo $submit_load; ?>>
-            <input class="uk-button submit_load" type="submit"  value="<?php echo $this->params->get('load_button'); ?>" <?php echo $submit_load; ?>>
-            <?php endif; ?>
-            <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>" <?php echo $submit_search; ?>>
-            <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>" <?php echo $submit_search; ?>>
+            <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
+            <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>">
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
             value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
             <input class="uk-hidden search_type" type="hidden" name="search_type" value="<?php echo $this->params->get('search_type'); ?>">
             <input class="uk-hidden search_version" type="hidden" name="search_version" value="<?php echo $this->params->get('version'); ?>">
             <input class="uk-hidden search_app" type="hidden" name="search_app" value="1"> 
-            <input class="uk-hidden load_app" type="hidden" name="load_app" value="0"> 
     <?php elseif($this->params->get('search_display') == 4):?>
     <form class="uk-form uk-search" id="search_form" method="post">
         <fieldset data-uk-margin="">
-			<?php if($this->params->get('search_mode') == 2): ?>
-            <input class="passage uk-search-field" type="input" name="passage" placeholder="<?php echo $this->params->get('load_phrase'); ?>" <?php echo $submit_load; ?>>
-            <input class="uk-button submit_load" type="submit"  value="<?php echo $this->params->get('load_button'); ?>" <?php echo $submit_load; ?>>
-            <?php endif; ?>
-            <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>" <?php echo $submit_search; ?>>
-            <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>" <?php echo $submit_search; ?>>
-            <?php if($this->params->get('search_options') == 1 || $this->params->get('search_mode') == 2): ?>
+            <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
+            <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>">
+            <?php if($this->params->get('search_options') == 1): ?>
             <button class="uk-button" data-uk-offcanvas="{target:'#search_scripture'}"><?php echo $this->params->get('advanced_button'); ?></button>
             <?php endif; ?>
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
@@ -162,24 +115,19 @@ if($this->params->get('search_mode') == 2){
             <input class="uk-hidden search_type" type="hidden" name="search_type" value="<?php echo $this->params->get('search_type'); ?>">
             <input class="uk-hidden search_version" type="hidden" name="search_version" value="<?php echo $this->params->get('version'); ?>">
             <input class="uk-hidden search_app" type="hidden" name="search_app" value="1"> 
-            <input class="uk-hidden load_app" type="hidden" name="load_app" value="0"> 
     <?php elseif($this->params->get('search_display') == 5):?>
     <form class="uk-form uk-search" id="search_form" method="post">
         <fieldset data-uk-margin="">
-			<?php if($this->params->get('search_mode') == 2): ?>
-            <input class="passage uk-search-field" type="input" name="passage" placeholder="<?php echo $this->params->get('load_phrase'); ?>" <?php echo $submit_load; ?>>
-            <?php endif; ?>
             <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
             <input type="submit" style="display:none;" >
-            <?php if($this->params->get('search_options') == 1 || $this->params->get('search_mode') == 2): ?>
+            <?php if($this->params->get('search_options') == 1): ?>
             <button class="uk-button" data-uk-offcanvas="{target:'#search_scripture'}"><?php echo $this->params->get('advanced_button'); ?></button>
             <?php endif; ?>
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
             value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
             <input class="uk-hidden search_type" type="hidden" name="search_type" value="<?php echo $this->params->get('search_type'); ?>">
             <input class="uk-hidden search_version" type="hidden" name="search_version" value="<?php echo $this->params->get('version'); ?>">
-            <input class="uk-hidden search_app" type="hidden" name="search_app" value="1">  
-            <input class="uk-hidden load_app" type="hidden" name="load_app" value="0"> 
+            <input class="uk-hidden search_app" type="hidden" name="search_app" value="1">
     <?php endif; ?>
         	<select id="versions" class="uk-margin-small-top">
                     <option value=""><?php echo JText::_('COM_GETBIBLE_SELECT_VERSION'); ?></option>
@@ -244,16 +192,10 @@ if($this->params->get('search_mode') == 2){
     <div class="uk-offcanvas-bar">
     	<?php if($this->params->get('search_display') == 1):?>
             <form class="uk-form uk-search" id="search_form" method="post">
-                <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>" <?php echo $submit_search; ?>>
-                <?php if($this->params->get('search_mode') == 2): ?>
-            	<input class="passage uk-search-field" type="input" name="passage" placeholder="<?php echo $this->params->get('load_phrase'); ?>" <?php echo $submit_load; ?>>
-                <?php endif; ?>
+                <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
                 <?php if($this->params->get('search_options') == 1): ?>
                     <div class="uk-margin">
-                        <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>" <?php echo $submit_search; ?>>
-                        <?php if($this->params->get('search_mode') == 2): ?>
-                        <input class="uk-button submit_load" type="submit"  value="<?php echo $this->params->get('load_button'); ?>" <?php echo $submit_load; ?>>
-                        <?php endif; ?>
+                        <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>">
                     </div>
                 <?php endif; ?>
                 <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
@@ -261,18 +203,9 @@ if($this->params->get('search_mode') == 2){
                 <input class="uk-hidden search_type" type="hidden" name="search_type" value="<?php echo $this->params->get('search_type'); ?>">
                 <input class="uk-hidden search_version" type="hidden" name="search_version" value="<?php echo $this->params->get('version'); ?>">
                 <input class="uk-hidden search_app" type="hidden" name="search_app" value="1"> 
-                <input class="uk-hidden load_app" type="hidden" name="load_app" value="0"> 
             </form>
         <?php endif; ?>
         <div class="uk-panel uk-container-center">
-			<?php if($this->params->get('search_mode') == 2): ?>
-        	<div class="uk-margin">
-                <div class="uk-button-group"  data-uk-button-radio="">
-                    <button type="button" class="uk-button uk-button-primary <?php echo $search_button; ?> mode" value="0"><?php echo $this->params->get('search_button'); ?></button>
-                    <button type="button" class="uk-button uk-button-primary <?php echo $load_button; ?> mode" value="1"><?php echo $this->params->get('load_button'); ?></button>
-                </div>
-            </div>
-            <?php endif; ?>
            	<?php if($this->params->get('search_options') == 1): ?>
             <div class="uk-margin">
                 <div class="uk-button-group"  data-uk-button-radio="">
@@ -291,9 +224,9 @@ if($this->params->get('search_mode') == 2){
                             break;
                         }
                     ?>
-                    <button type="button" class="uk-button uk-button-primary <?php echo $active_crit1_1 ?> search_crit1" value="1" <?php echo $submit_search; ?>><?php echo JText::_('COM_GETBIBLE_ALL_WORDS'); ?></button>
-                    <button type="button" class="uk-button uk-button-primary <?php echo $active_crit1_2 ?> search_crit1" value="2" <?php echo $submit_search; ?>><?php echo JText::_('COM_GETBIBLE_ANY_WORDS'); ?></button>
-                    <button type="button" class="uk-button uk-button-primary <?php echo $active_crit1_3 ?> search_crit1" value="3" <?php echo $submit_search; ?>><?php echo JText::_('COM_GETBIBLE_PHRASE'); ?></button>
+                    <button type="button" class="uk-button uk-button-primary <?php echo $active_crit1_1 ?> search_crit1" value="1"><?php echo JText::_('COM_GETBIBLE_ALL_WORDS'); ?></button>
+                    <button type="button" class="uk-button uk-button-primary <?php echo $active_crit1_2 ?> search_crit1" value="2"><?php echo JText::_('COM_GETBIBLE_ANY_WORDS'); ?></button>
+                    <button type="button" class="uk-button uk-button-primary <?php echo $active_crit1_3 ?> search_crit1" value="3"><?php echo JText::_('COM_GETBIBLE_PHRASE'); ?></button>
                 </div>
             </div>
             <div class="uk-margin">
@@ -313,10 +246,10 @@ if($this->params->get('search_mode') == 2){
                             break;
                         }
                     ?>
-                    <button type="button" class="uk-button uk-button-primary <?php echo $active_type_all ?> search_type_select" value="all" <?php echo $submit_search; ?>><?php echo JText::_('COM_GETBIBLE_BIBLE'); ?></button>
-                    <button type="button" class="uk-button uk-button-primary <?php echo $active_type_ot ?> search_type_select" value="ot" <?php echo $submit_search; ?>><?php echo JText::_('COM_GETBIBLE_OT'); ?></button>
-                    <button type="button" class="uk-button uk-button-primary <?php echo $active_type_nt ?> search_type_select" value="nt" <?php echo $submit_search; ?>><?php echo JText::_('COM_GETBIBLE_NT'); ?></button>
-                    <button type="button" class="uk-button uk-button-primary search_type_select" id="search_book" value="john" <?php echo $submit_search; ?>>This Book</button>
+                    <button type="button" class="uk-button uk-button-primary <?php echo $active_type_all ?> search_type_select" value="all"><?php echo JText::_('COM_GETBIBLE_BIBLE'); ?></button>
+                    <button type="button" class="uk-button uk-button-primary <?php echo $active_type_ot ?> search_type_select" value="ot"><?php echo JText::_('COM_GETBIBLE_OT'); ?></button>
+                    <button type="button" class="uk-button uk-button-primary <?php echo $active_type_nt ?> search_type_select" value="nt"><?php echo JText::_('COM_GETBIBLE_NT'); ?></button>
+                    <button type="button" class="uk-button uk-button-primary search_type_select" id="search_book" value="john">This Book</button>
                 </div>
             </div>
             <div class="uk-margin">
@@ -332,8 +265,8 @@ if($this->params->get('search_mode') == 2){
                             break;
                         }
                     ?>
-                    <button class="uk-button uk-button-mini uk-button-primary <?php echo $active_crit2_1 ?> search_crit2" type="button" value="1" <?php echo $submit_search; ?>><?php echo JText::_('COM_GETBIBLE_EXACT_MATCH'); ?></button>
-                    <button class="uk-button uk-button-mini uk-button-primary <?php echo $active_crit2_2 ?> search_crit2" type="button" value="2" <?php echo $submit_search; ?>><?php echo JText::_('COM_GETBIBLE_PARTIAL_MATCH'); ?></button>
+                    <button class="uk-button uk-button-mini uk-button-primary <?php echo $active_crit2_1 ?> search_crit2" type="button" value="1"><?php echo JText::_('COM_GETBIBLE_EXACT_MATCH'); ?></button>
+                    <button class="uk-button uk-button-mini uk-button-primary <?php echo $active_crit2_2 ?> search_crit2" type="button" value="2"><?php echo JText::_('COM_GETBIBLE_PARTIAL_MATCH'); ?></button>
                  </div>
             </div>
             <div class="uk-margin">
@@ -349,8 +282,8 @@ if($this->params->get('search_mode') == 2){
                             break;
                         }
                     ?>
-                    <button class="uk-button uk-button-mini uk-button-primary <?php echo $active_crit3_1 ?> search_crit3" type="button" value="1" <?php echo $submit_search; ?>><?php echo JText::_('COM_GETBIBLE_CASE_INSENSITIVE'); ?></button>
-                    <button class="uk-button uk-button-mini uk-button-primary <?php echo $active_crit3_2 ?> search_crit3" type="button" value="2" <?php echo $submit_search; ?>><?php echo JText::_('COM_GETBIBLE_CASE_SENSITIVE'); ?></button>
+                    <button class="uk-button uk-button-mini uk-button-primary <?php echo $active_crit3_1 ?> search_crit3" type="button" value="1"><?php echo JText::_('COM_GETBIBLE_CASE_INSENSITIVE'); ?></button>
+                    <button class="uk-button uk-button-mini uk-button-primary <?php echo $active_crit3_2 ?> search_crit3" type="button" value="2"><?php echo JText::_('COM_GETBIBLE_CASE_SENSITIVE'); ?></button>
                  </div>
             </div>
         	<?php endif; ?>
@@ -366,12 +299,3 @@ if($this->params->get('search_mode') == 2){
     	<span class="uk-align-right" data-uk-tooltip="{pos:'left'}" title="Powered by" ><?php echo $this->params->get('vdm_name');  ?></span>
     </a><?php endif; ?>
 <?php endif; ?>
-<?php if($this->params->get('highlight_option') == 1): ?>
-<script type="application/javascript">
-	jQuery(window).bind("load", function() {
-		if(typeof searchApp !== 'undefined'){
-			highScripture()
-		}
-	});
-</script>
-<?php endif ?>

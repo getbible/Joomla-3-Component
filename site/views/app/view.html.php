@@ -98,9 +98,9 @@ class GetbibleViewApp extends JViewLegacy
 		$setApp .= 	'var defaultBookNr 		= "'.$this->AppDefaults->book_nr.'";';
 		$setApp .= 	'var autoLoadChapter 	= '.$this->params->get('auto_loading_chapter').';';
 		$setApp .= 	'var appMode 			= '.$this->params->get('app_mode').';';
-		$setApp .= 	'var mode				= '.($this->params->get('mode_set') - 1).';';
 		$setApp .= 	'var jsonUrl 			= '.$jsonUrl.';';
 		$setApp .= 	'var booksDate 			= "'.$this->booksDate.'";';
+		$setApp .= 	'var highlightOption 	= '. $this->params->get('highlight_option').';';
 		if($this->AppDefaults->search == 1){
 			// set the search styles
 			if($this->params->get('highlight_padding')){

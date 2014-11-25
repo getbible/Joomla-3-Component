@@ -18,6 +18,9 @@ if(!defined('DS')){
 	define('DS',DIRECTORY_SEPARATOR);
 };
 
+// require helper files
+JLoader::register('GetHelper', JPATH_ADMINISTRATOR . DS . 'components' . DS . 'com_getbible'. DS . 'helpers' . DS . 'get.php');
+
 $controller = JControllerAdmin::getInstance('Getbible');
 $controller->execute(JRequest::getCmd('task'));
 $controller->redirect();

@@ -153,17 +153,6 @@
 				value="3">COM_GETBIBLE_UP_NONE</option>
 		</field>
 		<field
-			name="search_mode"
-			type="radio" class="btn-group"
-			default="1"
-			label="COM_GETBIBLE_SEARCH_MODE_LABEL"
-			description="COM_GETBIBLE_SEARCH_MODE_DESC">
-			<option
-				value="1">COM_GETBIBLE_KEYWORDS</option>
-			<option
-				value="2">COM_GETBIBLE_KEYWORDS_PASSAGES</option>
-		</field>
-		<field
 			name="search_display"
 			type="list"
 			default="1"
@@ -182,20 +171,6 @@
 			<option
 				value="6">COM_GETBIBLE_SEARCH_NONE</option>
 		</field>
-		<field 
-			name="load_phrase"
-			type="text" 
-			default="passage..." 
-			label="COM_GETBIBLE_LOAD_PHRASE_LABEL" 
-			description="COM_GETBIBLE_LOAD_PHRASE_DESC" 
-		/>
-		<field 
-			name="load_button"
-			type="text" 
-			default="Load" 
-			label="COM_GETBIBLE_LOAD_BUTTON_LABEL" 
-			description="COM_GETBIBLE_LOAD_BUTTON_DESC" 
-		/>
 		<field 
 			name="search_button"
 			type="text" 
@@ -227,17 +202,6 @@
 				value="1">COM_GETBIBLE_YES</option>
 			<option
 				value="0">COM_GETBIBLE_NO</option>
-		</field>
-		<field
-			name="mode_set"
-			type="radio" class="btn-group"
-			default="1"
-			label="COM_GETBIBLE_SEARCH_DEFAULTS_LABEL"
-			description="COM_GETBIBLE_SEARCH_DEFAULTS_DESC">
-			<option
-				value="1">COM_GETBIBLE_SEARCH</option>
-			<option
-				value="2">COM_GETBIBLE_LOAD</option>
 		</field>
 		<field
 			name="search_crit1"
@@ -576,6 +540,7 @@
   			<option value="2">COM_GETBIBLE_CONFIG_WORKER_SHOW_FRONT</option>
 			<option value="3">COM_GETBIBLE_CONFIG_WORKER_SHOW_ALL</option>
 		</field>
+
 		<field type="spacer" name="globalspacer4" hr="true" />
 		
 		<field name="worker4"

@@ -50,5 +50,68 @@ abstract class GetHelper
 	public static function htmlEscape($val)
 	{
 		return htmlentities($val, ENT_COMPAT, 'UTF-8');
-	}	
+	}
+	
+	
+	
+	public static function getSetBook($version,$book_nr,$only_ref = true)
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		
+		$query->select('a.book_name, a.book_nr, a.book_names AS ref');
+		$query->from('#__getbible_setbooks AS a');
+		$query->where($db->quoteName('a.version') . ' = ' . $db->quote($version));		
+		$query->where($db->quoteName('a.access') . ' = 1');
+		$query->where($db->quoteName('a.published') . ' = 1');
+		$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
+			 
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		// echo nl2br(str_replace('#__','api_',$query)); die;
+		$db->execute();
+		$num_rows = $db->getNumRows();
+		
+		if($num_rows){
+			// Load the results
+			$result 		= $db->loadObject();
+			if($only_ref){
+				$result->ref = json_decode($result->ref)->name2;
+			} else {
+				$result->ref = json_decode($result->ref);
+			}
+			// return result
+			return $result;
+		} else {
+			// fall back on default
+			return self::getSetBook('kjv',$book_nr,$only_ref);
+		}
+				
+	}
+	
+	public static function getSavedBooks($version)
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		
+		$query->select('a.book_nr');
+		$query->from('#__getbible_books AS a');
+		$query->where($db->quoteName('a.version') . ' = ' . $db->quote($version));
+		$query->where($db->quoteName('a.access') . ' = 1');
+		$query->where($db->quoteName('a.published') . ' = 1');
+		$query->order('a.book_nr ASC');
+			 
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		// echo nl2br(str_replace('#__','api_',$query)); die;
+		
+		return $db->loadColumn();
+				
+	}
 }

@@ -68,15 +68,44 @@ class GetbibleModelApp extends JModelList
 	public function getAppDefaults()
 	{
 		// check if search form is used
-		$jinput 	= JFactory::getApplication()->input;
-		$search_app = $jinput->post->get('search_app', 0, 'INT');
-		$load_app 	= $jinput->post->get('load_app', 0, 'INT');
+		$jinput 		= JFactory::getApplication()->input;
+		$search_app		= $jinput->post->get('search_app', 0, 'INT');
+		
 		if($search_app === 1){
+			$check_search	= $jinput->post->get('search', 'repent', 'SAFE_HTML');
+			$load 			= (preg_match('~[0-9]~', $check_search) > 0);
+			$defaultVersion = $jinput->post->get('search_version', 'kjv', 'ALNUM');
+			// if number is found in search request load passage
+			if($load){
+				// load search to get passage
+				$passage 		= $check_search;
+				// Load default passage
+				$defaultPassage	= $this->app_params->get('defaultStartBook'). ' '. $this->app_params->get('defaultStartChapter');
+				// get the defaults from request
+				if($passage == $defaultPassage){
+					$loadDefaults 			= new stdClass();
+					$loadDefaults->Book 	= $this->app_params->get('defaultStartBook');
+					$loadDefaults->Chapter 	= $this->app_params->get('defaultStartChapter');
+				} else {
+					$loadDefaults			= $this->getLoadDefaults($passage);
+				}
+				// load defaults
+				$defaults 					= $this->bookDefaults($loadDefaults->Book,$defaultVersion);
+				
+				if(is_object($defaults)){
+					// set defaults to loading request
+					$defaults->chapter 		= $loadDefaults->Chapter;
+					$defaults->lastchapter	= $defaults->chapter - 1;
+					$defaults->load 		= 1;
+					return $defaults;
+				}
+			}
+			
 			// Load the results
 			$result 			= new stdClass();
-			$result->search 	= $search_app;
-			$result->searchFor 	= $jinput->post->get('search', 'repent', 'SAFE_HTML');
-			$result->version 	= $jinput->post->get('search_version', 'kjv', 'ALNUM');
+			$result->search 	= 1;
+			$result->searchFor 	= $check_search;
+			$result->version 	= $defaultVersion;
 			// ensure the criteria is set correctly
 			$crit 				= $jinput->post->get('search_crit', '1_1_1', 'CMD');
 			$result->crit 		= (string) preg_replace('/[^0-9_]/i', '', $crit);
@@ -87,37 +116,7 @@ class GetbibleModelApp extends JModelList
 			} else {
 				$result->book_ref = $result->type;
 			}
-			
 			return $result;
-		} elseif($load_app === 1){
-			// Load default passage
-			$defaultPassage 			= $this->app_params->get('defaultStartBook'). ' '. $this->app_params->get('defaultStartChapter');
-			// get values from post
-			$passage 				= $jinput->post->get('passage', $defaultPassage, 'SAFE_HTML');
-			$defaultVersion 		= $jinput->post->get('search_version', 'kjv', 'ALNUM');
-			// get the defaults from request
-			if($passage == $defaultPassage){
-				$loadDefaults 			= new stdClass();
-				$loadDefaults->Book 	= $this->app_params->get('defaultStartBook');
-				$loadDefaults->Chapter 	= $this->app_params->get('defaultStartChapter');
-			} else {
-				$loadDefaults			= $this->getLoadDefaults($passage);
-			}
-			// load defaults
-			$defaults 				= $this->bookDefaults($loadDefaults->Book,$defaultVersion);
-			
-			if(is_object($defaults)){
-				// set defaults to loading request
-				$defaults->chapter 		= $loadDefaults->Chapter;
-				$defaults->lastchapter	= $defaults->chapter - 1;
-				$defaults->load 		= $load_app;
-			} else {
-				// if no defaults found load global default
-				$defaultVersion 		= $this->app_params->get('defaultStartVersion');
-				$defaultStartBook 		= $this->app_params->get('defaultStartBook');
-				$defaults 				= $this->bookDefaults($defaultStartBook,$defaultVersion);
-			}
-			return $defaults;			
 		} else {
 			$defaultVersion 		= $this->app_params->get('defaultStartVersion');
 			$defaultStartBook 		= $this->app_params->get('defaultStartBook');
@@ -125,7 +124,6 @@ class GetbibleModelApp extends JModelList
 					
 			return $defaults;
 		}
-		
 	}
 	
 	public function getBooksDate()
@@ -264,21 +262,22 @@ class GetbibleModelApp extends JModelList
 		$found = false;
 		if ($name){
 			// load all books
-			$books = $this->setBooks($version);
+			$savedBooks = GetHelper::getSavedBooks($version);						
+			$name 		= mb_strtoupper(preg_replace('/[^A-Z0-9]/i', '', $name), 'UTF-8');
 			// set query book number and name
-			foreach ($books as $book){
-				if(!$found){						
-					$name = mb_strtoupper(preg_replace('/\s+/', '', $name), 'UTF-8');
-					foreach($book['book_names'] as $key => $value){
+			foreach ($savedBooks as $book_nr){
+				$book = GetHelper::getSetBook($version,$book_nr,false);
+				if(!$found){
+					foreach($book->ref as $key => $value){
 						if ($value){
-							$value = mb_strtoupper(preg_replace('/\s+/', '', $value), 'UTF-8');
-							if ($name == $value){
-								$book_ref = $book['book_names']['name2'];
-								$book_nr = $book['nr'];
-								$found = true; 
+							$value = mb_strtoupper(preg_replace('/[^A-Z0-9]/i', '', $value), 'UTF-8');
+							if ($name == $value || $book->book_name == $name){
+								$book_ref 	= (string) preg_replace('/\s+/', '', $book->ref->name2);
+								$book_nr 	= $book->book_nr;
+								$found 		= true; 
 								break;					
 							} else {
-								$found = false;
+								$found 		= false;
 							}
 						}
 					}
@@ -288,36 +287,7 @@ class GetbibleModelApp extends JModelList
 				}
 			}
 		}
-		if (!$found){
-			if ($name){
-				// load all books again but now as KJV
-				$books = $this->setBooks($version, true);
-				// set query book number and name
-				foreach ($books as $book){
-					if(!$found){						
-						$name = mb_strtoupper(preg_replace('/\s+/', '', $name), 'UTF-8');
-						foreach($book['book_names'] as $key => $value){
-							if ($value){
-								$value = mb_strtoupper(preg_replace('/\s+/', '', $value), 'UTF-8');
-								if ($name == $value){
-									$book_ref = $book['book_names']['name2'];
-									$book_nr = $book['nr']; 
-									$found = true; 
-									break;					
-								} else {
-									$found = false;
-								}
-							}
-						}
-					}
-					if ($found){
-						break;
-					}
-				}
-			}
-		}
-		if(!$found){
-			JFactory::getApplication()->enqueueMessage(JText::_('Check the spelling of the book that it correspondence with the getBible book names for the '.$version.' version'), 'error'); 
+		if(!$found){ 
 			return false;
 		} else {
 			// Load the results
@@ -330,86 +300,5 @@ class GetbibleModelApp extends JModelList
 			
 			return $result;
 		}
-	}
-	
-	protected function setBooks($version = NULL, $retry = false, $default = 'kjv')
-	{
-		// Get a db connection.
-		$db = JFactory::getDbo();
-		
-		if ($version){
-			// Create a new query object.
-			$query = $db->getQuery(true);
-			// Order it by the ordering field.
-			$query->select($db->quoteName(array('book_names', 'book_nr', 'book_name')));
-			$query->from($db->quoteName('#__getbible_setbooks'));
-			$query->where($db->quoteName('version') . ' = '. $db->quote($version));
-			$query->where($db->quoteName('access') . ' = 1');
-			$query->where($db->quoteName('published') . ' = 1');
-			$query->order('book_nr ASC');
-			 
-			// Reset the query using our newly populated query object.
-			$db->setQuery($query);
-			 
-			// Load the results
-			$results = $db->loadAssocList();
-			
-			if($results){
-				foreach ($results as $book){
-					$books[$book['book_nr']]['nr'] 			= $book['book_nr'];
-					$books[$book['book_nr']]['book_names'] 	= json_decode($book['book_names'],true);
-					// if retry do't change name
-					$books[$book['book_nr']]['name'] 		= $book['book_name'];
-				}
-			}
-		}
-		if(!is_array($books)){
-			 
-			// Create a new query object.
-			$query = $db->getQuery(true);
-			// Order it by the ordering field.
-			$query->select($db->quoteName(array('book_names', 'book_nr', 'book_name')));
-			$query->from($db->quoteName('#__getbible_setbooks'));
-			$query->where($db->quoteName('version') . ' = '. $db->quote($default));
-			$query->where($db->quoteName('access') . ' = 1');
-			$query->where($db->quoteName('published') . ' = 1');
-			$query->order('book_nr ASC');
-			 
-			// Reset the query using our newly populated query object.
-			$db->setQuery($query);
-			 
-			// Load the results
-			$results = $db->loadAssocList();
-			foreach ($results as $book){
-				$books[$book['book_nr']]['nr'] 			= $book['book_nr'];
-				$books[$book['book_nr']]['book_names'] 	= json_decode($book['book_names'],true);
-				$books[$book['book_nr']]['name'] 		= $book['book_name'];
-			}
-		}
-		if($retry){
-			 
-			// Create a new query object.
-			$query = $db->getQuery(true);
-			// Order it by the ordering field.
-			$query->select($db->quoteName(array('book_names', 'book_nr', 'book_name')));
-			$query->from($db->quoteName('#__getbible_setbooks'));
-			$query->where($db->quoteName('version') . ' = '. $db->quote($default));
-			$query->where($db->quoteName('access') . ' = 1');
-			$query->where($db->quoteName('published') . ' = 1');
-			$query->order('book_nr ASC');
-			 
-			// Reset the query using our newly populated query object.
-			$db->setQuery($query);
-			 
-			// Load the results
-			$results = $db->loadAssocList();
-			foreach ($results as $book){
-				$books[$book['book_nr']]['nr'] 			= $book['book_nr'];
-				$books[$book['book_nr']]['book_names'] 	= json_decode($book['book_names'],true);
-				// if retry do't change name
-				$books[$book['book_nr']]['name'] 		= $book['book_name'];
-			}
-		}
-		return $books;		
 	}
 }

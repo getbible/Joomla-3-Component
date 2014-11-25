@@ -17,7 +17,7 @@ jQuery(function() {
 	if(typeof searchApp === 'undefined'){
 		getDataBo(defaultVersion,defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
 		getDataCh(defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
-	} else if(typeof loadApp === 'undefined'){
+	} else {
 		jQuery('#cPanel').hide();
 		jQuery('.searchbuttons').show();
 	}
@@ -36,7 +36,7 @@ jQuery(window).bind("load", function() {
 		if(autoLoadChapter === 1){
 			loadTimer1();
 		}
-	} else if(typeof loadApp === 'undefined'){
+	} else {
 		jQuery('#button_top').show();
 	}		
 });
@@ -82,7 +82,6 @@ jQuery(document).ready(function() {
 	/*******************************************\
 	*			Search Scripture Here			*
 	\*******************************************/
-	setMode();
 	// set the criteria for the search
 	var crit1 = 1;
 	var crit2 = 1;
@@ -111,41 +110,9 @@ jQuery(document).ready(function() {
 	jQuery('.search_version').val(BIBLE_VERSION);
 	// set the search book ref
 	jQuery('.search_book').val(BIBLE_BOOK);
-	// get the mode selected
-	jQuery('.mode').click(function() {
-		mode = jQuery(this).attr("value");
-		setMode();
-	});
 	
 });
 
-
-// function to change search mode
-function setMode(){
-	if(mode == 1){
-		jQuery('.search_field').hide();
-		jQuery('.submit_search').hide();
-		jQuery('.search_crit1').hide();
-		jQuery('.search_crit2').hide();
-		jQuery('.search_crit3').hide();
-		jQuery('.search_type_select').hide();
-		jQuery('.search_app').val(0);
-		jQuery('.load_app').val(1);
-		jQuery('.passage').show();
-		jQuery('.submit_load').show();
-	} else if(mode == 0){
-		jQuery('.passage').hide();
-		jQuery('.submit_load').hide();
-		jQuery('.search_app').val(1);
-		jQuery('.load_app').val(0);	
-		jQuery('.search_field').show();
-		jQuery('.submit_search').show();
-		jQuery('.search_crit1').show();
-		jQuery('.search_crit2').show();
-		jQuery('.search_crit3').show();
-		jQuery('.search_type_select').show();		
-	}
-}
 // set highlight option on or off
 var setHight = false;
 function highScripture(){
@@ -305,11 +272,13 @@ function getData(request, addTo, Found) {
 				jQuery('.navigation').show();
 			 }
 		 },
-		 error:function(){
+		 error:function(e){
 				jQuery('#b_loader').hide();
 				jQuery('#t_loader').hide();
-				if((typeof searchApp === 'undefined' && typeof loadApp === 'undefined') || FoundTheVerse){
+				if((typeof searchApp === 'undefined') || FoundTheVerse){
 					jQuery('.navigation').show();
+				} else {
+					jQuery('#scripture').html('<h2>Not Found! Please try again!</h2> '); // <---- this is the div id we update
 				}
 				if(!addTo && appMode == 1){
 					jQuery('#scripture').html('<h2>No scripture was returned, please try again!</h2>'); // <---- this is the div id we update
@@ -408,20 +377,24 @@ function setBook(json,direction,addTo){
 // Set Search
 function setSearch(json,direction){
 	var output = '<small>('+json.counter+')</small><br/>';
-		jQuery.each(json.book, function(index, value) {
-			var book_ref 	= value.book_ref.replace(/\s+/g, '');
-			var setCall 	= 'p='+book_ref+value.chapter_nr+"&v="+BIBLE_VERSION;
-			var setGlobal 	= book_ref+'__'+value.book_nr+'__'+value.chapter_nr+'__'+BIBLE_VERSION;
-			output += '<center><b><a href="javascript:void(0)" onclick="loadFoundChapter(\''+setCall+'\',\''+setGlobal+'\')">'+value.book_name+'&#160;'+value.chapter_nr+'</a></b></center><br/><p class="'+direction+'">';
-			jQuery.each(value.chapter, function(index, value) {
-				output += '&#160;&#160;<small class="ltr">' +value.verse_nr+ '</small>&#160;&#160;';
-				output += value.verse;
-				output += '<br/>';
-			});
-			output += '</p>';
+	jQuery.each(json.book, function(index, value) {
+		var book_ref 	= value.book_ref.replace(/\s+/g, '');
+		var setCall 	= 'p='+book_ref+value.chapter_nr+"&v="+BIBLE_VERSION;
+		var setGlobal 	= book_ref+'__'+value.book_nr+'__'+value.chapter_nr+'__'+BIBLE_VERSION;
+		output += '<center><b><a href="javascript:void(0)" onclick="loadFoundChapter(\''+setCall+'\',\''+setGlobal+'\')">'+value.book_name+'&#160;'+value.chapter_nr+'</a></b></center><br/><p class="'+direction+'">';
+		jQuery.each(value.chapter, function(index, value) {
+			output += '&#160;&#160;<small class="ltr">' +value.verse_nr+ '</small>&#160;&#160;';
+			output += value.verse;
+			output += '<br/>';
 		});
-		jQuery('#scripture').html(output);  // <---- this is the div id we update
-		jQuery('#scripture').removeClass('text_loading');
+		output += '</p>';
+	});
+	jQuery('#scripture').html(output);  // <---- this is the div id we update
+	// add highlighting if auto hightligs is turned on
+	if(highlightOption == 1){
+		highScripture();							
+	}
+	jQuery('#scripture').removeClass('text_loading');
 }
 
 	/*******************************************\
@@ -444,15 +417,13 @@ function getDataCh(call) {
 	if(!jsonStore){
 		// get the chapters from server
 		jQuery.ajax({
-			type: "GET",
-			dataType: "jsonp",
-			url: getUrl,
-			data: Get,
-			// the name of the callback parameter, as specified by the getBible API
-			jsonp: "callback"
-		})
-		.done(function( json ) {
-			// and save the result
+		 type: 'GET',
+		 url: getUrl,
+		 dataType: 'jsonp',
+		 data: Get,
+		 jsonp: 'callback',
+		 success:function(json){
+			 // and save the result
 			jQuery.jStorage.set(requestStore,json);
 			var output = '<div style="display: inline-block;">';
 			jQuery.each(json, function(index, element) {
@@ -462,6 +433,10 @@ function getDataCh(call) {
 			output += '</div>';
 			jQuery('#t_loader').hide();
 			jQuery('#chapters').html(output);  // <---- this is the div id we update
+		 },
+		 error:function(){
+				jQuery('#chapters').html('error!');
+			 },
 		});
 	} else {
 		var output = '<div style="display: inline-block;">';
@@ -508,26 +483,25 @@ function getDataBo(version, first, versionChange) {
 	if(!jsonStore){
 		// get the books from server
 		jQuery.ajax({
-			type: "GET",
-			dataType: "jsonp",
-			url: getUrl,
-			// the name of the callback parameter, as specified by the getBible API
-			jsonp: "callback",
-			data: { v: version }
-		}).done(function( json ) {
-			// and save the result
+		 type: 'GET',
+		 url: getUrl,
+		 dataType: 'jsonp',
+		 data: { v: version },
+		 jsonp: 'callback',
+		 success:function(json){
+			 // and save the result
 			jQuery.jStorage.set(requestStore,json);
 			var op = new Option('- Select Book -', '');
 			/// jquerify the DOM object 'o' so we can use the html method
 			jQuery(op).html('- Select Book -');
 			jQuery('#books').append(op);
 			jQuery.each(json, function() {
-					str = this.ref.replace(/\s+/g, '');
-					$value = version+'__'+this.book_nr+'__'+str;
-					var op = new Option(this.book_name, $value);
-					/// jquerify the DOM object 'o' so we can use the html method
-					jQuery(op).html(this.book_name);
-					jQuery('#books').append(op);
+				str = this.ref.replace(/\s+/g, '');
+				$value = version+'__'+this.book_nr+'__'+str;
+				var op = new Option(this.book_name, $value);
+				/// jquerify the DOM object 'o' so we can use the html method
+				jQuery(op).html(this.book_name);
+				jQuery('#books').append(op);
 			});
 			if(first){
 				if(versionChange == 1){
@@ -558,6 +532,10 @@ function getDataBo(version, first, versionChange) {
 			}
 			jQuery('#f_loader').hide();
 			jQuery('#books').show();
+		 },
+		 error:function(){
+				jQuery('#books').append('error');
+			 },
 		});
 	} else {
 		var op = new Option('- Select Book -', '');
@@ -565,12 +543,12 @@ function getDataBo(version, first, versionChange) {
 		jQuery(op).html('- Select Book -');
 		jQuery('#books').append(op);
 		jQuery.each(jsonStore, function() {
-				str = this.ref.replace(/\s+/g, '');
-				$value = version+'__'+this.book_nr+'__'+str;
-				var op = new Option(this.book_name, $value);
-				/// jquerify the DOM object 'o' so we can use the html method
-				jQuery(op).html(this.book_name);
-				jQuery('#books').append(op);
+			str = this.ref.replace(/\s+/g, '');
+			$value = version+'__'+this.book_nr+'__'+str;
+			var op = new Option(this.book_name, $value);
+			/// jquerify the DOM object 'o' so we can use the html method
+			jQuery(op).html(this.book_name);
+			jQuery('#books').append(op);
 		});
 		if(first){
 			if(versionChange == 1){
@@ -675,6 +653,7 @@ function prevChapter(){
 		// this should not happen... since it should be hidden.
 		jQuery('#prev').hide();
 	} else {
+
 		jQuery('.navigation').hide();
 		jQuery('#b_loader').show();
 		getData('p='+BIBLE_BOOK+BIBLE_LAST_CHAPTER+'&v='+BIBLE_VERSION,addTo);
