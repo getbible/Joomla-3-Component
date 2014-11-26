@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.2  November 10, 2014
+* 	@version 	1.0.3  November 25, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -22,18 +22,20 @@ class GetbibleControllerBible extends JControllerLegacy
 		
 		$this->registerTask('books', 'bible');
 		$this->registerTask('chapter', 'bible');
+		$this->registerTask('defaults', 'bible');
 	}
 	
 	public function bible()
 	{
-		$task = $this->getTask();
+		$jinput 	= JFactory::getApplication()->input;
+		$task 		= $this->getTask();
 		if ($task == 'books'){
 			try
 			{
-				$version = JFactory::getApplication()->input->get('v', NULL, 'ALNUM');
+				$version = $jinput->get('v', NULL, 'ALNUM');
 				
 				if($version){
-					$result = $this->getModel('control')->getBooks($version);
+					$result = $this->getModel('control')->getBooks($jinput->get('v', NULL, 'ALNUM'));
 				} else {
 					$result = false;
 				}
@@ -45,12 +47,24 @@ class GetbibleControllerBible extends JControllerLegacy
 			}
 		} elseif ($task == 'chapter'){
 			try
-			{
-				$book_nr = JFactory::getApplication()->input->get('nr', NULL, 'INT');
-				$version = JFactory::getApplication()->input->get('v', NULL, 'ALNUM');
-				 
-				$result = $this->getModel('control')->getChapters($book_nr,$version);
+			{				 
+				$result = $this->getModel('control')->getChapters(	$jinput->get('nr', NULL, 'INT'),
+																	$jinput->get('v', NULL, 'ALNUM') );
 				
+				echo $_GET['callback']."(".json_encode($result).");";
+			}
+				catch(Exception $e)
+			{
+			  	echo $_GET['callback']."(".json_encode($e).");";
+			}
+		} elseif ($task == 'defaults'){
+			try
+			{				 
+				$result = $this->getModel('control')->getAppDefaults(	$jinput->get('search_app', null, 'INT'), 
+																		$jinput->get('search', null, 'SAFE_HTML'), 
+																		$jinput->get('search_version', null, 'ALNUM'), 
+																		$jinput->get('search_crit', null, 'CMD'), 
+																		$jinput->get('search_type', null, 'ALNUM') );
 				echo $_GET['callback']."(".json_encode($result).");";
 			}
 				catch(Exception $e)

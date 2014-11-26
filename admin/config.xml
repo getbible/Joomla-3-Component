@@ -541,6 +541,7 @@
 			<option value="3">COM_GETBIBLE_CONFIG_WORKER_SHOW_ALL</option>
 		</field>
 
+
 		<field type="spacer" name="globalspacer4" hr="true" />
 		
 		<field name="worker4"

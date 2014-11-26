@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.2  November 10, 2014
+* 	@version 	1.0.3  November 25, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -132,7 +132,7 @@ $versions = $this->cpanel;
         	<select id="versions" class="uk-margin-small-top">
                     <option value=""><?php echo JText::_('COM_GETBIBLE_SELECT_VERSION'); ?></option>
                 <?php foreach($versions as $key => $version): ?>
-                    <?php if($key == $this->AppDefaults->version) :?>
+                    <?php if($key == $this->AppDefaults['version']) :?>
                     <option value="<?php echo $key; ?>" selected="selected">(<?php echo $version->language; ?>) <?php echo $version->version_name; ?></option>
                     <?php else: ?>
                     <option value="<?php echo $key; ?>" >(<?php echo $version->language; ?>) <?php echo $version->version_name; ?></option>

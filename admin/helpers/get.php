@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.2  November 10, 2014
+* 	@version 	1.0.3  November 25, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -16,21 +16,53 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 abstract class GetHelper
 {
 	
-	public static $current 	= null;
-	public static $local 	= null;
+	public static $currentVersion 	= false;
+	public static $localVersion 	= false;
 	
 	/**
 	 *	Load the Component xml manifests. 
 	 */
-	 protected static function setXML(){
-		self::$local 	= simplexml_load_file(JPATH_ADMINISTRATOR."/components/com_getbible/getbible.xml");
-		$updates 		= simplexml_load_file(self::$local->updateservers->server);
-		// set local
-		list($localMain,$localDesign,$localTail) = explode('.', self::$local->version);
-		foreach ($updates as $update){
-			list($currentMain,$currentDesign,$currentTail) = explode('.', $update->version);
-			if (($currentTail >= $localTail) || ($currentDesign > $localDesign) || ($currentMain > $localMain)){
-				self::$current = $update;
+	 protected static function setXML()
+	 {
+		// check if data is in session
+		$session 		= JFactory::getSession();
+		// $session->clear('get_xml_settings'); // to debug the session
+		$xml_settings 	= $session->get('get_xml_settings', false);
+		if($xml_settings !== false){
+			$xml_settings 	= json_decode(base64_decode($xml_settings));
+			self::$localVersion 	= $xml_settings->local;
+			self::$currentVersion 	= $xml_settings->current;
+		} else {
+			// Parse the XML
+			$local 			= @simplexml_load_file(JPATH_ADMINISTRATOR."/components/com_getbible/getbible.xml");
+			$feed 			= @file_get_contents('http://getbible.net/updates/joomla_three.xml');
+			$updates 		= @simplexml_load_string($feed);
+			// load local version
+			self::$localVersion 	= (string)$local->version;
+			// set current version
+			if(self::$localVersion !== false){
+				list($localMain,$localDesign,$localTail) = explode('.', self::$localVersion);
+				if(count($updates) > 0 && ($updates !== false)){
+					foreach ($updates as $update){
+						list($currentMain,$currentDesign,$currentTail) = explode('.', $update->version);
+						if (($currentTail >= $localTail) || ($currentDesign > $localDesign) || ($currentMain > $localMain)){
+							self::$currentVersion = (string)$update->version;
+						}
+					}
+				} else {
+					self::$currentVersion = false;
+				}
+			} else {
+				self::$localVersion = false;
+				self::$currentVersion = false;
+			}
+			// if both are set, then continue
+			if(self::$currentVersion !== false && self::$localVersion !== false){
+				$xml_settings 				= array();
+				$xml_settings['current'] 	= self::$currentVersion;
+				$xml_settings['local'] 		= self::$localVersion;
+				// add to session to speedup the page load.
+				$session->set('get_xml_settings', base64_encode(json_encode($xml_settings)));
 			}
 		}
 	}
@@ -39,10 +71,16 @@ abstract class GetHelper
 		// set xml info
 		self::setXML();
 		// check if we must update
-		if((string)self::$local->version !== (string)self::$current->version){
-			$notice = "You are still on version(" . self::$local->version ."). Get the latest getBible version(" . self::$current->version .") <a class=\"btn btn-mini\"  href=\"". JRoute::_( 'index.php?option=com_installer&view=update', false )."\">Upgrade Now!</a> it only gets better.";
-			JFactory::getApplication()->enqueueMessage($notice, 'notice');
-			return true;
+		if(self::$currentVersion  !== false && self::$localVersion !== false ){
+			$local 		= (int)str_replace('.', '', self::$localVersion);
+			$current 	= (int)str_replace('.', '', self::$currentVersion);
+			if($local !== $current){
+				if($local < $current){
+					$notice = "You are still on version(" . self::$localVersion ."). Get the latest getBible version(" . self::$currentVersion .") <a class=\"btn btn-mini\"  href=\"". JRoute::_( 'index.php?option=com_installer&view=update', false )."\">Upgrade Now!</a> it only gets better.";
+					JFactory::getApplication()->enqueueMessage($notice, 'notice');
+					return true;
+				}
+			}
 		}
 		return false;
 	}

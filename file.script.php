@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.2  November 10, 2014
+* 	@version 	1.0.3  November 25, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -53,7 +53,7 @@ class com_getbibleInstallerScript {
 				$db = JFactory::getDBO();
 				$query = $db->getQuery(true);
 				$query->update('#__extensions');
-				$defaults = '{"vdm_logo":"1","vdm_link":"1","vdm_name":"getBible.net","vdm_url":"http:\/\/getbible.net\/","vdm_owner":"Llewellyn van der Merwe","highlight_textcolor":"#ffffff","highlight_background":"#54aacb","highlight_linecolor":"#ff0000","highlight_linetype":"none","highlight_padding":"1","auto_loading_chapter":"1","app_mode":"1","jsonQueryOptions":"0","jsonAPIaccess":"0","jsonAPIkey":"","installOptions":"1","localInstallFolder":"scriptureinstall","defaultStartVersion":"kjv","defaultStartBook":"John","defaultStartChapter":"7","check_in":"-1 day","nameGlobal":"Llewellyn van der Merwe","emailGlobal":"info@getbible.net","titleWorker1":"","nameWorker1":"","emailWorker1":"","linkWorker1":"","useWorker1":"0","showWorker1":"0","titleWorker2":"","nameWorker2":"","emailWorker2":"","linkWorker2":"","useWorker2":"0","showWorker2":"0","titleWorker3":"","nameWorker3":"","emailWorker3":"","linkWorker3":"","useWorker3":"0","showWorker3":"0","titleWorker4":"","nameWorker4":"","emailWorker4":"","linkWorker4":"","useWorker4":"0","showWorker4":"0"}';
+				$defaults = '{"vdm_logo":"1","vdm_link":"1","vdm_name":"getBible.net","vdm_url":"http:\/\/getbible.net\/","vdm_owner":"Llewellyn van der Merwe","auto_loading_chapter":"0","app_mode":"2","highlight_textcolor":"#ffffff","highlight_background":"#52a9ca","highlight_linecolor":"#ffffff","highlight_linetype":"none","highlight_padding":"0","highlight_option":"1","up_button":"2","search_display":"1","search_button":"Search","advanced_button":"Advanced","search_phrase":"search...","search_options":"1","search_crit1":"1","search_type":"all","search_crit2":"1","search_crit3":"1","jsonQueryOptions":"0","jsonAPIaccess":"0","jsonAPIkey":"","installOptions":"1","localInstallFolder":"scriptureinstall","defaultStartVersion":"kjv","defaultStartBook":"John","defaultStartChapter":"1","check_in":"-1 day","nameGlobal":"Llewellyn van der Merwe","emailGlobal":"info@getbible.net","titleWorker1":"Application Engineer","nameWorker1":"Llewellyn van der Merwe","emailWorker1":"llewellyn@vdm.io","linkWorker1":"http:\/\/vdm.io","useWorker1":"2","showWorker1":"3","titleWorker2":"","nameWorker2":"","emailWorker2":"","linkWorker2":"","useWorker2":"0","showWorker2":"0","titleWorker3":"","nameWorker3":"","emailWorker3":"","linkWorker3":"","useWorker3":"0","showWorker3":"0","titleWorker4":"","nameWorker4":"","emailWorker4":"","linkWorker4":"","useWorker4":"0","showWorker4":"0"}';
 				$query->set("params =  '{$defaults}'");
 				$query->where("element = 'com_getbible'"); 
 				$db->setQuery($query);

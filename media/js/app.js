@@ -1,6 +1,6 @@
 /**
 * 
-* 	@version 	1.0.2  November 10, 2014
+* 	@version 	1.0.3  November 25, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -11,27 +11,30 @@
 	/*******************************************\
 	*			Load Scripture Here				*
 	\*******************************************/
-		
+
+// the Globals
+var BIBLE_BOOK 			= 0;
+var BIBLE_CHAPTER 		= 0;
+var BIBLE_LAST_CHAPTER 	= 0;
+var BIBLE_VERSION 		= 0;
+var defaultVersion 		= 0;
+var defaultBook 		= 0;
+var defaultBookNr 		= 0;
+var defaultChapter 		= 0;
+var setQuery 			= 0;
+
+	
 // get the data from the API
 jQuery(function() {
-	if(typeof searchApp === 'undefined'){
-		getDataBo(defaultVersion,defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
-		getDataCh(defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
-	} else {
-		jQuery('#cPanel').hide();
-		jQuery('.searchbuttons').show();
-	}
-	if(BIBLE_LAST_CHAPTER < 1){
-		jQuery('#prev').hide();
-	}
-	getData(setQuery);
+	// load defaults
+	getDefaults(getUrl, defaultRequest, defaultKey);
 	
 });
 // Load this after page is fully loaded
 jQuery(window).bind("load", function() {
 	//jQuery('#t_loader').hide();
 	jQuery('#getbible').show();
-	if(typeof searchApp === 'undefined'){
+	if(searchApp != 1){
 		jQuery('.button').show();
 		if(autoLoadChapter === 1){
 			loadTimer1();
@@ -105,11 +108,6 @@ jQuery(document).ready(function() {
 	jQuery('.search_type_select').click(function() {
 		jQuery('.search_type').val(jQuery(this).attr("value"));
 	});
-	
-	// set the search version
-	jQuery('.search_version').val(BIBLE_VERSION);
-	// set the search book ref
-	jQuery('.search_book').val(BIBLE_BOOK);
 	
 });
 
@@ -222,11 +220,11 @@ function getData(request, addTo, Found) {
 	if(jQuery.jStorage.storageSize() > 4500000){ 
 		var storeIndex = jQuery.jStorage.index();
 		// now remove the first once set when full
-		jQuery.jStorage.deleteKey(storeIndex[0]);
-		jQuery.jStorage.deleteKey(storeIndex[1]);
-		jQuery.jStorage.deleteKey(storeIndex[2]);
-		jQuery.jStorage.deleteKey(storeIndex[3]);
-		jQuery.jStorage.deleteKey(storeIndex[4]);
+		jQuery.jStorage.deleteKey(storeIndex[5]);
+		jQuery.jStorage.deleteKey(storeIndex[6]);
+		jQuery.jStorage.deleteKey(storeIndex[7]);
+		jQuery.jStorage.deleteKey(storeIndex[8]);
+		jQuery.jStorage.deleteKey(storeIndex[9]);
 		
 	}
 	// add loading class
@@ -268,14 +266,14 @@ function getData(request, addTo, Found) {
 			 }
 			 jQuery('#b_loader').hide();
 			 jQuery('#t_loader').hide();
-			 if(typeof searchApp === 'undefined' || FoundTheVerse){
+			 if(searchApp != 1 || FoundTheVerse){
 				jQuery('.navigation').show();
 			 }
 		 },
 		 error:function(e){
 				jQuery('#b_loader').hide();
 				jQuery('#t_loader').hide();
-				if((typeof searchApp === 'undefined') || FoundTheVerse){
+				if((searchApp != 1) || FoundTheVerse){
 					jQuery('.navigation').show();
 				} else {
 					jQuery('#scripture').html('<h2>Not Found! Please try again!</h2> '); // <---- this is the div id we update
@@ -311,9 +309,106 @@ function getData(request, addTo, Found) {
 		 }
 		 jQuery('#b_loader').hide();
 		 jQuery('#t_loader').hide();
-		 if(typeof searchApp === 'undefined' || FoundTheVerse){
+		 if(searchApp != 1 || FoundTheVerse){
 			jQuery('.navigation').show();
 		 }
+	}	
+}
+
+// Ajax Call to get Defaults
+function getDefaults(getUrl, request, requestStore) {
+	// Check if "requestStore" exists in the local storage
+	var jsonStore = jQuery.jStorage.get(requestStore);
+	if(!jsonStore){
+		 if (typeof appKey !== 'undefined') {
+			request = request+'&appKey='+appKey;
+		}
+		// get the chapters from server
+		jQuery.ajax({
+		 type: 'GET',
+		 url: getUrl,
+		 dataType: 'jsonp',
+		 data: request,
+		 jsonp: 'callback',
+		 success:function(json){
+			 // and save the result
+			 jQuery.jStorage.set(requestStore,json);
+			 // set defaults
+			 BIBLE_BOOK 		= json.book_ref;
+			 BIBLE_CHAPTER 		= json.chapter;
+			 BIBLE_LAST_CHAPTER = json.lastchapter;
+			 BIBLE_VERSION 		= json.version;
+			 defaultVersion 	= json.version;
+			 defaultBook 		= json.book_ref;
+			 defaultBookNr 		= json.book_nr;
+			 defaultChapter 	= json.chapter;
+			 setQuery 			= "p="+defaultBook+defaultChapter+"&v="+defaultVersion;
+			 if(request && json.search == 1){
+				 searchFor 			= json.searchFor;
+				 searchCrit 		= json.crit;
+				 searchType 		= json.type;
+				 searchApp 			= json.search;
+				 setQuery 			= "s="+searchFor+"&crit="+searchCrit+"&t="+searchType+"&v="+defaultVersion;
+			 }
+			 
+			if(searchApp != 1){
+				getDataBo(defaultVersion,defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
+				getDataCh(defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
+			} else {
+				
+				jQuery('#cPanel').hide();
+				jQuery('.searchbuttons').show();
+			}
+			if(BIBLE_LAST_CHAPTER < 1){
+				jQuery('#prev').hide();
+			}
+			// get the data
+			getData(setQuery);
+			// set the search version
+			jQuery('.search_version').val(BIBLE_VERSION);
+			// set the search book ref
+			jQuery('.search_book').val(BIBLE_BOOK);
+			 
+		 },
+		 error:function(e){
+				
+			 },
+		});
+	} else {
+		// set defaults
+		 BIBLE_BOOK 		= jsonStore.book_ref;	
+		 BIBLE_CHAPTER 		= jsonStore.chapter;
+		 BIBLE_LAST_CHAPTER = jsonStore.lastchapter;
+		 BIBLE_VERSION 		= jsonStore.version;		
+		 defaultVersion 	= jsonStore.version;
+		 defaultBook 		= jsonStore.book_ref;
+		 defaultBookNr 		= jsonStore.book_nr;
+		 defaultChapter 	= jsonStore.chapter;
+		 setQuery 			= "p="+defaultBook+defaultChapter+"&v="+defaultVersion;
+		 if(request && jsonStore.search == 1){
+			 searchFor 			= jsonStore.searchFor;
+			 searchCrit 		= jsonStore.crit;
+			 searchType 		= jsonStore.type;
+			 searchApp 			= jsonStore.search;
+			 setQuery 			= "s="+searchFor+"&crit="+searchCrit+"&t="+searchType+"&v="+defaultVersion;
+		 }
+		 
+		if(searchApp != 1){
+			getDataBo(defaultVersion,defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
+			getDataCh(defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
+		} else {
+			jQuery('#cPanel').hide();
+			jQuery('.searchbuttons').show();
+		}
+		if(BIBLE_LAST_CHAPTER < 1){
+			jQuery('#prev').hide();
+		}
+		// get the data
+		getData(setQuery);
+		// set the search version
+		jQuery('.search_version').val(BIBLE_VERSION);
+		// set the search book ref
+		jQuery('.search_book').val(BIBLE_BOOK);
 	}	
 }
 
@@ -415,6 +510,9 @@ function getDataCh(call) {
 	var requestStore = 'chapters_'+Get;
 	var jsonStore = jQuery.jStorage.get(requestStore);
 	if(!jsonStore){
+		if (typeof appKey !== 'undefined') {
+			Get = Get+'&appKey='+appKey;
+		}
 		// get the chapters from server
 		jQuery.ajax({
 		 type: 'GET',
@@ -481,12 +579,16 @@ function getDataBo(version, first, versionChange) {
 		}
 	}
 	if(!jsonStore){
+		var Get = 'v='+version;
+		if (typeof appKey !== 'undefined') {
+			Get = Get+'&appKey='+appKey;
+		}
 		// get the books from server
 		jQuery.ajax({
 		 type: 'GET',
 		 url: getUrl,
 		 dataType: 'jsonp',
-		 data: { v: version },
+		 data: Get,
 		 jsonp: 'callback',
 		 success:function(json){
 			 // and save the result

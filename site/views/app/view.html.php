@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.2  November 10, 2014
+* 	@version 	1.0.3  November 25, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -85,42 +85,34 @@ class GetbibleViewApp extends JViewLegacy
 		// The JS
 		// Load jQuery check
 		if (!HeaderCheck::js_loaded('jquery')) {
-			//$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jquery-1.10.2.min.js');
 			JHtml::_('jquery.ui');
 		}
-		// set defaults		
-		$setApp .= 	'var BIBLE_BOOK 		= "'.$this->AppDefaults->book_ref.'";';	
-		$setApp .= 	'var BIBLE_CHAPTER 		= "'.$this->AppDefaults->chapter.'";';
-		$setApp .=	'var BIBLE_LAST_CHAPTER = "'.$this->AppDefaults->lastchapter.'";';
-		$setApp .= 	'var BIBLE_VERSION 		= "'.$this->AppDefaults->version.'";';		
-		$setApp .= 	'var defaultVersion 	= "'.$this->AppDefaults->version.'";';
-		$setApp .= 	'var defaultBook 		= "'.$this->AppDefaults->book_ref.'";';
-		$setApp .= 	'var defaultBookNr 		= "'.$this->AppDefaults->book_nr.'";';
+		// set defaults	
+		$setApp .=  'var getUrl				= "'.$this->AppDefaults['getUrl'].'";';
+		$setApp .=  'var defaultKey 		= "'.$this->AppDefaults['defaultKey'].'";';
+		$setApp .=  'var searchApp 			= 0;';
+		if($this->AppDefaults['request']){
+			$setApp .=  'var defaultRequest		= "'.$this->AppDefaults['request'].'";';
+			$setApp .=  'var searchFor 			= 0;';
+			$setApp .=  'var searchCrit 		= 0;';
+			$setApp .=  'var searchType 		= 0;';
+			$setApp .=  'var loadApp 			= 0;';
+		} else {
+			$setApp .=  'var defaultRequest		= 0;';
+		}
 		$setApp .= 	'var autoLoadChapter 	= '.$this->params->get('auto_loading_chapter').';';
 		$setApp .= 	'var appMode 			= '.$this->params->get('app_mode').';';
 		$setApp .= 	'var jsonUrl 			= '.$jsonUrl.';';
 		$setApp .= 	'var booksDate 			= "'.$this->booksDate.'";';
-		$setApp .= 	'var highlightOption 	= '. $this->params->get('highlight_option').';';
-		if($this->AppDefaults->search == 1){
-			// set the search styles
-			if($this->params->get('highlight_padding')){
-				$padding = 'padding: 0 3px 0 3px;';
-			} else {
-				$padding = '';
-			}
-			$searchStyles = '.highlight { color: '.$this->params->get('highlight_textcolor').'; border-bottom: 1px '.$this->params->get('highlight_linetype').' '.$this->params->get('highlight_linecolor').'; background-color: '.$this->params->get('highlight_background').'; '. $padding .' }';
-			$this->document->addStyleDeclaration( $searchStyles );
-			
-			$setApp .= 	'var searchFor 		= "'.$this->AppDefaults->searchFor.'";';
-			$setApp .= 	'var searchCrit 	= "'.$this->AppDefaults->crit.'";';
-			$setApp .= 	'var searchType 	= "'.$this->AppDefaults->type.'";';
-			$setApp .= 	'var searchApp 		= '.$this->AppDefaults->search.';';
-			$setApp .= 	'var setQuery 		= "s="+searchFor+"&crit="+searchCrit+"&t="+searchType+"&v="+defaultVersion;';
-			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'highlight.js');
+		$setApp .= 	'var highlightOption 	= '. $this->params->get('highlight_option').';';// set the search styles
+		if($this->params->get('highlight_padding')){
+			$padding = 'padding: 0 3px 0 3px;';
 		} else {
-			$setApp .= 	'var defaultChapter = "'.$this->AppDefaults->chapter.'";';
-			$setApp .= 	'var setQuery 		= "p="+defaultBook+defaultChapter+"&v="+defaultVersion;';
+			$padding = '';
 		}
+		$searchStyles = '.highlight { color: '.$this->params->get('highlight_textcolor').'; border-bottom: 1px '.$this->params->get('highlight_linetype').' '.$this->params->get('highlight_linecolor').'; background-color: '.$this->params->get('highlight_background').'; '. $padding .' }';
+		$this->document->addStyleDeclaration( $searchStyles );
+		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'highlight.js');
 		
 		$this->document->addScriptDeclaration($setApp);  
 		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'app.js');
