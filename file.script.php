@@ -67,13 +67,20 @@ class com_getbibleInstallerScript {
 		} 
 		if ($type == 'update') {
 				// fix update string in db
-				$db = JFactory::getDBO();
+				$db = JFactory::getDbo();
 				$query = $db->getQuery(true);
-				$query->update('#__update_sites');
-				$query->set("type =  'extension'");
-				$query->where("location = 'http://getbible.net/updates/joomla_three.xml'"); 
+				// Fields to update.
+				$fields = array(
+					$db->quoteName('location') . ' = ' . $db->quote('http://getbible.net/updates/joomla_three.xml')
+				);
+				// Conditions for which records should be updated.
+				$conditions = array(
+					$db->quoteName('type') . ' = ' . $db->quote('extension'), 
+					$db->quoteName('enabled') . ' = 1'
+				);
+				$query->update($db->quoteName('#__update_sites'))->set($fields)->where($conditions);
 				$db->setQuery($query);
-				$db->query();
+				$result = $db->execute();
 				
 		echo '	<p>'.JText::_('Congratulations! Now you can start using Get Bible!').'</p>
 				<a target="_blank" href="http://getbible.net/" title="Get Bible">
