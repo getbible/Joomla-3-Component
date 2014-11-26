@@ -71,12 +71,12 @@ class com_getbibleInstallerScript {
 				$query = $db->getQuery(true);
 				// Fields to update.
 				$fields = array(
-					$db->quoteName('location') . ' = ' . $db->quote('http://getbible.net/updates/joomla_three.xml')
+					$db->quoteName('type') . ' = ' . $db->quote('extension'), 
+					$db->quoteName('enabled') . ' = 1'
 				);
 				// Conditions for which records should be updated.
 				$conditions = array(
-					$db->quoteName('type') . ' = ' . $db->quote('extension'), 
-					$db->quoteName('enabled') . ' = 1'
+					$db->quoteName('location') . ' = ' . $db->quote('http://getbible.net/updates/joomla_three.xml')
 				);
 				$query->update($db->quoteName('#__update_sites'))->set($fields)->where($conditions);
 				$db->setQuery($query);
