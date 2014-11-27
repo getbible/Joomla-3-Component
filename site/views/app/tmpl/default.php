@@ -296,6 +296,6 @@ $versions = $this->cpanel;
     <?php if ($this->params->get('vdm_link') == 1): ?></a><?php endif; ?>
 <?php else: ?>
 	<?php if ($this->params->get('vdm_link') == 1): ?><a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
-    	<span class="uk-align-right" data-uk-tooltip="{pos:'left'}" title="Powered by" ><?php echo $this->params->get('vdm_name');  ?></span>
+    	<span class="uk-align-right" data-uk-tooltip="{pos:'left'}" title="The words of eternal life!" ><?php echo $this->params->get('vdm_name');  ?></span>
     </a><?php endif; ?>
 <?php endif; ?>
