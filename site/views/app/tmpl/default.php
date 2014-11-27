@@ -292,7 +292,7 @@ $versions = $this->cpanel;
 </div>
 <?php if ($this->params->get('vdm_logo') == 1): ?>
 	<?php if ($this->params->get('vdm_link') == 1): ?><a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank"><?php endif; ?>
-    	<span class="uk-align-right" data-uk-tooltip="{pos:'left'}" title="Powered by" ><img src="/media/com_getbible/images/icon.png" /></span>
+    	<span class="uk-align-right" data-uk-tooltip="{pos:'left'}" title="The words of eternal life!" ><img src="/media/com_getbible/images/icon.png" /></span>
     <?php if ($this->params->get('vdm_link') == 1): ?></a><?php endif; ?>
 <?php else: ?>
 	<?php if ($this->params->get('vdm_link') == 1): ?><a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
