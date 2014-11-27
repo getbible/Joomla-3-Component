@@ -208,7 +208,67 @@ function loadFoundChapter(call, setGlobal){
 		jQuery('#prev').hide();
 	}
 	getData(call, false, true);
-	gotoTop();
+	if(appMode == 2){
+		gotoTop();
+	}
+}
+
+// load the next book
+function loadNextBook(addTo,Found){
+	
+	//  Call to get scripture
+	var bookNow = false;
+	jQuery("#books option").each(function(){
+		option = this.value;
+		var check = option.split('__');
+		if(check[2] == BIBLE_BOOK){
+			bookNow = option;
+			return false;
+		}
+	});
+	if(bookNow){
+		var bookNowArray 	= bookNow.split('__');
+		var bookNew			= false;
+		if(bookNowArray[1] == 66){
+			--BIBLE_LAST_CHAPTER;
+			--BIBLE_CHAPTER;
+			jQuery('#scripture').removeClass('text_loading');
+		} else {
+			BIBLE_BOOK_NR 		= ++bookNowArray[1];
+			jQuery("#books option").each(function(){
+				option = this.value;
+				var check = option.split('__');
+				if(check[1] == BIBLE_BOOK_NR){
+					bookNew = option;
+					return false;
+				}
+			});
+		}
+		if(bookNew){
+			// add loading class
+			if(!addTo){
+				jQuery('#scripture').addClass('text_loading');
+			}
+			jQuery('#t_loader').show();
+			var bookNewArray 	= bookNew.split('__');
+			BIBLE_BOOK			= bookNewArray[2];
+			BIBLE_VERSION		= bookNewArray[0];
+			BIBLE_CHAPTER 		= 1;
+			BIBLE_LAST_CHAPTER 	= 0;
+			getDataBo(BIBLE_VERSION,BIBLE_VERSION+'__'+BIBLE_BOOK_NR+'__'+BIBLE_BOOK);
+			getDataCh(BIBLE_VERSION+'__'+BIBLE_BOOK_NR+'__'+BIBLE_BOOK);
+			jQuery('#versions').val(BIBLE_VERSION);
+			jQuery("#books").val(bookNew);
+			jQuery('.search_book').val(BIBLE_BOOK);
+			// set the search book ref
+			jQuery('#prev').hide();
+			// load next book
+			getData('p='+BIBLE_BOOK+BIBLE_CHAPTER+'&v='+BIBLE_VERSION,addTo,Found);
+			if(appMode == 2){
+				gotoTop();
+			}
+		}
+	}
 }
 
 // set the found verse page next chapter load text
@@ -278,11 +338,15 @@ function getData(request, addTo, Found) {
 					jQuery('.navigation').show();
 				} else {
 					jQuery('#scripture').html('<h2>Not Found! Please try again!</h2> '); // <---- this is the div id we update
+					jQuery('#scripture').removeClass('text_loading');
 				}
 				if(!addTo && appMode == 1){
 					jQuery('#scripture').html('<h2>No scripture was returned, please try again!</h2>'); // <---- this is the div id we update
+					jQuery('#scripture').removeClass('text_loading');
+				} else {
+					// check if result else load next book
+					loadNextBook(addTo,Found);
 				}
-				jQuery('#scripture').removeClass('text_loading');
 			 },
 		});
 	} else {
@@ -780,13 +844,24 @@ var didScroll = false;
 jQuery(window).scroll(function() {
     didScroll = true;
 });
-
+// set delay timer var
+var clickTimer = false;
 // Get next chapter as you scroll down
 function loadTimer1(){
 	timerInterval_1 = setInterval(function() {
 		if ((autoLoadChapter === 1) && didScroll) {
 			if (jQuery(window).scrollTop() >= jQuery(document).height() - jQuery(window).height() - 10) {
-				nextChapter();
+				if(appMode == 1){				
+					// listen for click
+				   if(clickTimer) { 
+					  // abort previous request if 800ms have not passed
+					  clearTimeout(clickTimer);
+				   }
+					clickTimer = setTimeout(function() {  nextChapter();  },1000);
+				} else {
+					nextChapter();
+				}
+				// set scroll lock
 				didScroll = false;
 			 }
 		}
@@ -799,28 +874,30 @@ function nextChapter(){
 	BIBLE_CHAPTER++;
 	if(appMode == 1){
 		addTo = true;
+		jQuery('#b_loader').show();
 	} else if(appMode == 2){
 		addTo = false;
 		gotoTop();
+		jQuery('#t_loader').show();
 		if(BIBLE_CHAPTER > 1){
 			jQuery('#prev').show();
 		}
 	}
 	jQuery('.navigation').hide();
-	jQuery('#b_loader').show();
 	getData('p='+BIBLE_BOOK+BIBLE_CHAPTER+'&v='+BIBLE_VERSION,addTo);
 }
 // get previous chapter with prev button
 function prevChapter(){
 	addTo = false;
-	gotoTop();
+	if(appMode == 2){
+		gotoTop();
+	}
 	if(BIBLE_LAST_CHAPTER < 1){
 		// this should not happen... since it should be hidden.
 		jQuery('#prev').hide();
 	} else {
-
 		jQuery('.navigation').hide();
-		jQuery('#b_loader').show();
+		jQuery('#t_loader').show();
 		getData('p='+BIBLE_BOOK+BIBLE_LAST_CHAPTER+'&v='+BIBLE_VERSION,addTo);
 		BIBLE_CHAPTER--;
 		BIBLE_LAST_CHAPTER--;
