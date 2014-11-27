@@ -437,36 +437,7 @@ function setVerses(json,direction,addTo){
 
 // Set Chapter
 function setChapter(json,direction,addTo){
-	if(isNumeric(defaultVers)){
-		if (isInArray(",", defaultVers)){
-			var result = defaultVers.split(',');
-		} else {
-			var listVers = [];
-			if (isInArray("-", defaultVers)){
-				var numbers = defaultVers.split('-');
-				for (var nr = numbers[0]; nr <= numbers[1]; nr++) {
-					listVers.push(nr*1);
-				}
-			} else {
-				listVers.push(defaultVers*1);
-			}
-		}
-		defaultVers = 0;
-		if(typeof result !== 'undefined'){
-			var listVers = [];
-			for(var i = 0; i <= result.length; i++){
-				if (isInArray("-", result[i])){
-					var numbers = result[i].split('-');
-					for (var nr = numbers[0]; nr <= numbers[1]; nr++) {
-						listVers.push(nr*1);
-					}
-				} else {
-					listVers.push(result[i]*1);
-				}
-			}
-		}
-	}
-		
+	listVers = getVerses();
 	var output = '<center><b>'+json.book_name+'&#160;'+json.chapter_nr+'</b></center><br/><p class="'+direction+'">';
 			jQuery.each(json.chapter, function(index, value) {
 				if(isInArray(value.verse_nr, listVers)){
@@ -530,16 +501,51 @@ function setSearch(json,direction){
 	jQuery('#scripture').removeClass('text_loading');
 }
 
+// get verses from string
+function getVerses(){
+	if(isNumeric(defaultVers)){
+		var listVers = [];
+		if (isInArray(",", defaultVers)){
+			var result = defaultVers.split(',');
+		} else {
+			if (isInArray("-", defaultVers)){
+				var numbers = defaultVers.split('-');
+				for (var nr = numbers[0]; nr <= numbers[1]; nr++) {
+					listVers.push(nr*1);
+				}
+			} else {
+				listVers.push(defaultVers*1);
+			}
+		}
+		defaultVers = 0;
+		if(typeof result !== 'undefined'){
+			for(var i = 0; i <= result.length; i++){
+				if (isInArray("-", result[i])){
+					var numbers = result[i].split('-');
+					for (var nr = numbers[0]; nr <= numbers[1]; nr++) {
+						listVers.push(nr*1);
+					}
+				} else {
+					listVers.push(result[i]*1);
+				}
+			}
+		}
+		return listVers;
+	}
+	return false;
+}
 // check if value is in array
 function isInArray(value, array) {
 	if(typeof array !== 'undefined'){
-  		return array.indexOf(value) > -1;
+		if(array !== false){
+  			return array.indexOf(value) > -1;
+		}
 	} return false;
 }
 // check if number is found in string but not 0
 function isNumeric(number) {
 	if(typeof number !== 'undefined'){
-		if(number != 0){
+		if(number != 0 && number != null){
 			var matches = number.match(/\d+/g);
 			if (matches != null) {
 				return true;

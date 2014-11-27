@@ -205,8 +205,73 @@ class GetbibleModelVersion extends JModelAdmin
 			 
 			$db->setQuery($query);
 			 
-			 
 			$result = $db->query();
 		}
+	}
+
+	/**
+	 * Method to change the published state of one or more records.
+	 *
+	 * @param   array    &$pks   A list of the primary keys to change.
+	 * @param   integer  $value  The value of the published state.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 */
+	public function publish(&$pks, $value = 1)
+	{
+		if (parent::publish($pks, $value))
+		{
+			$pks   = (array) $pks;
+			
+			// Iterate the items to delete each one.
+			foreach ($pks as $i => $pk)
+			{
+				$this->versionPublish($this->getItem($pk)->version, $value);
+			}
+			
+			return $this->_cpanel();
+		}
+	}
+		
+	/**
+	 * Method to change the published state of all version data.
+	 *
+	 * @param   string $version_code_name  of version name.
+	 * @param   integer  $value  The value of the published state.
+	 *
+	 */
+	protected function versionPublish($version_code_name, $value = 1)
+	{
+		$db = JFactory::getDbo();
+ 		$tables = array('#__getbible_setbooks','#__getbible_chapters','#__getbible_books','#__getbible_verses');
+		foreach ($tables as $table){
+ 
+			$query = $db->getQuery(true);
+			 
+			// Fields to update.
+			$fields = array(
+				$db->quoteName('published') . ' = ' . $value
+			);
+			 
+			// Conditions for which records should be updated.
+			$conditions = array(
+				$db->quoteName('version') . ' = ' . $db->quote($version_code_name)
+			);
+			 
+			$query->update($db->quoteName($table))->set($fields)->where($conditions);
+			 
+			$db->setQuery($query);
+			 
+			$db->execute();
+		}
+	}
+	
+	protected function _cpanel()
+	{
+		// Base this model on the backend version.
+		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_getbible'.DS.'models'.DS.'cpanel.php';
+		$cpanel_model = new GetbibleModelCpanel;
+		return $cpanel_model->setCpanel();
 	}
 }
