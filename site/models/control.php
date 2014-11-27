@@ -134,6 +134,7 @@ class GetbibleModelControl extends JModelList
 					if(is_object($defaults)){
 						// set defaults to loading request
 						$defaults->chapter 		= $loadDefaults->Chapter;
+						$defaults->vers 		= $loadDefaults->Vers;
 						$defaults->lastchapter	= $defaults->chapter - 1;
 						$defaults->load 		= 1;
 						return $defaults;
@@ -215,6 +216,7 @@ class GetbibleModelControl extends JModelList
 		$request 			= new stdClass();
 		$request->Book 		= $name;
 		$request->Chapter 	= $ch;
+		$request->Vers	 	= $vers;
 		
 		return $request;
 	}

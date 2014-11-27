@@ -79,6 +79,6 @@
 		</languages>
 	</administration>
 	<updateservers>
-		<server type="extension" priority="1" element="com_getbible" name="Get Bible API">http://getbible.net/updates/joomla_three.xml</server>
+		<server type="extension" enabled="1" element="com_getbible" name="Get Bible API">http://getbible.net/updates/joomla_three.xml</server>
 	</updateservers>
 </extension>

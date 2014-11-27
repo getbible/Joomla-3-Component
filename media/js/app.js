@@ -18,6 +18,7 @@ var BIBLE_CHAPTER 		= 0;
 var BIBLE_LAST_CHAPTER 	= 0;
 var BIBLE_VERSION 		= 0;
 var defaultVersion 		= 0;
+var defaultVers			= 0;
 var defaultBook 		= 0;
 var defaultBookNr 		= 0;
 var defaultChapter 		= 0;
@@ -339,6 +340,7 @@ function getDefaults(getUrl, request, requestStore) {
 			 BIBLE_LAST_CHAPTER = json.lastchapter;
 			 BIBLE_VERSION 		= json.version;
 			 defaultVersion 	= json.version;
+			 defaultVers		= json.vers;
 			 defaultBook 		= json.book_ref;
 			 defaultBookNr 		= json.book_nr;
 			 defaultChapter 	= json.chapter;
@@ -381,6 +383,7 @@ function getDefaults(getUrl, request, requestStore) {
 		 BIBLE_LAST_CHAPTER = jsonStore.lastchapter;
 		 BIBLE_VERSION 		= jsonStore.version;		
 		 defaultVersion 	= jsonStore.version;
+		 defaultVers		= jsonStore.vers;
 		 defaultBook 		= jsonStore.book_ref;
 		 defaultBookNr 		= jsonStore.book_nr;
 		 defaultChapter 	= jsonStore.chapter;
@@ -416,7 +419,7 @@ function getDefaults(getUrl, request, requestStore) {
 function setVerses(json,direction,addTo){
 	var output = '';
 		jQuery.each(json.book, function(index, value) {
-			output += '<center><b>'+value.book_name+'&#160;'+value.chapter_nr+'</b></center><br/><p class="'+direction+'">';
+			output += '<center><b>'+value.book_name+'&#160;'+value.chapter_nr+'</b></center><br/><p class=\"'+direction+'\">';
 			jQuery.each(value.chapter, function(index, value) {
 				output += '&#160;&#160;<small class="ltr">' +value.verse_nr+ '</small>&#160;&#160;';
 				output += value.verse;
@@ -434,10 +437,45 @@ function setVerses(json,direction,addTo){
 
 // Set Chapter
 function setChapter(json,direction,addTo){
+	if(isNumeric(defaultVers)){
+		if (isInArray(",", defaultVers)){
+			var result = defaultVers.split(',');
+		} else {
+			var listVers = [];
+			if (isInArray("-", defaultVers)){
+				var numbers = defaultVers.split('-');
+				for (var nr = numbers[0]; nr <= numbers[1]; nr++) {
+					listVers.push(nr*1);
+				}
+			} else {
+				listVers.push(defaultVers*1);
+			}
+		}
+		defaultVers = 0;
+		if(typeof result !== 'undefined'){
+			var listVers = [];
+			for(var i = 0; i <= result.length; i++){
+				if (isInArray("-", result[i])){
+					var numbers = result[i].split('-');
+					for (var nr = numbers[0]; nr <= numbers[1]; nr++) {
+						listVers.push(nr*1);
+					}
+				} else {
+					listVers.push(result[i]*1);
+				}
+			}
+		}
+	}
+		
 	var output = '<center><b>'+json.book_name+'&#160;'+json.chapter_nr+'</b></center><br/><p class="'+direction+'">';
 			jQuery.each(json.chapter, function(index, value) {
-				output += '&#160;&#160;<small class="ltr">' +value.verse_nr+ '</small>&#160;&#160;';
-				output += value.verse;
+				if(isInArray(value.verse_nr, listVers)){
+					output += '&#160;&#160;<small class="ltr">' +value.verse_nr+ '</small>&#160;&#160;';
+					output += '<span class="highlight">' +value.verse+ '</span>';
+				} else {
+					output += '&#160;&#160;<small class="ltr">' +value.verse_nr+ '</small>&#160;&#160;';
+					output += value.verse;
+				}
 				output += '<br/>';
 			});
 			output += '</p>';
@@ -490,6 +528,25 @@ function setSearch(json,direction){
 		highScripture();							
 	}
 	jQuery('#scripture').removeClass('text_loading');
+}
+
+// check if value is in array
+function isInArray(value, array) {
+	if(typeof array !== 'undefined'){
+  		return array.indexOf(value) > -1;
+	} return false;
+}
+// check if number is found in string but not 0
+function isNumeric(number) {
+	if(typeof number !== 'undefined'){
+		if(number != 0){
+			var matches = number.match(/\d+/g);
+			if (matches != null) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 	/*******************************************\

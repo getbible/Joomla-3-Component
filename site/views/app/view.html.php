@@ -135,7 +135,7 @@ class GetbibleViewApp extends JViewLegacy
 		}
 		// debug offline status
 		// $this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'offline-simulate-ui.min.js');
-		
+						
 		// to check in app is online
 		$offline	= '	jQuery(document).ready(function(){ 
 							Offline.options = {checks: { image: {url: "/media/com_getbible/images/vdm.png"}, active: "image"}};
