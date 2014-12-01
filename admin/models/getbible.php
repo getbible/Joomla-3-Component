@@ -247,7 +247,7 @@ class GetbibleModelGetbible extends JModelList
 				$book_name 	= $this->getBook($book_nr,$version);
 				$book_ref	= $this->getBookRef($book_nr,$version);
 				// load in to result set
-				$returns['book'][] = array('book_name'=>$book_name, 'book_ref'=>$book_ref, 'book_nr'=>$book_nr, 'chapter_nr'=>$chapter_nr, 'chapter'=>$chapter);
+				$returns['book'][] = array('version' => $version, 'book_name'=>$book_name, 'book_ref'=>$book_ref, 'book_nr'=>$book_nr, 'chapter_nr'=>$chapter_nr, 'chapter'=>$chapter);
 				
 			}
 			// load direction
@@ -294,7 +294,7 @@ class GetbibleModelGetbible extends JModelList
 					// load book name
 					$bookName	= $this->getBook($get['book_nr'],$version);
 					// load book
-					$json 		= '{"type":"book","book_name":"'.$bookName.'","book_nr":'.(int)$get['book_nr'].', "direction":"'.$direction.'", '.$results.'}';
+					$json 		= '{"type":"book","version":"'.$version.'","book_name":"'.$bookName.'","book_nr":'.(int)$get['book_nr'].', "direction":"'.$direction.'", '.$results.'}';
 					return $json;
 				} return false;
 			} elseif ($get['type'] == 'nc'){  // <--- if a chapter is requeted
@@ -321,7 +321,7 @@ class GetbibleModelGetbible extends JModelList
 					// load book name
 					$bookName	= $this->getBook($get['book_nr'],$version);
 					// load chapter
-					$json 		= '{"type":"chapter","book_name":"'.$bookName.'","book_nr":'.(int)$get['book_nr'].',"chapter_nr":'.$get['chapter_nr'].', "direction":"'.$direction.'", '.$results.'}';
+					$json 		= '{"type":"chapter","version":"'.$version.'","book_name":"'.$bookName.'","book_nr":'.(int)$get['book_nr'].',"chapter_nr":'.$get['chapter_nr'].', "direction":"'.$direction.'", '.$results.'}';
 					return $json;
 				} return false;
 				
@@ -342,6 +342,7 @@ class GetbibleModelGetbible extends JModelList
 			$returns['direction'] = $direction;
 			// set type
 			$returns['type'] = 'verse';
+			$returns['version'] = $version;
 			return json_encode($returns);
 		} return false;
 	}

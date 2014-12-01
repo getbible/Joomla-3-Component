@@ -24,12 +24,18 @@ var defaultBookNr 		= 0;
 var defaultChapter 		= 0;
 var setQuery 			= 0;
 
-	
+// set bookmark array
+var alpha 			= "abcdefghijklm";
+var bookmarksArray 	= alpha.split("");
+// set default current bookmark
+var currentMark = 'a';
+
 // get the data from the API
 jQuery(function() {
 	// load defaults
 	getDefaults(getUrl, defaultRequest, defaultKey);
-	
+	bookmark();
+		
 });
 // Load this after page is fully loaded
 jQuery(window).bind("load", function() {
@@ -213,6 +219,83 @@ function loadFoundChapter(call, setGlobal){
 	}
 }
 
+jQuery(document).ready(function() {
+		
+	jQuery('.verse').hover(function() {
+			jQuery(this).addClass('hoverStyle');
+		}, function() {
+			jQuery(this).removeClass('hoverStyle');
+		}
+	);
+	
+	jQuery('.verse').click(function() {
+		setBookmark(this);
+	});
+	
+	
+});
+// set the bookmark color
+function setCurrentColor(mark){
+	currentMark = mark;
+}
+// set the bookmarks object
+function setBookmark(e) {
+	// get bookmarks
+	var bookMarksStore = jQuery.jStorage.get('bookmarks');
+	if(!bookMarksStore){
+		var bookMarksStore = {};
+	}
+	var id 	= jQuery(e).attr("id");
+	var add = true;
+	jQuery(bookmarksArray).each(function(index, mark) {
+		// remove the class and unset values
+		if(jQuery('#'+id).hasClass('bookmark_'+mark)){
+			jQuery('#'+id).removeClass('bookmark_'+mark);
+			delete bookMarksStore[id];
+			if('bookmark_'+mark == 'bookmark_'+currentMark){
+				add = false;
+			}
+		}
+	});
+	if (add){
+		// add the class and set the values
+		bookMarksStore[id] = currentMark;
+		jQuery('#'+id).addClass('bookmark_'+currentMark);
+	}
+	
+	//save bookmarks
+	jQuery.jStorage.set('bookmarks',bookMarksStore);
+}
+
+// script to have bookmark selection
+function bookmark(){
+		
+	jQuery('.verse').hover(function() {
+			jQuery(this).addClass('hoverStyle');
+		}, function() {
+			jQuery(this).removeClass('hoverStyle');
+		}
+	);
+	
+	jQuery('.verse').click(function() {
+		setBookmark(this);
+	});
+	
+	var bookMarks = jQuery.jStorage.get('bookmarks');
+	if(bookMarks){
+		jQuery.jStorage.deleteKey('bookmarks');
+		jQuery.each( bookMarks, function( val, mark ) {
+			if(jQuery("#" + val).length != 0) {
+			  jQuery("#" + val).addClass('bookmark_'+mark);
+			}
+		});
+	}
+	
+	//save bookmarks
+	jQuery.jStorage.set('bookmarks',bookMarks);
+	
+}
+
 // load the next book
 function loadNextBook(addTo,Found){
 	
@@ -297,7 +380,7 @@ function getData(request, addTo, Found) {
 	}
 	// Check if "requestStore" exists in the local storage
 	var jsonStore = jQuery.jStorage.get(requestStore);
-	if(!jsonStore){
+	if(!jsonStore || typeof jsonStore.version === 'undefined'){
 		if (typeof appKey !== 'undefined') {
 			request = request+'&appKey='+appKey;
 		}
@@ -377,7 +460,7 @@ function getData(request, addTo, Found) {
 		 if(searchApp != 1 || FoundTheVerse){
 			jQuery('.navigation').show();
 		 }
-	}	
+	}
 }
 
 // Ajax Call to get Defaults
@@ -483,11 +566,16 @@ function getDefaults(getUrl, request, requestStore) {
 function setVerses(json,direction,addTo){
 	var output = '';
 		jQuery.each(json.book, function(index, value) {
-			output += '<center><b>'+value.book_name+'&#160;'+value.chapter_nr+'</b></center><br/><p class=\"'+direction+'\">';
+			output += '<div><center><b>'+value.book_name+'&#160;'+value.chapter_nr+'</b></center></div><p class=\"'+direction+'\">';
 			jQuery.each(value.chapter, function(index, value) {
-				output += '&#160;&#160;<small class="ltr">' +value.verse_nr+ '</small>&#160;&#160;';
+				output += '&#160;&#160;<small class="verse_nr ltr">' +value.verse_nr+ '</small>&#160;&#160;<span class="verse" id="'+value.book_nr+'_'+value.chapter_nr+'_' +value.verse_nr+ '">';
+
 				output += value.verse;
-				output += '<br/>';
+				if(verselineMode == 2){
+					output += '</span>&#160;';
+				} else {
+					output += '</span><br/>';
+				}
 			});
 			output += '</p>';
 		});
@@ -496,50 +584,61 @@ function setVerses(json,direction,addTo){
 		} else {
 			jQuery('#scripture').html(output);  // <---- this is the div id we update
 		}
+		bookmark();
 		jQuery('#scripture').removeClass('text_loading');
 }
 
 // Set Chapter
 function setChapter(json,direction,addTo){
 	listVers = getVerses();
-	var output = '<center><b>'+json.book_name+'&#160;'+json.chapter_nr+'</b></center><br/><p class="'+direction+'">';
-			jQuery.each(json.chapter, function(index, value) {
-				if(isInArray(value.verse_nr, listVers)){
-					output += '&#160;&#160;<small class="ltr">' +value.verse_nr+ '</small>&#160;&#160;';
-					output += '<span class="highlight">' +value.verse+ '</span>';
-				} else {
-					output += '&#160;&#160;<small class="ltr">' +value.verse_nr+ '</small>&#160;&#160;';
-					output += value.verse;
-				}
-				output += '<br/>';
-			});
-			output += '</p>';
-			if(addTo){
-				jQuery('#scripture').append(output);
-			} else {
-				jQuery('#scripture').html(output);  // <---- this is the div id we update
-			}
-			jQuery('#scripture').removeClass('text_loading');
+	var output = '<div><center><b>'+json.book_name+'&#160;'+json.chapter_nr+'</b></center></div><p class="'+direction+'">';
+	jQuery.each(json.chapter, function(index, value) {
+		if(isInArray(value.verse_nr, listVers)){
+			output += '&#160;&#160;<small class="verse_nr ltr">' +value.verse_nr+ '</small>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+			output += '<span class="highlight">' +value.verse+ '</span>';
+		} else {
+			output += '&#160;&#160;<small class="verse_nr ltr">' +value.verse_nr+ '</small>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+			output += value.verse;
+		}
+		if(verselineMode == 2){
+			output += '</span>&#160;';
+		} else {
+			output += '</span><br/>';
+		}
+	});
+	output += '</p>';
+	if(addTo){
+		jQuery('#scripture').append(output);
+	} else {
+		jQuery('#scripture').html(output);  // <---- this is the div id we update
+	}
+	bookmark();
+	jQuery('#scripture').removeClass('text_loading');
 }
 
 // Set Book
 function setBook(json,direction,addTo){
 	var output = '';
-		jQuery.each(json.book, function(index, value) {
-			output += '<center><b>'+json.book_name+'&#160;'+value.chapter_nr+'</b></center><br/><p class="'+direction+'">';
-			jQuery.each(value.chapter, function(index, value) {
-				output += '&#160;&#160;<small class="ltr">' +value.verse_nr+ '</small>&#160;&#160;';
-				output += value.verse;
-				output += '<br/>';
-			});
-			output += '</p>';
+	jQuery.each(json.book, function(index, value) {
+		output += '<div><center><b>'+json.book_name+'&#160;'+value.chapter_nr+'</b></center></div><p class="'+direction+'">';
+		jQuery.each(value.chapter, function(index, value) {
+			output += '&#160;&#160;<small class="verse_nr ltr">' +value.verse_nr+ '</small>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+value.chapter_nr+'_' +value.verse_nr+ '">';
+			output += value.verse;
+			if(verselineMode == 2){
+				output += '</span>&#160;';
+			} else {
+				output += '</span><br/>';
+			}
 		});
-		if(addTo){
-			jQuery('#scripture').append(output);
-		} else {
-			jQuery('#scripture').html(output);  // <---- this is the div id we update
-		}
-		jQuery('#scripture').removeClass('text_loading');
+		output += '</p>';
+	});
+	if(addTo){
+		jQuery('#scripture').append(output);
+	} else {
+		jQuery('#scripture').html(output);  // <---- this is the div id we update
+	}
+	bookmark();
+	jQuery('#scripture').removeClass('text_loading');
 }
 
 // Set Search

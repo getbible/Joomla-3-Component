@@ -13,7 +13,6 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 $versions = $this->cpanel;
-
 ?>
 <div class="searchbuttons" style="display:none;">
 <?php if($this->params->get('search_display') == 1): ?>
@@ -78,13 +77,18 @@ $versions = $this->cpanel;
 <?php endif ?>
 </div>
 <div id="cPanel">
+<?php if($this->params->get('toolbar') == 2): ?>
+<div data-uk-sticky="" style="background:#fff;" >
+<?php endif; ?>
 	<?php if($this->params->get('search_display') == 1): ?>
     <form class="uk-form">
         <fieldset data-uk-margin="">
+            <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
             <button class="uk-button submit_search" data-uk-offcanvas="{target:'#search_scripture'}"><i class="uk-icon-search"></i> <?php echo $this->params->get('search_button'); ?></button>
     <?php elseif($this->params->get('search_display') == 2):?>
     <form class="uk-form uk-search" id="search_form" method="post">
         <fieldset data-uk-margin="">
+            <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
             <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
             <input type="submit" style="display:none;" >
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
@@ -95,6 +99,7 @@ $versions = $this->cpanel;
     <?php elseif($this->params->get('search_display') == 3):?>
     <form class="uk-form uk-search" id="search_form" method="post">
         <fieldset data-uk-margin="">
+            <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
             <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
             <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>">
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
@@ -105,6 +110,7 @@ $versions = $this->cpanel;
     <?php elseif($this->params->get('search_display') == 4):?>
     <form class="uk-form uk-search" id="search_form" method="post">
         <fieldset data-uk-margin="">
+            <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
             <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
             <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>">
             <?php if($this->params->get('search_options') == 1): ?>
@@ -118,6 +124,7 @@ $versions = $this->cpanel;
     <?php elseif($this->params->get('search_display') == 5):?>
     <form class="uk-form uk-search" id="search_form" method="post">
         <fieldset data-uk-margin="">
+            <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
             <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
             <input type="submit" style="display:none;" >
             <?php if($this->params->get('search_options') == 1): ?>
@@ -147,16 +154,19 @@ $versions = $this->cpanel;
             <button class="uk-button button" type="button" style="display:none;" onClick="showChapters()"><i class="uk-icon-list-ol"></i> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></button>
         </fieldset>
     </form>
+<?php if($this->params->get('toolbar') == 2): ?>
+</div>
+<?php endif; ?>
 </div>
 <br/>
 
 <div id="t_loader" style="text-align:center;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div>
 
-<div id="getbible" style="display:none;">
+<div id="getbible" style="display:none;" class="uk-margin-remove">
 
     <div id="chapters" style="display:none;"></div>
     
-    <div id="scripture"></div>
+    <div id="scripture" class="uk-margin-remove"></div>
 	<?php if($this->params->get('app_mode') == 2): ?>
 		<?php if($this->params->get('up_button') == 1): ?>
             <button id="button_top" class="uk-button uk-button-primary" type="button" style="display:none; position: fixed; bottom: 0px; z-index: 3;" onClick="gotoTop()"><?php echo JText::_('COM_GETBIBLE_GO_TOP'); ?> <i class="uk-icon-arrow-up"></i></button>
@@ -165,8 +175,15 @@ $versions = $this->cpanel;
                 <a class="uk-button searchbuttons" type="button" onClick="gotoTop()"><?php echo JText::_('COM_GETBIBLE_GO_TOP'); ?> <i class="uk-icon-arrow-up"></i></a>
             </div>
         <?php endif; ?>
-        <div class="navigation uk-panel uk-width-1-2 uk-container-center uk-text-center" style="display:none;">
+        <div class="navigation uk-panel uk-width-1-2 uk-hidden-small uk-container-center uk-text-center" style="display:none;">
             <div class="uk-button-group">
+                <a class="uk-button button" type="button"  onClick="showChapters(true)"><i class="uk-icon-list-ol"></i> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></a>
+                <a id="prev" class="uk-button" href="javascript:void(0)" onClick="prevChapter()"><i class="uk-icon-fast-backward"></i> <?php echo JText::_('COM_GETBIBLE_PREV'); ?></a>
+                <a class="uk-button" href="javascript:void(0)" onClick="nextChapter()"><?php echo JText::_('COM_GETBIBLE_NEXT'); ?> <i class="uk-icon-fast-forward"></i></a>
+            </div>
+        </div>
+        <div class="navigation uk-panel uk-visible-small" style="display:none;" data-uk-margin>
+        	<div class="uk-button-group">
                 <a class="uk-button button" type="button"  onClick="showChapters(true)"><i class="uk-icon-list-ol"></i> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></a>
                 <a id="prev" class="uk-button" href="javascript:void(0)" onClick="prevChapter()"><i class="uk-icon-fast-backward"></i> <?php echo JText::_('COM_GETBIBLE_PREV'); ?></a>
                 <a class="uk-button" href="javascript:void(0)" onClick="nextChapter()"><?php echo JText::_('COM_GETBIBLE_NEXT'); ?> <i class="uk-icon-fast-forward"></i></a>
@@ -187,6 +204,32 @@ $versions = $this->cpanel;
     <?php endif; ?>
 </div>
 <div id="b_loader" style="display:none; text-align:center;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div>
+
+<div id="bookmark_cpanel" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <div class="uk-hidden-small" data-uk-margin>
+        	<?php foreach($this->bookmarks as $mark => $details): ?>
+            	<a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-large uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
+					<?php echo $details['name']; ?>&nbsp;&nbsp;&nbsp;
+                    <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>; font-size: <?php echo $this->params->get('font_medium'); ?>px;">
+                    	&nbsp;<i class="uk-icon-pencil"></i>&nbsp;Text&nbsp;&nbsp;
+                    </span>
+                </a>
+            <?php endforeach; ?>
+        </div>
+        <div class="uk-visible-small" data-uk-margin>
+        	<?php foreach($this->bookmarks as $mark => $details): ?>
+            	<a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-mini uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
+					<?php echo $details['name']; ?>&nbsp;&nbsp;&nbsp;
+                    <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>;">
+                    	&nbsp;<i class="uk-icon-pencil"></i>&nbsp;Text&nbsp;&nbsp;
+                    </span>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
 
 <div id="search_scripture" class="uk-offcanvas">
     <div class="uk-offcanvas-bar">
