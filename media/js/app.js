@@ -249,6 +249,7 @@ function setBookmark(e) {
 	var add = true;
 	jQuery(bookmarksArray).each(function(index, mark) {
 		// remove the class and unset values
+		jQuery('#'+id+' span').removeClass('highlight');
 		if(jQuery('#'+id).hasClass('bookmark_'+mark)){
 			jQuery('#'+id).removeClass('bookmark_'+mark);
 			delete bookMarksStore[id];
