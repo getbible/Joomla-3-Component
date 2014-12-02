@@ -27,14 +27,13 @@ var setQuery 			= 0;
 // set bookmark array
 var alpha 			= "abcdefghijklm";
 var bookmarksArray 	= alpha.split("");
-// set default current bookmark
-var currentMark = 'a';
 
 // get the data from the API
 jQuery(function() {
 	// load defaults
 	getDefaults(getUrl, defaultRequest, defaultKey);
-	bookmark();
+	appFeatures();
+	setTextSize();
 		
 });
 // Load this after page is fully loaded
@@ -217,67 +216,35 @@ function loadFoundChapter(call, setGlobal){
 	if(appMode == 2){
 		gotoTop();
 	}
-}
+}	
 
+	/*******************************************\
+	*		Load App Page features Here			*
+	\*******************************************/
+	
 jQuery(document).ready(function() {
-		
+	// first page load	
 	jQuery('.verse').hover(function() {
 			jQuery(this).addClass('hoverStyle');
 		}, function() {
 			jQuery(this).removeClass('hoverStyle');
 		}
 	);
-	
 	jQuery('.verse').click(function() {
 		setBookmark(this);
 	});
 	
-	
 });
-// set the bookmark color
-function setCurrentColor(mark){
-	currentMark = mark;
-}
-// set the bookmarks object
-function setBookmark(e) {
-	// get bookmarks
-	var bookMarksStore = jQuery.jStorage.get('bookmarks');
-	if(!bookMarksStore){
-		var bookMarksStore = {};
-	}
-	var id 	= jQuery(e).attr("id");
-	var add = true;
-	jQuery(bookmarksArray).each(function(index, mark) {
-		// remove the class and unset values
-		jQuery('#'+id+' span').removeClass('highlight');
-		if(jQuery('#'+id).hasClass('bookmark_'+mark)){
-			jQuery('#'+id).removeClass('bookmark_'+mark);
-			delete bookMarksStore[id];
-			if('bookmark_'+mark == 'bookmark_'+currentMark){
-				add = false;
-			}
-		}
-	});
-	if (add){
-		// add the class and set the values
-		bookMarksStore[id] = currentMark;
-		jQuery('#'+id).addClass('bookmark_'+currentMark);
-	}
-	
-	//save bookmarks
-	jQuery.jStorage.set('bookmarks',bookMarksStore);
-}
 
-// script to have bookmark selection
-function bookmark(){
-		
+// script to set all app apge features
+function appFeatures(){
+	// for other ajax pages
 	jQuery('.verse').hover(function() {
 			jQuery(this).addClass('hoverStyle');
 		}, function() {
 			jQuery(this).removeClass('hoverStyle');
 		}
 	);
-	
 	jQuery('.verse').click(function() {
 		setBookmark(this);
 	});
@@ -291,10 +258,87 @@ function bookmark(){
 			}
 		});
 	}
-	
+	// ensure that text gets resized
+	setTextSize();
 	//save bookmarks
 	jQuery.jStorage.set('bookmarks',bookMarks);
 	
+}
+
+// get selected text
+function getSelectionText() {
+    var text = "";
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        text = document.selection.createRange().text;
+    }
+    return text;
+}
+// set the bookmark color
+function setCurrentColor(mark){
+	//save current bookmark
+	jQuery.jStorage.set('currentMark',mark);
+}
+// set the text size
+function setCurrentTextSize(size){
+	//get current size
+	var was = jQuery.jStorage.get('TextSize', 'medium');
+	//save new current size
+	jQuery.jStorage.set('TextSize',size);
+	// update text
+	setTextSize(was,size);
+}
+function setTextSize(wasSize,newSize){
+	if(!newSize){
+		var newSize = jQuery.jStorage.get('TextSize', 'medium');
+	}
+	// set new class size
+	jQuery(".verse").addClass('verse_'+newSize);
+	jQuery(".verse_nr").addClass('nr_'+newSize);
+	if(wasSize){
+		if(newSize !== wasSize){
+			// remove last class size
+			jQuery(".verse").removeClass('verse_'+wasSize);
+			jQuery(".verse_nr").removeClass('nr_'+wasSize);
+		}
+	}
+	
+}
+// set the bookmarks object
+function setBookmark(e) {
+	// get default current bookmark
+	var markIt = jQuery.jStorage.get('markit', 1);
+	if(markIt == 1){
+		// get default current bookmark
+		var currentMark = jQuery.jStorage.get('currentMark', 'a');
+		// get bookmarks
+		var bookMarksStore = jQuery.jStorage.get('bookmarks');
+		if(!bookMarksStore){
+			var bookMarksStore = {};
+		}
+		var id 	= jQuery(e).attr("id");
+		var add = true;
+		jQuery(bookmarksArray).each(function(index, mark) {
+			// remove the class and unset values
+			jQuery('#'+id+' span').removeClass('highlight');
+			if(jQuery('#'+id).hasClass('bookmark_'+mark)){
+				jQuery('#'+id).removeClass('bookmark_'+mark);
+				delete bookMarksStore[id];
+				if('bookmark_'+mark == 'bookmark_'+currentMark){
+					add = false;
+				}
+			}
+		});
+		if (add){
+			// add the class and set the values
+			bookMarksStore[id] = currentMark;
+			jQuery('#'+id).addClass('bookmark_'+currentMark);
+		}
+		
+		//save bookmarks
+		jQuery.jStorage.set('bookmarks',bookMarksStore);
+	}
 }
 
 // load the next book
@@ -532,6 +576,7 @@ function getDefaults(getUrl, request, requestStore) {
 		 BIBLE_VERSION 		= jsonStore.version;		
 		 defaultVersion 	= jsonStore.version;
 		 defaultVers		= jsonStore.vers;
+
 		 defaultBook 		= jsonStore.book_ref;
 		 defaultBookNr 		= jsonStore.book_nr;
 		 defaultChapter 	= jsonStore.chapter;
@@ -567,9 +612,9 @@ function getDefaults(getUrl, request, requestStore) {
 function setVerses(json,direction,addTo){
 	var output = '';
 		jQuery.each(json.book, function(index, value) {
-			output += '<div><center><b>'+value.book_name+'&#160;'+value.chapter_nr+'</b></center></div><p class=\"'+direction+'\">';
+			output += '<p class="uk-text-center uk-text-bold">'+value.book_name+'&#160;'+value.chapter_nr+'</p><p class=\"'+direction+'\">';
 			jQuery.each(value.chapter, function(index, value) {
-				output += '&#160;&#160;<small class="verse_nr ltr">' +value.verse_nr+ '</small>&#160;&#160;<span class="verse" id="'+value.book_nr+'_'+value.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '</span>&#160;&#160;<span class="verse" id="'+value.book_nr+'_'+value.chapter_nr+'_' +value.verse_nr+ '">';
 
 				output += value.verse;
 				if(verselineMode == 2){
@@ -585,20 +630,21 @@ function setVerses(json,direction,addTo){
 		} else {
 			jQuery('#scripture').html(output);  // <---- this is the div id we update
 		}
-		bookmark();
+		appFeatures();
 		jQuery('#scripture').removeClass('text_loading');
 }
 
 // Set Chapter
 function setChapter(json,direction,addTo){
 	listVers = getVerses();
-	var output = '<div><center><b>'+json.book_name+'&#160;'+json.chapter_nr+'</b></center></div><p class="'+direction+'">';
+	jQuery("#books option:selected").text(json.book_name+' '+json.chapter_nr);
+	var output = '<p class="'+direction+'">';
 	jQuery.each(json.chapter, function(index, value) {
 		if(isInArray(value.verse_nr, listVers)){
-			output += '&#160;&#160;<small class="verse_nr ltr">' +value.verse_nr+ '</small>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+			output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '</span>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 			output += '<span class="highlight">' +value.verse+ '</span>';
 		} else {
-			output += '&#160;&#160;<small class="verse_nr ltr">' +value.verse_nr+ '</small>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+			output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '</span>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 			output += value.verse;
 		}
 		if(verselineMode == 2){
@@ -613,7 +659,7 @@ function setChapter(json,direction,addTo){
 	} else {
 		jQuery('#scripture').html(output);  // <---- this is the div id we update
 	}
-	bookmark();
+	appFeatures();
 	jQuery('#scripture').removeClass('text_loading');
 }
 
@@ -621,9 +667,9 @@ function setChapter(json,direction,addTo){
 function setBook(json,direction,addTo){
 	var output = '';
 	jQuery.each(json.book, function(index, value) {
-		output += '<div><center><b>'+json.book_name+'&#160;'+value.chapter_nr+'</b></center></div><p class="'+direction+'">';
+		output += '<p class="uk-text-center uk-text-bold">'+json.book_name+'&#160;'+value.chapter_nr+'</p><p class="'+direction+'">';
 		jQuery.each(value.chapter, function(index, value) {
-			output += '&#160;&#160;<small class="verse_nr ltr">' +value.verse_nr+ '</small>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+value.chapter_nr+'_' +value.verse_nr+ '">';
+			output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '</span>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+value.chapter_nr+'_' +value.verse_nr+ '">';
 			output += value.verse;
 			if(verselineMode == 2){
 				output += '</span>&#160;';
@@ -638,7 +684,7 @@ function setBook(json,direction,addTo){
 	} else {
 		jQuery('#scripture').html(output);  // <---- this is the div id we update
 	}
-	bookmark();
+	appFeatures();
 	jQuery('#scripture').removeClass('text_loading');
 }
 
@@ -649,11 +695,11 @@ function setSearch(json,direction){
 		var book_ref 	= value.book_ref.replace(/\s+/g, '');
 		var setCall 	= 'p='+book_ref+value.chapter_nr+"&v="+BIBLE_VERSION;
 		var setGlobal 	= book_ref+'__'+value.book_nr+'__'+value.chapter_nr+'__'+BIBLE_VERSION;
-		output += '<center><b><a href="javascript:void(0)" onclick="loadFoundChapter(\''+setCall+'\',\''+setGlobal+'\')">'+value.book_name+'&#160;'+value.chapter_nr+'</a></b></center><br/><p class="'+direction+'">';
-		jQuery.each(value.chapter, function(index, value) {
-			output += '&#160;&#160;<small class="ltr">' +value.verse_nr+ '</small>&#160;&#160;';
-			output += value.verse;
-			output += '<br/>';
+		output += '<p class="uk-text-center uk-text-bold"><a href="javascript:void(0)" onclick="loadFoundChapter(\''+setCall+'\',\''+setGlobal+'\')">'+value.book_name+'&#160;'+value.chapter_nr+'</a></p><p class="'+direction+'">';
+		jQuery.each(value.chapter, function(index, chapter) {
+			output += '&#160;&#160;<span class="verse_nr ltr">' +chapter.verse_nr+ '</span>&#160;&#160;<span class="verse" id="'+value.book_nr+'_'+value.chapter_nr+'_' +chapter.verse_nr+ '">';
+			output += chapter.verse;
+			output += '</span><br/>';
 		});
 		output += '</p>';
 	});
@@ -662,6 +708,7 @@ function setSearch(json,direction){
 	if(highlightOption == 1){
 		highScripture();							
 	}
+	appFeatures();
 	jQuery('#scripture').removeClass('text_loading');
 }
 

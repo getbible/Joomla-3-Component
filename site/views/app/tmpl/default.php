@@ -68,7 +68,7 @@ $versions = $this->cpanel;
 <?php endif; ?>
     
 <?php if($this->params->get('highlight_option') == 2): ?>
-		<a class="uk-button" onClick="highScripture()" href="#highlight"><?php echo JText::_('Highlight'); ?></a>
+		<a class="uk-button" onClick="highScripture()" href="javascript:void(0)"><?php echo JText::_('Highlight'); ?></a>
    	</fieldset>
 </form>
 <?php else: ?>
@@ -76,19 +76,41 @@ $versions = $this->cpanel;
 </form>
 <?php endif ?>
 </div>
-<div id="cPanel">
+
 <?php if($this->params->get('toolbar') == 2): ?>
-<div data-uk-sticky="" style="background:#fff;" >
+<div id="cPanel" data-uk-sticky="" style="background:#fff;" >
+<?php else: ?>
+<div id="cPanel">
 <?php endif; ?>
 	<?php if($this->params->get('search_display') == 1): ?>
-    <form class="uk-form">
+    <form class="uk-form uk-display-block">
         <fieldset data-uk-margin="">
             <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+            <div class="uk-button-dropdown" data-uk-dropdown="">
+                <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
+				<div class="uk-dropdown uk-dropdown-small">
+					<ul class="uk-nav uk-nav-dropdown">
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('small')">Small</a></li>
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('medium')">Medium</a></li>
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('large')">Large</a></li>
+                    </ul>
+                </div>
+            </div>
             <button class="uk-button submit_search" data-uk-offcanvas="{target:'#search_scripture'}"><i class="uk-icon-search"></i> <?php echo $this->params->get('search_button'); ?></button>
     <?php elseif($this->params->get('search_display') == 2):?>
-    <form class="uk-form uk-search" id="search_form" method="post">
+    <form class="uk-form uk-search uk-display-block" id="search_form" method="post">
         <fieldset data-uk-margin="">
             <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+            <div class="uk-button-dropdown" data-uk-dropdown="">
+                <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
+				<div class="uk-dropdown uk-dropdown-small">
+					<ul class="uk-nav uk-nav-dropdown">
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('small')">Small</a></li>
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('medium')">Medium</a></li>
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('large')">Large</a></li>
+                    </ul>
+                </div>
+            </div>
             <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
             <input type="submit" style="display:none;" >
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
@@ -97,9 +119,19 @@ $versions = $this->cpanel;
             <input class="uk-hidden search_version" type="hidden" name="search_version" value="<?php echo $this->params->get('version'); ?>">
             <input class="uk-hidden search_app" type="hidden" name="search_app" value="1">
     <?php elseif($this->params->get('search_display') == 3):?>
-    <form class="uk-form uk-search" id="search_form" method="post">
+    <form class="uk-form uk-search uk-display-block" id="search_form" method="post">
         <fieldset data-uk-margin="">
             <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+            <div class="uk-button-dropdown" data-uk-dropdown="">
+                <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
+				<div class="uk-dropdown uk-dropdown-small">
+					<ul class="uk-nav uk-nav-dropdown">
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('small')">Small</a></li>
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('medium')">Medium</a></li>
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('large')">Large</a></li>
+                    </ul>
+                </div>
+            </div>
             <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
             <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>">
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
@@ -108,9 +140,19 @@ $versions = $this->cpanel;
             <input class="uk-hidden search_version" type="hidden" name="search_version" value="<?php echo $this->params->get('version'); ?>">
             <input class="uk-hidden search_app" type="hidden" name="search_app" value="1"> 
     <?php elseif($this->params->get('search_display') == 4):?>
-    <form class="uk-form uk-search" id="search_form" method="post">
+    <form class="uk-form uk-search uk-display-block" id="search_form" method="post">
         <fieldset data-uk-margin="">
             <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+            <div class="uk-button-dropdown" data-uk-dropdown="">
+                <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
+				<div class="uk-dropdown uk-dropdown-small">
+					<ul class="uk-nav uk-nav-dropdown">
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('small')">Small</a></li>
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('medium')">Medium</a></li>
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('large')">Large</a></li>
+                    </ul>
+                </div>
+            </div>
             <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
             <input class="uk-button submit_search" type="submit"  value="<?php echo $this->params->get('search_button'); ?>">
             <?php if($this->params->get('search_options') == 1): ?>
@@ -122,9 +164,19 @@ $versions = $this->cpanel;
             <input class="uk-hidden search_version" type="hidden" name="search_version" value="<?php echo $this->params->get('version'); ?>">
             <input class="uk-hidden search_app" type="hidden" name="search_app" value="1"> 
     <?php elseif($this->params->get('search_display') == 5):?>
-    <form class="uk-form uk-search" id="search_form" method="post">
+    <form class="uk-form uk-search uk-display-block" id="search_form" method="post">
         <fieldset data-uk-margin="">
             <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+            <div class="uk-button-dropdown" data-uk-dropdown="">
+                <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
+				<div class="uk-dropdown uk-dropdown-small">
+					<ul class="uk-nav uk-nav-dropdown">
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('small')">Small</a></li>
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('medium')">Medium</a></li>
+                        <li><a href="javascript:void(0)" onClick="setCurrentTextSize('large')">Large</a></li>
+                    </ul>
+                </div>
+            </div>
             <input class="search_field uk-search-field" type="input" name="search" placeholder="<?php echo $this->params->get('search_phrase'); ?>">
             <input type="submit" style="display:none;" >
             <?php if($this->params->get('search_options') == 1): ?>
@@ -154,19 +206,14 @@ $versions = $this->cpanel;
             <button class="uk-button button" type="button" style="display:none;" onClick="showChapters()"><i class="uk-icon-list-ol"></i> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></button>
         </fieldset>
     </form>
-<?php if($this->params->get('toolbar') == 2): ?>
 </div>
-<?php endif; ?>
-</div>
-<br/>
-
 <div id="t_loader" style="text-align:center;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div>
 
-<div id="getbible" style="display:none;" class="uk-margin-remove">
+<div id="getbible" style="display:none;">
 
     <div id="chapters" style="display:none;"></div>
     
-    <div id="scripture" class="uk-margin-remove"></div>
+    <div id="scripture" class="uk-margin-remove uk-display-block"></div>
 	<?php if($this->params->get('app_mode') == 2): ?>
 		<?php if($this->params->get('up_button') == 1): ?>
             <button id="button_top" class="uk-button uk-button-primary" type="button" style="display:none; position: fixed; bottom: 0px; z-index: 3;" onClick="gotoTop()"><?php echo JText::_('COM_GETBIBLE_GO_TOP'); ?> <i class="uk-icon-arrow-up"></i></button>
@@ -220,7 +267,7 @@ $versions = $this->cpanel;
         </div>
         <div class="uk-visible-small" data-uk-margin>
         	<?php foreach($this->bookmarks as $mark => $details): ?>
-            	<a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-mini uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
+            	<a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-small uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
 					<?php echo $details['name']; ?>&nbsp;&nbsp;&nbsp;
                     <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>;">
                     	&nbsp;<i class="uk-icon-pencil"></i>&nbsp;Text&nbsp;&nbsp;

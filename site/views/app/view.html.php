@@ -114,10 +114,15 @@ class GetbibleViewApp extends JViewLegacy
 			$padding = '';
 		}
 		// verses style
-		$versStyles = '	.verse { cursor: pointer; font-size: '.$this->params->get('font_medium').'px; line-height: '. (8 + $this->params->get('font_medium')).'px;} 
-						.font_small { font-size: '.$this->params->get('font_small').'px; line-height: '. (7 + $this->params->get('font_small')).'px;} 
-						.font_medium { font-size: '.$this->params->get('font_medium').'px; line-height: '. (8 + $this->params->get('font_medium')).'px;}
-						.font_large { font-size: '.$this->params->get('font_large').'px; line-height: '. (9 + $this->params->get('font_large')).'px;}';
+		$versStyles = '	#scripture .verse { cursor: pointer; }
+						/* verse sizes */ 
+						#scripture .verse_small { font-size: '.$this->params->get('font_small').'px; line-height: 1.5;} 
+						#scripture .verse_medium { font-size: '.$this->params->get('font_medium').'px; line-height: 1.5;}
+						#scripture .verse_large { font-size: '.$this->params->get('font_large').'px; line-height: 1.5;}
+						/* verse nr sizes */ 
+						#scripture .nr_small { font-size: '. ($this->params->get('font_small') - 3).'px; line-height: 1.5;} 
+						#scripture .nr_medium { font-size: '. ($this->params->get('font_medium') - 4).'px; line-height: 1.5;}
+						#scripture .nr_large { font-size: '. ($this->params->get('font_large') - 5).'px; line-height: 1.5;}';
 		$this->document->addStyleDeclaration( $versStyles );
 		// search highlight style
 		$searchStyles = '.highlight { color: '.$this->params->get('highlight_textcolor').'; border-bottom: 1px '.$this->params->get('highlight_linetype').' '.$this->params->get('highlight_linecolor').'; background-color: '.$this->params->get('highlight_background').'; '. $padding .' }';
