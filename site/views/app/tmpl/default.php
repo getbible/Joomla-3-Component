@@ -154,18 +154,17 @@ $versions = $this->cpanel;
                 <button class="uk-button submit_search" type="submit" ><i class="uk-icon-search"></i><span class="uk-hidden-small"> <?php echo $this->params->get('search_button'); ?></span></button>
                 <button class="uk-button" type="button" onClick="showSmallCpanel()"><i class="uk-icon-book"></i><span class="uk-hidden-small"> <span class="booksMenu"></span></span></button>
                 <button class="uk-button button_chapters" type="button" style="display:none;" onClick="showChapters()"><i class="uk-icon-list-ol"></i><span class="uk-hidden-small"> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></span></button>
-                    <div class="uk-button-dropdown" data-uk-dropdown="">
-                        <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
-                        <div class="uk-dropdown uk-dropdown-small">
-                            <ul class="uk-nav uk-nav-dropdown">
-                                <li><a href="javascript:void(0)" onClick="setCurrentTextSize('small')">Small</a></li>
-                                <li><a href="javascript:void(0)" onClick="setCurrentTextSize('medium')">Medium</a></li>
-                                <li><a href="javascript:void(0)" onClick="setCurrentTextSize('large')">Large</a></li>
-                            </ul>
-                        </div>
+                <div class="uk-button-dropdown" data-uk-dropdown="">
+                    <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
+                    <div class="uk-dropdown uk-dropdown-small">
+                        <ul class="uk-nav uk-nav-dropdown">
+                            <li><a href="javascript:void(0)" onClick="setCurrentTextSize('small')">Small</a></li>
+                            <li><a href="javascript:void(0)" onClick="setCurrentTextSize('medium')">Medium</a></li>
+                            <li><a href="javascript:void(0)" onClick="setCurrentTextSize('large')">Large</a></li>
+                        </ul>
                     </div>
-                    <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
                 </div>
+                <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
             </div>
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
             value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
