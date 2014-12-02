@@ -41,7 +41,7 @@ jQuery(window).bind("load", function() {
 	//jQuery('#t_loader').hide();
 	jQuery('#getbible').show();
 	if(searchApp != 1){
-		jQuery('.button').show();
+		jQuery('.button_chapters').show();
 		if(autoLoadChapter === 1){
 			loadTimer1();
 		}
@@ -54,14 +54,14 @@ jQuery(document).ready(function() {
 	
 	var preSB;
 
-	jQuery('#books').focus(function () {
+	jQuery('.books').focus(function () {
 		// Store the current value on focus, before it changes
 		preSB = this.value;
 		}).change(function() {
 			var newSB = this.value;
 			jQuery('#t_loader').show();
 			jQuery('#chapters').slideUp( "slow" );
-			jQuery('.button').hide();
+			// jQuery('.button_chapters').hide();
 			jQuery('#chapters').html('');
 			getDataCh(newSB);
 			jQuery('#chapters').slideDown( "slow" );
@@ -71,16 +71,16 @@ jQuery(document).ready(function() {
 	var preSV;
 	var activePassage;
 	
-	jQuery('#versions').focus(function () {
+	jQuery('.versions').focus(function () {
 		// Store the current value on focus, before it changes
 		preSV 			= this.value;
 		}).change(function() {
-			activePassage 	= jQuery("#books option:selected").val();
+			activePassage 	= jQuery(".books option:selected").val();
 			var newSV = this.value;
-			jQuery('#books').hide();
-			jQuery('.button').hide();
+			jQuery('.books').hide();
+			// jQuery('.button_chapters').hide();
 			jQuery('#chapters').hide();
-			jQuery('#books').empty();
+			jQuery('.books').empty();
 			getDataBo(newSV, activePassage, 1);
 			jQuery('.search_version').val(newSV);
 			// update global version
@@ -200,12 +200,12 @@ function loadFoundChapter(call, setGlobal){
 	BIBLE_CHAPTER 		= result[2];
 	BIBLE_LAST_CHAPTER 	= --result[2];
 	BIBLE_VERSION		= result[3];
-	jQuery('.button').show();
+	jQuery('.button_chapters').show();
 	getDataBo(BIBLE_VERSION,BIBLE_VERSION+'__'+BIBLE_BOOK_NR+'__'+BIBLE_BOOK);
 	getDataCh(BIBLE_VERSION+'__'+BIBLE_BOOK_NR+'__'+BIBLE_BOOK);
 	jQuery('.searchbuttons').hide();
 	jQuery('#button_top').hide();
-	jQuery('#versions').val(BIBLE_VERSION);
+	jQuery('.versions').val(BIBLE_VERSION);
 	jQuery('#cPanel').show();
 	// set the search book ref
 	jQuery('.search_book').val(BIBLE_BOOK);
@@ -346,7 +346,7 @@ function loadNextBook(addTo,Found){
 	
 	//  Call to get scripture
 	var bookNow = false;
-	jQuery("#books option").each(function(){
+	jQuery(".books option").each(function(){
 		option = this.value;
 		var check = option.split('__');
 		if(check[2] == BIBLE_BOOK){
@@ -363,7 +363,7 @@ function loadNextBook(addTo,Found){
 			jQuery('#scripture').removeClass('text_loading');
 		} else {
 			BIBLE_BOOK_NR 		= ++bookNowArray[1];
-			jQuery("#books option").each(function(){
+			jQuery(".books option").each(function(){
 				option = this.value;
 				var check = option.split('__');
 				if(check[1] == BIBLE_BOOK_NR){
@@ -385,8 +385,8 @@ function loadNextBook(addTo,Found){
 			BIBLE_LAST_CHAPTER 	= 0;
 			getDataBo(BIBLE_VERSION,BIBLE_VERSION+'__'+BIBLE_BOOK_NR+'__'+BIBLE_BOOK);
 			getDataCh(BIBLE_VERSION+'__'+BIBLE_BOOK_NR+'__'+BIBLE_BOOK);
-			jQuery('#versions').val(BIBLE_VERSION);
-			jQuery("#books").val(bookNew);
+			jQuery('.versions').val(BIBLE_VERSION);
+			jQuery(".books").val(bookNew);
 			jQuery('.search_book').val(BIBLE_BOOK);
 			// set the search book ref
 			jQuery('#prev').hide();
@@ -637,7 +637,8 @@ function setVerses(json,direction,addTo){
 // Set Chapter
 function setChapter(json,direction,addTo){
 	listVers = getVerses();
-	jQuery("#books option:selected").text(json.book_name+' '+json.chapter_nr);
+	jQuery(".booksMenu").text(json.book_name+' '+json.chapter_nr+' ('+json.version+')');
+	jQuery(".books :selected").text(json.book_name+' '+json.chapter_nr);
 	var output = '<p class="'+direction+'">';
 	jQuery.each(json.chapter, function(index, value) {
 		if(isInArray(value.verse_nr, listVers)){
@@ -690,6 +691,7 @@ function setBook(json,direction,addTo){
 
 // Set Search
 function setSearch(json,direction){
+
 	var output = '<small>('+json.counter+')</small><br/>';
 	jQuery.each(json.book, function(index, value) {
 		var book_ref 	= value.book_ref.replace(/\s+/g, '');
@@ -824,8 +826,8 @@ function getDataCh(call) {
 
 // Ajax Call to get Books
 function getDataBo(version, first, versionChange) {
-	jQuery('#books').hide();
-	jQuery('#f_loader').show();
+	jQuery('.books').hide();
+	jQuery('.f_loader').show();
 	if (typeof cPanelUrl !== 'undefined') {
 		getUrl = cPanelUrl+"index.php?option=com_getbible&task=bible.books&format=json";     	
 	} else {
@@ -870,32 +872,32 @@ function getDataBo(version, first, versionChange) {
 			var op = new Option('- Select Book -', '');
 			/// jquerify the DOM object 'o' so we can use the html method
 			jQuery(op).html('- Select Book -');
-			jQuery('#books').append(op);
+			jQuery('.books').append(op);
 			jQuery.each(json, function() {
 				str = this.ref.replace(/\s+/g, '');
 				$value = version+'__'+this.book_nr+'__'+str;
 				var op = new Option(this.book_name, $value);
 				/// jquerify the DOM object 'o' so we can use the html method
 				jQuery(op).html(this.book_name);
-				jQuery('#books').append(op);
+				jQuery('.books').append(op);
 			});
 			if(first){
 				if(versionChange == 1){
 					var active = first.split('__');
 					var option = '';
 					var loadthis = '';
-					jQuery("#books option").each(function(){
+					jQuery(".books option").each(function(){
 						option = this.value;
 						var check = option.split('__');
 						if(check[1] == active[1]){
-							 jQuery("#books").val(option);
+							 jQuery(".books").val(option);
 							 loadthis = option;
 							 breakOut = true;
 							 return false;
 						}
 					});
 					if(loadthis && breakOut){
-						jQuery('#books').val(loadthis);
+						jQuery('.books').val(loadthis);
 						var builder 	= loadthis.split('__');
 						var calling 	= 'p='+builder[2]+BIBLE_CHAPTER+'&v='+builder[0];
 						var globalSet 	= builder[2]+'__'+BIBLE_CHAPTER+'__'+builder[0];
@@ -903,46 +905,46 @@ function getDataBo(version, first, versionChange) {
 						getScripture(calling,globalSet);
 					}
 				} else {
-					jQuery('#books').val(first);
+					jQuery('.books').val(first);
 				}
 			}
-			jQuery('#f_loader').hide();
-			jQuery('#books').show();
+			jQuery('.f_loader').hide();
+			jQuery('.books').show();
 		 },
 		 error:function(){
-				jQuery('#books').append('error');
+				jQuery('.books').append('error');
 			 },
 		});
 	} else {
 		var op = new Option('- Select Book -', '');
 		// jquerify the DOM object 'o' so we can use the html method
 		jQuery(op).html('- Select Book -');
-		jQuery('#books').append(op);
+		jQuery('.books').append(op);
 		jQuery.each(jsonStore, function() {
 			str = this.ref.replace(/\s+/g, '');
 			$value = version+'__'+this.book_nr+'__'+str;
 			var op = new Option(this.book_name, $value);
 			/// jquerify the DOM object 'o' so we can use the html method
 			jQuery(op).html(this.book_name);
-			jQuery('#books').append(op);
+			jQuery('.books').append(op);
 		});
 		if(first){
 			if(versionChange == 1){
 				var active = first.split('__');
 				var option = '';
 				var loadthis = '';
-				jQuery("#books option").each(function(){
+				jQuery(".books option").each(function(){
 					option = this.value;
 					var check = option.split('__');
 					if(check[1] == active[1]){
-						 jQuery("#books").val(option);
+						 jQuery(".books").val(option);
 						 loadthis = option;
 						 breakOut = true;
 						 return false;
 					}
 				});
 				if(loadthis && breakOut){
-					jQuery('#books').val(loadthis);
+					jQuery('.books').val(loadthis);
 					var builder 	= loadthis.split('__');
 					var calling 	= 'p='+builder[2]+BIBLE_CHAPTER+'&v='+builder[0];
 					var globalSet 	= builder[2]+'__'+BIBLE_CHAPTER+'__'+builder[0];
@@ -950,24 +952,27 @@ function getDataBo(version, first, versionChange) {
 					getScripture(calling,globalSet);
 				}
 			} else {
-				jQuery('#books').val(first);
+				jQuery('.books').val(first);
 			}
 		}
-		jQuery('#f_loader').hide();
-		jQuery('#books').show();
+		jQuery('.f_loader').hide();
+		jQuery('.books').show();
 	}
 }
 // scroll to top function
 function gotoTop(){
 	jQuery("html, body").animate({ scrollTop: 0 }, "slow");
 }
+// show small cpanel
+function showSmallCpanel(){
+	jQuery('#small_cpanel').slideToggle( "slow" );
+	gotoTop();
+}
 // show chapter selection
-function showChapters(slideup) {
-	jQuery('.button').hide();
-	jQuery('#chapters').slideDown( "slow" );
-	if(slideup){
-		gotoTop();
-	}
+function showChapters() {
+	// jQuery('.button_chapters').hide();
+	jQuery('#chapters').slideToggle( "slow" );
+	gotoTop();
 }
 //  Call to get scripture
 function getScripture(call,setGlobal) {
@@ -979,7 +984,7 @@ function getScripture(call,setGlobal) {
 	BIBLE_VERSION		= result[2];
 	getData(call);
 	jQuery('#chapters').slideUp( "slow" );
-	jQuery('.button').show();
+	jQuery('.button_chapters').show();
 	gotoTop();
 	if(BIBLE_LAST_CHAPTER < 1){
 		jQuery('#prev').hide();
