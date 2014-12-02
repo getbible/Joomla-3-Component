@@ -665,72 +665,7 @@
 		name="search"
 		label="COM_GETBIBLE_CONFIG_SEARCH_FIELDSET_LABEL"
 		description="COM_GETBIBLE_CONFIG_SEARCH_FIELDSET_DESC">
-
-		<field name="highlight_textcolor" type="color" default="#515456"
-        label="COM_GETBIBLE_CONFIG_HIGHLIGHT_TEXTCOLOR_LABEL"
-        description="COM_GETBIBLE_CONFIG_HIGHLIGHT_TEXTCOLOR_DESC" />
 		
-		<field name="highlight_background" type="color" default="#fff"
-        label="COM_GETBIBLE_CONFIG_HIGHLIGHT_BACKGROUND_LABEL"
-        description="COM_GETBIBLE_CONFIG_HIGHLIGHT_BACKGROUND_DESC" />
-		
-		<field name="highlight_linecolor" type="color" default="#FF0000"
-        label="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINECOLOR_LABEL"
-        description="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINECOLOR_DESC" />
-		
-		<field name="highlight_linetype"
-			type="radio"
-			class="btn-group"
-			default="dashed"
-			label="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINETYPE_LABEL"
-        	description="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINETYPE_DESC">
-			<option
-				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
-			<option
-				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
-			<option
-				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
-			<option
-				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
-		</field>
-		
-		<field name="highlight_padding"
-			type="radio"
-			class="btn-group btn-group-yesno"
-			default="1"
-			label="COM_GETBIBLE_CONFIG_HIGHLIGHT_PADDING_LABEL"
-        	description="COM_GETBIBLE_CONFIG_HIGHLIGHT_PADDINGE_DESC">
-			<option
-				value="1">COM_GETBIBLE_CONFIG_YES</option>
-			<option
-				value="0">COM_GETBIBLE_CONFIG_NO</option>
-		</field>
-		<field
-			name="highlight_option"
-			type="radio" class="btn-group"
-			default="1"
-			label="COM_GETBIBLE_HIGHLIGHTS_DEFAULTS_LABEL"
-			description="COM_GETBIBLE_HIGHLIGHTS_DEFAULTS_DESC">
-			<option
-				value="1">COM_GETBIBLE_AUTO_HIGHLIGHTS</option>
-			<option
-				value="2">COM_GETBIBLE_BUTTON_HIGHLIGHTS</option>
-			<option
-				value="3">COM_GETBIBLE_NONE_HIGHLIGHTS</option>
-		</field>
-		<field
-			name="up_button"
-			type="radio" class="btn-group"
-			default="1"
-			label="COM_GETBIBLE_UP_BUTTON_DEFAULTS_LABEL"
-			description="COM_GETBIBLE_UP_BUTTON_DEFAULTS_DESC">
-			<option
-				value="1">COM_GETBIBLE_UP_FIXED</option>
-			<option
-				value="2">COM_GETBIBLE_UP_BOTTOM</option>
-			<option
-				value="3">COM_GETBIBLE_UP_NONE</option>
-		</field>
 		<field
 			name="search_display"
 			type="list"
@@ -771,6 +706,79 @@
 			label="COM_GETBIBLE_SEARCH_PHRASE_LABEL" 
 			description="COM_GETBIBLE_SEARCH_PHRASE_DESC" 
 		/>
+		
+		<field
+			name="up_button"
+			type="radio" class="btn-group"
+			default="1"
+			label="COM_GETBIBLE_UP_BUTTON_DEFAULTS_LABEL"
+			description="COM_GETBIBLE_UP_BUTTON_DEFAULTS_DESC">
+			<option
+				value="1">COM_GETBIBLE_UP_FIXED</option>
+			<option
+				value="2">COM_GETBIBLE_UP_BOTTOM</option>
+			<option
+				value="3">COM_GETBIBLE_UP_NONE</option>
+		</field>
+		
+		<field type="spacer" name="search_a_spacer" hr="true" />
+		
+		<field
+			name="highlight_option"
+			type="radio" class="btn-group"
+			default="1"
+			label="COM_GETBIBLE_HIGHLIGHTS_DEFAULTS_LABEL"
+			description="COM_GETBIBLE_HIGHLIGHTS_DEFAULTS_DESC">
+			<option
+				value="1">COM_GETBIBLE_AUTO_HIGHLIGHTS</option>
+			<option
+				value="2">COM_GETBIBLE_BUTTON_HIGHLIGHTS</option>
+			<option
+				value="3">COM_GETBIBLE_NONE_HIGHLIGHTS</option>
+		</field>
+		
+		<field name="highlight_textcolor" type="color" default="#515456"
+        label="COM_GETBIBLE_CONFIG_HIGHLIGHT_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_HIGHLIGHT_TEXTCOLOR_DESC" />
+		
+		<field name="highlight_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_HIGHLIGHT_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_HIGHLIGHT_BACKGROUND_DESC" />
+		
+		<field name="highlight_linecolor" type="color" default="#FF0000"
+        label="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINECOLOR_DESC" />
+		
+		<field name="highlight_linetype"
+			type="radio"
+			class="btn-group"
+			default="dashed"
+			label="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_HIGHLIGHT_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field name="highlight_padding"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="1"
+			label="COM_GETBIBLE_CONFIG_HIGHLIGHT_PADDING_LABEL"
+        	description="COM_GETBIBLE_CONFIG_HIGHLIGHT_PADDINGE_DESC">
+			<option
+				value="1">COM_GETBIBLE_CONFIG_YES</option>
+			<option
+				value="0">COM_GETBIBLE_CONFIG_NO</option>
+		</field>
+		
+		<field type="spacer" name="search_b_spacer" hr="true" />
+		
 		<field
 			name="search_options"
 			type="radio" class="btn-group btn-group-yesno"

@@ -249,7 +249,41 @@ $versions = $this->cpanel;
             <input class="uk-hidden search_app" type="hidden" name="search_app" value="1">
         </fieldset>
     </form>
-    <?php endif; ?>
+    <?php else : ?>
+    <form class="uk-form uk-display-block">
+        <fieldset data-uk-margin="">
+            <div class="uk-button-group">
+                <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+                <div class="uk-button-dropdown" data-uk-dropdown="">
+                    <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
+                    <div class="uk-dropdown uk-dropdown-small">
+                        <ul class="uk-nav uk-nav-dropdown">
+                            <li><a href="javascript:void(0)" onClick="setCurrentTextSize('small')">Small</a></li>
+                            <li><a href="javascript:void(0)" onClick="setCurrentTextSize('medium')">Medium</a></li>
+                            <li><a href="javascript:void(0)" onClick="setCurrentTextSize('large')">Large</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <select class="versions" class="uk-margin-small-top">
+            <option value=""><?php echo JText::_('COM_GETBIBLE_SELECT_VERSION'); ?></option>
+                <?php foreach($versions as $key => $version): ?>
+                    <?php if($key == $this->AppDefaults['version']) :?>
+                    <option value="<?php echo $key; ?>" selected="selected">(<?php echo $version->language; ?>) <?php echo $version->version_name; ?></option>
+                    <?php else: ?>
+                    <option value="<?php echo $key; ?>" >(<?php echo $version->language; ?>) <?php echo $version->version_name; ?></option>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </select>
+            <select class="f_loader" class="uk-margin-small-top"  style="display:none;">
+                <option value="" selected="selected"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></option>
+            </select>
+            <select class="books" class="uk-margin-small-top"  style="display:none;">
+            </select>
+            <button class="uk-button button_chapters" type="button" style="display:none;" onClick="showChapters()"><i class="uk-icon-list-ol"></i><span class="uk-hidden-small"> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></span></button>        
+        </fieldset>
+    </form>
+	<?php endif; ?>
 </div>
 <?php if($this->params->get('search_display') == 1 || $this->params->get('search_display') == 3 || $this->params->get('search_display') == 4): ?>
 <div id="small_cpanel"  style="display:none;">
