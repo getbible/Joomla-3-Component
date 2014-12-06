@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.3  November 25, 2014
+* 	@version 	1.0.4  December 06, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -96,8 +96,154 @@ class GetbibleModelControl extends JModelList
 		return false;
 	}
 	
+	public function setBookmark($bookmark,$publish,$jsonKey,$tu)
+	{
+		$user = JFactory::getUser();
+		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
+			// Check Token!
+			$token = JSession::getFormToken();
+			if ($jsonKey == $token){
+				// get current date
+				$date 		= date('Y-m-d H:i:s');
+				$aBookmark 	= (string) preg_replace('/[^A-Z0-9_]/i', '', $bookmark);
+				list($mark, $color) = explode('__',$aBookmark);
+				return $this->setBookmark_db($mark, $color, $publish, $user->id, $date);
+			}
+		}
+		return false;
+	}
+	
+	public function setBookmarks($bookmark,$action,$publish,$jsonKey,$tu)
+	{
+		$user = JFactory::getUser();
+		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
+			// Check Token!
+			$token = JSession::getFormToken();
+			if ($jsonKey == $token){
+				if($action == 2){
+					$this->clearBookmarks($jsonKey,$tu);
+				}
+				// get current date
+				$date 		= date('Y-m-d H:i:s');
+				$bookmarks 	= json_decode(base64_decode($bookmark),true);
+				if(is_array($bookmarks)){
+					foreach($bookmarks as $mark => $color){
+						$this->setBookmark_db($mark, $color, $publish, $user->id, $date);
+					}
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public function getBookmarks($jsonKey,$tu)
+	{
+		$user = JFactory::getUser();
+		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
+			// Check Token!
+			$token = JSession::getFormToken();
+			if ($jsonKey == $token){
+				// Get a db connection.
+				$db = JFactory::getDbo();
+				// Create a new query object.
+				$query = $db->getQuery(true);
+				$query->select($db->quoteName(array('books_nr','chapter_nr','verse_nr','color')));
+				$query->from($db->quoteName('#__getbible_bookmarks'));
+				$query->where($db->quoteName('user') . ' = '. $db->quote($user->id));
+				$query->where($db->quoteName('published') . ' = 1');
+				$db->setQuery($query);
+				$db->execute();
+				if($db->getNumRows()){
+					$rows = $db->loadObjectList();
+					foreach($rows as $row){
+						$buket[$row->books_nr.'_'.$row->chapter_nr.'_'.$row->verse_nr] = $row->color;
+					}
+					return base64_encode(json_encode($buket));
+				}
+			}
+		}
+		return false;
+	}
+	
+	public function clearBookmarks($jsonKey,$tu)
+	{
+		$user = JFactory::getUser();
+		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
+			// Check Token!
+			$token = JSession::getFormToken();
+			if ($jsonKey == $token){
+				// Get a db connection.
+				$db = JFactory::getDbo();
+				// Create a new query object.
+				$query = $db->getQuery(true);
+				$conditions = array(
+					$db->quoteName('user') . ' = '. $db->quote($user->id)
+				);
+				$query->delete($db->quoteName('#__getbible_bookmarks'));
+				$query->where($conditions);
+				$db->setQuery($query);
+				return $db->execute();
+			}
+		}
+		return false;		
+	}
+	
+	protected function setBookmark_db($mark, $color, $publish, $user, $date)
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		$mark 	= (string) preg_replace('/[^A-Z0-9_]/i', '', $mark);
+		$color 	= (string) preg_replace('/[^A-Z]/i', '', $color);
+		list($books_nr,$chapter_nr,$verse_nr) = explode('_',$mark);
+		$query->select('id');
+		$query->from($db->quoteName('#__getbible_bookmarks'));
+		$query->where($db->quoteName('books_nr') . 		' = '. $db->quote($books_nr));
+		$query->where($db->quoteName('chapter_nr') . 	' = '. $db->quote($chapter_nr));
+		$query->where($db->quoteName('verse_nr') . 		' = '. $db->quote($verse_nr));
+		$query->where($db->quoteName('user') . 			' = '. $db->quote($user));		 
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		$db->execute();
+		if($db->getNumRows()){
+			$id = $db->loadResult();
+			// update value
+			$query = $db->getQuery(true);
+			// Fields to update.
+			$fields = array(
+				$db->quoteName('color') . ' = ' . $db->quote($color),
+				$db->quoteName('published') . ' = ' . $publish,
+				$db->quoteName('modified_on') . ' = ' . $db->quote($date)
+			);
+			// Conditions for which records should be updated.
+			$conditions = array(
+				$db->quoteName('id') . ' = ' . $id
+			);
+			$query->update($db->quoteName('#__getbible_bookmarks'))->set($fields)->where($conditions);
+			$db->setQuery($query);
+			return $db->execute();
+		} else {
+			// add new value
+			$query = $db->getQuery(true);
+			// Insert columns.
+			$columns = array('user', 'books_nr', 'chapter_nr', 'verse_nr', 'color', 'published', 'created_on');
+			// Insert values.
+			$values = array($db->quote($user), $db->quote($books_nr), $db->quote($chapter_nr), $db->quote($verse_nr), $db->quote($color), $db->quote($publish), $db->quote($date));
+			// Prepare the insert query.
+			$query
+				->insert($db->quoteName('#__getbible_bookmarks'))
+				->columns($db->quoteName($columns))
+				->values(implode(',', $values));
+			// Set the query using our newly populated query object and execute it.
+			$db->setQuery($query);
+			return $db->execute();
+		}
+	}
+	
 	public function getAppDefaults($search_app = 0, $check_search = 'repent', $defaultVersion = 'kjv', $crit = '1_1_1', $searchType = 'all')
-	{		
+	{
 		if($this->app_params->get('jsonAPIaccess') && $this->app_params->get('jsonQueryOptions') == 1){
 
 			// Get the input data

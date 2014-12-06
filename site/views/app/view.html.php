@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.3  November 25, 2014
+* 	@version 	1.0.4  December 06, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -20,7 +20,8 @@ class GetbibleViewApp extends JViewLegacy
 	protected $cpanel;
 	protected $AppDefaults;
 	protected $bookmarks;
-
+	protected $signupUrl;
+	protected $user;
 	/**
 	 * Display the view
 	 */
@@ -33,13 +34,15 @@ class GetbibleViewApp extends JViewLegacy
 		// get the last date a book name was changed
 		$this->booksDate = $this->get('BooksDate');
 		// Get app Params
-		$this->params = JFactory::getApplication()->getParams();
+		$this->params 		= JFactory::getApplication()->getParams();
+		$this->signupUrl 	= $this->getRouteUrl('index.php?Itemid='.$this->params->get('account_menu'));
+		// set the user details
+		$this->user = JFactory::getUser();
 		
 		$this->_prepareDocument();
 		
 		parent::display($tpl);
-	}
-
+	} 
 		
 	/**
 	 * Prepares the document
@@ -89,8 +92,16 @@ class GetbibleViewApp extends JViewLegacy
 		if (!HeaderCheck::js_loaded('jquery')) {
 			JHtml::_('jquery.ui');
 		}
-		// set defaults	
-		$setApp .=  'var getUrl				= "'.$this->AppDefaults['getUrl'].'";';
+		// set defaults
+		if($this->params->get('account')){
+			$setApp .=	'var openNow			= "'.base64_encode($this->user->id).'";';
+			$setApp .=  'var user_id 			= "'.$this->user->id.'";';
+			$setApp .=  'var jsonKey 			= "'.JSession::getFormToken().'";';
+		} else {
+			$setApp .=	'var openNow			= 0;';
+			$setApp .=  'var user_id 			= 0;';
+			$setApp .=  'var jsonKey 			= 0;';
+		}
 		$setApp .=  'var defaultKey 		= "'.$this->AppDefaults['defaultKey'].'";';
 		$setApp .=  'var searchApp 			= 0;';
 		if($this->AppDefaults['request']){
@@ -122,7 +133,9 @@ class GetbibleViewApp extends JViewLegacy
 						/* verse nr sizes */ 
 						#scripture .nr_small { font-size: '. ($this->params->get('font_small') - 3).'px; line-height: 1.5;} 
 						#scripture .nr_medium { font-size: '. ($this->params->get('font_medium') - 4).'px; line-height: 1.5;}
-						#scripture .nr_large { font-size: '. ($this->params->get('font_large') - 5).'px; line-height: 1.5;}';
+						#scripture .nr_large { font-size: '. ($this->params->get('font_large') - 5).'px; line-height: 1.5;}
+						/* chapter nr sizes */ 
+						#scripture .chapter_nr { font-size: 200%; }';
 		$this->document->addStyleDeclaration( $versStyles );
 		// search highlight style
 		$searchStyles = '.highlight { color: '.$this->params->get('highlight_textcolor').'; border-bottom: 1px '.$this->params->get('highlight_linetype').' '.$this->params->get('highlight_linecolor').'; background-color: '.$this->params->get('highlight_background').'; '. $padding .' }';
@@ -145,6 +158,9 @@ class GetbibleViewApp extends JViewLegacy
 								}';
 			$this->document->addStyleDeclaration( $markStyle );
 		}
+		// load base64 javascript plugin
+		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'base64.js');
+		// load highlight javascript plugin
 		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'highlight.js');
 		
 		$this->document->addScriptDeclaration($setApp);  
@@ -181,5 +197,21 @@ class GetbibleViewApp extends JViewLegacy
 							}, 3000);
 						});';
 		$this->document->addScriptDeclaration($offline);
+	}
+	
+	/**
+	 * Get the correct path
+	 */
+	protected function getRouteUrl($route) {
+		
+		// Get the global site router.
+		$config = &JFactory::getConfig();
+		$router = JRouter::getInstance('site');
+		$router->setMode( $config->get('sef', 1) );
+	
+		$uri    = &$router->build($route);
+		$path   = $uri->toString(array('path', 'query', 'fragment'));
+	
+		return $path;
 	}
 }

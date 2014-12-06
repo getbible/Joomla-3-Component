@@ -1,6 +1,6 @@
 /**
 * 
-* 	@version 	1.0.3  November 25, 2014
+* 	@version 	1.0.4  December 06, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -31,9 +31,11 @@ var bookmarksArray 	= alpha.split("");
 // get the data from the API
 jQuery(function() {
 	// load defaults
-	getDefaults(getUrl, defaultRequest, defaultKey);
-	appFeatures();
+	getDefaults(defaultRequest, defaultKey);
+	appFeatures(1);
 	setTextSize();
+	// check if bookmarks are in sync
+	checkBookmarkSync();
 		
 });
 // Load this after page is fully loaded
@@ -176,7 +178,6 @@ function highScripture(){
 			}
 		}
 	}
-	
 }
 // set the search book when a book is changed
 function setSearchBook(newBook,lastBook){
@@ -229,15 +230,16 @@ jQuery(document).ready(function() {
 		}, function() {
 			jQuery(this).removeClass('hoverStyle');
 		}
-	);
-	jQuery('.verse').click(function() {
-		setBookmark(this);
-	});
-	
+	);	
 });
 
+jQuery(document).on('click', ".verse", function(e){
+	e.preventDefault();
+	setBookmark(this);
+});
 // script to set all app apge features
-function appFeatures(){
+function appFeatures(when){
+	
 	// for other ajax pages
 	jQuery('.verse').hover(function() {
 			jQuery(this).addClass('hoverStyle');
@@ -245,11 +247,9 @@ function appFeatures(){
 			jQuery(this).removeClass('hoverStyle');
 		}
 	);
-	jQuery('.verse').click(function() {
-		setBookmark(this);
-	});
 	
 	var bookMarks = jQuery.jStorage.get('bookmarks');
+	
 	if(bookMarks){
 		jQuery.jStorage.deleteKey('bookmarks');
 		jQuery.each( bookMarks, function( val, mark ) {
@@ -257,12 +257,238 @@ function appFeatures(){
 			  jQuery("#" + val).addClass('bookmark_'+mark);
 			}
 		});
-	}
+		//save bookmarks
+		jQuery.jStorage.set('bookmarks',bookMarks);
+	} 
 	// ensure that text gets resized
 	setTextSize();
-	//save bookmarks
-	jQuery.jStorage.set('bookmarks',bookMarks);
 	
+}
+function mergeAllBookmarks(){
+	setBookmarks_server(3).done(function(isMerged) {
+		if(isMerged){
+			loadServerBookmarks(true);
+		}
+	})
+}
+function saveBrowserBookmarks(act){
+	setBookmarks_server(act);
+}
+function loadServerBookmarks(removeLocal){
+	getBookmarks().done(function(server) {
+		if(removeLocal){
+			var bookMarks = jQuery.jStorage.get('bookmarks');
+			if(bookMarks){
+				jQuery.each(bookMarks, function(id, color) {
+					// remove the class
+					jQuery('#'+id).removeClass('bookmark_'+color);
+				});
+				jQuery.jStorage.deleteKey('bookmarks');
+			}
+		}
+		if(server){
+			serverBookMarks = JSON.parse(Base64.decode(server));
+			jQuery.each( serverBookMarks, function( id, color ) {
+				if(jQuery("#" + id).length != 0) {
+				  jQuery("#" + id).addClass('bookmark_'+color);
+				}
+			});
+			//save bookmarks
+			jQuery.jStorage.set('bookmarks',serverBookMarks);
+		}
+	})	
+}
+function clearAllBookmarks(){
+	clearServerBookmarks().done(function(isCleared) {
+		if(isCleared){
+			var bookMarks = jQuery.jStorage.get('bookmarks');
+			if(bookMarks){
+				jQuery.each(bookMarks, function(id, color) {
+					// remove the class
+					jQuery('#'+id).removeClass('bookmark_'+color);
+				});
+				jQuery.jStorage.deleteKey('bookmarks');
+			}
+		}
+	})
+}
+function clearServerBookmarks(){
+	if(user_id > 0){
+		var getUrl 	= "index.php?option=com_getbible&task=bible.clearbookmarks&format=json";
+		var request = '&jsonKey='+jsonKey+'&tu='+openNow;
+		return jQuery.ajax({
+			 type: 'GET',
+			 url: getUrl,
+			 dataType: 'jsonp',
+			 data: request,
+			 jsonp: 'callback'
+		});
+	}
+	return false;
+}
+
+function getBookmarks(){
+	// get bookmarks		
+	if(user_id > 0){
+		var getUrl 	= "index.php?option=com_getbible&task=bible.getbookmarks&format=json";
+		var request	= '&jsonKey='+jsonKey+'&tu='+openNow;
+		return jQuery.ajax({
+			 type: 'GET',
+			 url: getUrl,
+			 dataType: 'jsonp',
+			 data: request,
+			 jsonp: 'callback'
+		});
+	}
+	return false;
+}
+
+function checkBookmarkSync(){
+	if(user_id > 0){
+		getBookmarks().done(function(server) {
+			if(!server){
+				server = {not : 'found'};
+			} else {
+				server = JSON.parse(Base64.decode(server));
+			}
+			var local = jQuery.jStorage.get('bookmarks');
+			if(!local){
+				local 	= {not : 'found'};
+			}
+			if(!sameObject(local,server)){
+				jQuery('.slectionSync').hide();
+				jQuery.UIkit.modal("#bookmark_checker").show();
+				if(local.not){
+					// server has bookmarks but not browser
+					jQuery('.server_has').show();
+				}else if(server.not){
+					// Browser has bookmarks but not server
+					jQuery('.browser_has').show();
+				} else {
+					// both has bookmarks
+					jQuery('.both_has').show();
+				}
+			}			
+		});	
+	}
+}
+// check if object is the same
+function sameObject(a,b) {
+	if (!b || !a || b.length != a.length) {
+		return false;
+	}
+	var same = true;
+	jQuery.each(a, function(id, color) {
+		if(color !== b[id]){
+			same = false;
+			return false;
+		}
+	});
+	jQuery.each(b, function(id, color) {
+		if(color !== a[id]){
+			same = false;
+			return false;
+		}
+	});
+	return same;
+}
+
+// set the bookmark
+function setBookmark(verse) {
+	// get default current bookmark
+	var currentMark = jQuery.jStorage.get('currentMark', 'a');
+	// get bookmarks
+	var bookMarksStore = jQuery.jStorage.get('bookmarks');
+	if(!bookMarksStore){
+		bookMarksStore = {};
+	}
+	var id 		= jQuery(verse).attr("id");
+	var add 	= true;
+	var delet 	= false;
+	var deletMark;
+	jQuery(bookmarksArray).each(function(index, mark) {
+		// remove the class and unset values
+		jQuery('#'+id+' span').removeClass('highlight');
+		if(jQuery('#'+id).hasClass('bookmark_'+mark)){
+			deletMark 	= mark;
+			delet 		= true;
+			return false;
+		}
+	});
+	if(delet){
+		jQuery('#'+id).removeClass('bookmark_'+deletMark);
+		delete bookMarksStore[id];
+		if('bookmark_'+deletMark == 'bookmark_'+currentMark){
+			add = false;
+			setBookmark_server(0,id+'__'+deletMark);
+		}
+	}
+	if(add){
+		setBookmark_server(1,id+'__'+currentMark);
+		// add the class and set the values
+		bookMarksStore[id] = currentMark;
+		jQuery('#'+id).addClass('bookmark_'+currentMark);
+	}
+	//save bookmarks
+	jQuery.jStorage.set('bookmarks',bookMarksStore);
+}
+
+function setBookmarks_server(action){
+	
+	// set bookmark	on server	
+	if(user_id > 0){
+		var getUrl		= "index.php?option=com_getbible&task=bible.setbookmarks&format=json";
+		var bookMarks 	= jQuery.jStorage.get('bookmarks');
+		if(bookMarks){
+			var checker = JSON.stringify(bookMarks);
+			var request = 'bookmark='+Base64.encode(checker)+'&publish=1';
+		} else {
+			return false;
+		}
+		/************************************
+		* action has the following options	*
+		* 1 = first set of bookmarks		*
+		* 2 = replace all server bookmarks	*
+		* 3 = merge with server bookmarks	*
+		************************************/
+		switch(action){
+			case 2:
+			case 3:
+			request = request+'&act='+action;
+			break;
+			default:
+			request = request+'&act=1';
+		}
+		request = request+'&jsonKey='+jsonKey+'&tu='+openNow;
+		return jQuery.ajax({
+			 type: 'GET',
+			 url: getUrl,
+			 dataType: 'jsonp',
+			 data: request,
+			 jsonp: 'callback'
+		});
+	}
+	return false;
+}
+function setBookmark_server(publish,mark){
+	
+	// set bookmark	on server	
+	if(user_id > 0){
+		var getUrl = "index.php?option=com_getbible&task=bible.setBookmark&format=json";
+		if(mark.length > 0){
+			var request = 'bookmark='+mark+'&publish='+publish+'&jsonKey='+jsonKey+'&tu='+openNow;
+		} else {
+			return false;
+		}
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
 }
 
 // get selected text
@@ -304,41 +530,6 @@ function setTextSize(wasSize,newSize){
 		}
 	}
 	
-}
-// set the bookmarks object
-function setBookmark(e) {
-	// get default current bookmark
-	var markIt = jQuery.jStorage.get('markit', 1);
-	if(markIt == 1){
-		// get default current bookmark
-		var currentMark = jQuery.jStorage.get('currentMark', 'a');
-		// get bookmarks
-		var bookMarksStore = jQuery.jStorage.get('bookmarks');
-		if(!bookMarksStore){
-			var bookMarksStore = {};
-		}
-		var id 	= jQuery(e).attr("id");
-		var add = true;
-		jQuery(bookmarksArray).each(function(index, mark) {
-			// remove the class and unset values
-			jQuery('#'+id+' span').removeClass('highlight');
-			if(jQuery('#'+id).hasClass('bookmark_'+mark)){
-				jQuery('#'+id).removeClass('bookmark_'+mark);
-				delete bookMarksStore[id];
-				if('bookmark_'+mark == 'bookmark_'+currentMark){
-					add = false;
-				}
-			}
-		});
-		if (add){
-			// add the class and set the values
-			bookMarksStore[id] = currentMark;
-			jQuery('#'+id).addClass('bookmark_'+currentMark);
-		}
-		
-		//save bookmarks
-		jQuery.jStorage.set('bookmarks',bookMarksStore);
-	}
 }
 
 // load the next book
@@ -509,14 +700,19 @@ function getData(request, addTo, Found) {
 }
 
 // Ajax Call to get Defaults
-function getDefaults(getUrl, request, requestStore) {
+function getDefaults(request, requestStore) {
+	if (typeof cPanelUrl !== 'undefined') {
+		var getUrl = cPanelUrl+"index.php?option=com_getbible&task=bible.defaults&format=json";     	
+	} else {
+		var getUrl = "index.php?option=com_getbible&task=bible.defaults&format=json";
+	}
 	// Check if "requestStore" exists in the local storage
 	var jsonStore = jQuery.jStorage.get(requestStore);
 	if(!jsonStore){
 		 if (typeof appKey !== 'undefined') {
 			request = request+'&appKey='+appKey;
 		}
-		// get the chapters from server
+		// get the defaults from server
 		jQuery.ajax({
 		 type: 'GET',
 		 url: getUrl,
@@ -565,7 +761,7 @@ function getDefaults(getUrl, request, requestStore) {
 			 
 		 },
 		 error:function(e){
-				
+
 			 },
 		});
 	} else {
@@ -630,7 +826,7 @@ function setVerses(json,direction,addTo){
 		} else {
 			jQuery('#scripture').html(output);  // <---- this is the div id we update
 		}
-		appFeatures();
+		appFeatures(2);
 		jQuery('#scripture').removeClass('text_loading');
 }
 
@@ -640,6 +836,7 @@ function setChapter(json,direction,addTo){
 	jQuery(".booksMenu").text(json.book_name+' '+json.chapter_nr+' ('+json.version+')');
 	jQuery(".books :selected").text(json.book_name+' '+json.chapter_nr);
 	var output = '<p class="'+direction+'">';
+	if(addTo){	output += '<span class="chapter_nr">'+json.chapter_nr+'</span>'; }
 	jQuery.each(json.chapter, function(index, value) {
 		if(isInArray(value.verse_nr, listVers)){
 			output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '</span>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
@@ -660,7 +857,7 @@ function setChapter(json,direction,addTo){
 	} else {
 		jQuery('#scripture').html(output);  // <---- this is the div id we update
 	}
-	appFeatures();
+	appFeatures(2);
 	jQuery('#scripture').removeClass('text_loading');
 }
 
@@ -685,7 +882,7 @@ function setBook(json,direction,addTo){
 	} else {
 		jQuery('#scripture').html(output);  // <---- this is the div id we update
 	}
-	appFeatures();
+	appFeatures(2);
 	jQuery('#scripture').removeClass('text_loading');
 }
 
@@ -710,7 +907,7 @@ function setSearch(json,direction){
 	if(highlightOption == 1){
 		highScripture();							
 	}
-	appFeatures();
+	appFeatures(2);
 	jQuery('#scripture').removeClass('text_loading');
 }
 
@@ -775,9 +972,9 @@ function isNumeric(number) {
 // Ajax Call to get chapter
 function getDataCh(call) {
 	if (typeof cPanelUrl !== 'undefined') {
-		getUrl = cPanelUrl+"index.php?option=com_getbible&task=bible.chapter&format=json";     	
+		var getUrl = cPanelUrl+"index.php?option=com_getbible&task=bible.chapter&format=json";     	
 	} else {
-		getUrl = "index.php?option=com_getbible&task=bible.chapter&format=json";
+		var getUrl = "index.php?option=com_getbible&task=bible.chapter&format=json";
 	}
 	jQuery('#scripture').addClass('text_loading');
 	var result = call.split('__');
@@ -829,9 +1026,9 @@ function getDataBo(version, first, versionChange) {
 	jQuery('.books').hide();
 	jQuery('.f_loader').show();
 	if (typeof cPanelUrl !== 'undefined') {
-		getUrl = cPanelUrl+"index.php?option=com_getbible&task=bible.books&format=json";     	
+		var getUrl = cPanelUrl+"index.php?option=com_getbible&task=bible.books&format=json";     	
 	} else {
-		getUrl = "index.php?option=com_getbible&task=bible.books&format=json";
+		var getUrl = "index.php?option=com_getbible&task=bible.books&format=json";
 	}
 	jQuery('#scripture').addClass('text_loading');
 	

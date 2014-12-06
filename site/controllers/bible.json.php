@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.3  November 25, 2014
+* 	@version 	1.0.4  December 06, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -23,6 +23,10 @@ class GetbibleControllerBible extends JControllerLegacy
 		$this->registerTask('books', 'bible');
 		$this->registerTask('chapter', 'bible');
 		$this->registerTask('defaults', 'bible');
+		$this->registerTask('setbookmark', 'bible');
+		$this->registerTask('setbookmarks', 'bible');
+		$this->registerTask('getbookmarks', 'bible');
+		$this->registerTask('clearbookmarks', 'bible');
 	}
 	
 	public function bible()
@@ -65,6 +69,59 @@ class GetbibleControllerBible extends JControllerLegacy
 																		$jinput->get('search_version', null, 'ALNUM'), 
 																		$jinput->get('search_crit', null, 'CMD'), 
 																		$jinput->get('search_type', null, 'ALNUM') );
+				echo $_GET['callback']."(".json_encode($result).");";
+			}
+				catch(Exception $e)
+			{
+			  	echo $_GET['callback']."(".json_encode($e).");";
+			}
+		} elseif ($task == 'setBookmark'){
+			try
+			{				 
+				$result = $this->getModel('control')->setBookmark(	$jinput->get('bookmark', 0, 'STRING'),
+																	$jinput->get('publish', 0, 'INT'),
+																	$jinput->get('jsonKey', 0, 'ALNUM'),
+																	$jinput->get('tu', 0, 'BASE64') );
+				
+				echo $_GET['callback']."(".json_encode($result).");";
+			}
+				catch(Exception $e)
+			{
+			  	echo $_GET['callback']."(".json_encode($e).");";
+			}
+		} elseif ($task == 'setbookmarks'){
+			try
+			{				 
+				$result = $this->getModel('control')->setBookmarks(	$jinput->get('bookmark', 0, 'BASE64'),
+																	$jinput->get('act', 0, 'INT'),
+																	$jinput->get('publish', 0, 'INT'),
+																	$jinput->get('jsonKey', 0, 'ALNUM'),
+																	$jinput->get('tu', 0, 'BASE64') );
+				
+				echo $_GET['callback']."(".json_encode($result).");";
+			}
+				catch(Exception $e)
+			{
+			  	echo $_GET['callback']."(".json_encode($e).");";
+			}
+		} elseif ($task == 'getbookmarks'){
+			try
+			{				 
+				$result = $this->getModel('control')->getBookmarks(	$jinput->get('jsonKey', 0, 'ALNUM'),
+																	$jinput->get('tu', 0, 'BASE64') );
+				
+				echo $_GET['callback']."(".json_encode($result).");";
+			}
+				catch(Exception $e)
+			{
+			  	echo $_GET['callback']."(".json_encode($e).");";
+			}
+		} elseif ($task == 'clearbookmarks'){
+			try
+			{				 
+				$result = $this->getModel('control')->clearBookmarks(	$jinput->get('jsonKey', 0, 'ALNUM'),
+																		$jinput->get('tu', 0, 'BASE64') );
+				
 				echo $_GET['callback']."(".json_encode($result).");";
 			}
 				catch(Exception $e)

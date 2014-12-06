@@ -110,6 +110,22 @@ CREATE TABLE IF NOT EXISTS `#__getbible_versions` (
   UNIQUE KEY `version` (`version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+CREATE TABLE IF NOT EXISTS `#__getbible_bookmarks` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user` int(11) NOT NULL DEFAULT '0',
+  `books_nr` int(11) DEFAULT NULL,
+  `chapter_nr` int(11) DEFAULT NULL,
+  `verse_nr` int(11) DEFAULT NULL,
+  `color` varchar(255) DEFAULT NULL,
+  `published` tinyint(4) DEFAULT NULL,
+  `created_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `modified_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  KEY `user` (`user`),
+  KEY `books_nr` (`books_nr`),
+  KEY `color` (`color`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
 INSERT INTO `#__getbible_setbooks` (`id`, `book_name`, `version`, `chapter_nr`, `book_nr`, `book_names`, `access`, `published`, `created_by`, `created_on`, `checked_out`, `checked_out_time`, `modified_by`, `modified_on`) VALUES
 (1, 'Genesis', 'kjv', 50, 1, '{"name1":"Genesis","name2":"Ge","name3":"GEN","name4":null,"name5":null}', 1, 1, 0, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00'),
 (2, 'Exodus', 'kjv', 40, 2, '{"name1":"Exodus","name2":"Ex","name3":"EXO","name4":null,"name5":null}', 1, 1, 0, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00'),

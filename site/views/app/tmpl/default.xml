@@ -5,4 +5,247 @@
 			To view the Bible App
 		</message>
 	</layout>
+	
+	<!-- Add fields to the parameters object for the layout. -->
+	<fields name="params">
+
+		<!-- Basic options. -->
+		<fieldset name="app"
+			label="COM_GETBIBLE_CONFIG_APP_FIELDSET_LABEL"
+			description="COM_GETBIBLE_CONFIG_APP_FIELDSET_DESC">
+			
+			<field name="auto_loading_chapter"
+				type="radio"
+				class="btn-group"
+				label="COM_GETBIBLE_CONFIG_AUTO_LOADING_CHAPTERS_LABEL"
+				description="COM_GETBIBLE_CONFIG_AUTO_LOADING_CHAPTERS_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_CONFIG_YES</option>
+				<option
+					value="0">COM_GETBIBLE_CONFIG_NO</option>
+			</field>
+			
+			<field name="app_mode"
+				type="radio"
+				class="btn-group"
+				label="COM_GETBIBLE_CONFIG_APP_MODE_LABEL"
+				description="COM_GETBIBLE_CONFIG_APP_MODE_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_CONFIG_STREAM</option>
+				<option
+					value="2">COM_GETBIBLE_CONFIG_BOOK</option>
+			</field>
+			
+			<field name="toolbar"
+				type="radio"
+				class="btn-group"
+				label="COM_GETBIBLE_CONFIG_TOOLBAR_LABEL"
+				description="COM_GETBIBLE_CONFIG_TOOLBAR_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_CONFIG_FIXED</option>
+				<option
+					value="2">COM_GETBIBLE_CONFIG_STICKY</option>
+			</field>
+			
+			<field name="line_mode"
+				type="radio"
+				class="btn-group"
+				label="COM_GETBIBLE_CONFIG_LINE_MODE_LABEL"
+				description="COM_GETBIBLE_CONFIG_LINE_MODE_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_CONFIG_NEWLINE</option>
+				<option
+					value="2">COM_GETBIBLE_CONFIG_CONTINUES</option>
+			</field>
+		
+		</fieldset>
+		<fieldset name="global"
+			addfieldpath="/administrator/components/com_getbible/models/fields"
+			label="Scripture Defaults"
+			description="">
+			
+			<field name="defaultStartVersion" 
+				type="version" 
+				default=""
+				label="COM_GETBIBLE_CONFIG_DEFAULT_STARTING_VERSION_LABEL"
+			/>
+			<field name="defaultStartBook"
+				type="text"
+				label="COM_GETBIBLE_CONFIG_DEFAULT_STARTING_BOOK_LABEL"
+				description="COM_GETBIBLE_CONFIG_DEFAULT_STARTING_BOOK_DESC"
+				size="60"
+				default=""
+			/>
+			<field name="defaultStartChapter"
+				type="text"
+				label="COM_GETBIBLE_CONFIG_DEFAULT_STARTING_CHAPTER_LABEL"
+				description="COM_GETBIBLE_CONFIG_DEFAULT_STARTING_CHAPTER_DESC"
+				size="60"
+				default=""
+			/>
+		</fieldset>
+		<fieldset
+			name="account_tab"
+			label="COM_GETBIBLE_CONFIG_ACCOUNT_FIELDSET_LABEL"
+			description="COM_GETBIBLE_CONFIG_ACCOUNT_FIELDSET_DESC">
+	
+			<field name="account"
+				type="radio"
+				class="btn-group"
+				label="COM_GETBIBLE_CONFIG_ALLOW_ACCOUNTS_LABEL"
+				description="COM_GETBIBLE_ALLOW_ACCOUNTS_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_CONFIG_YES</option>
+				<option
+					value="0">COM_GETBIBLE_CONFIG_NO</option>
+			</field>
+		</fieldset>
+		<fieldset
+			name="search"
+			label="COM_GETBIBLE_CONFIG_SEARCH_FIELDSET_LABEL"
+			description="COM_GETBIBLE_CONFIG_SEARCH_FIELDSET_DESC">
+			
+			<field
+				name="search_display"
+				type="list"
+				label="COM_GETBIBLE_SEARCH_DISPLAY_LABEL"
+				description="COM_GETBIBLE_SEARCH_DISPLAY_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_SEARCH_BUTTON</option>
+				<option
+					value="2">COM_GETBIBLE_SEARCH_BOX</option>
+				<option
+					value="3">COM_GETBIBLE_SEARCH_BOX_BUTTON</option>
+				<option
+					value="4">COM_GETBIBLE_SEARCH_BOX_BUTTON_ADVANCED</option>
+				<option
+					value="5">COM_GETBIBLE_SEARCH_BOX_ADVANVED</option>
+				<option
+					value="6">COM_GETBIBLE_SEARCH_NONE</option>
+			</field>
+			<field
+				name="up_button"
+				type="radio" class="btn-group"
+				label="COM_GETBIBLE_UP_BUTTON_DEFAULTS_LABEL"
+				description="COM_GETBIBLE_UP_BUTTON_DEFAULTS_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_UP_FIXED</option>
+				<option
+					value="2">COM_GETBIBLE_UP_BOTTOM</option>
+				<option
+					value="3">COM_GETBIBLE_UP_NONE</option>
+			</field>
+			
+			<field type="spacer" name="search_a_spacer" hr="true" />
+			
+			<field
+				name="highlight_option"
+				type="radio" class="btn-group"
+				label="COM_GETBIBLE_HIGHLIGHTS_DEFAULTS_LABEL"
+				description="COM_GETBIBLE_HIGHLIGHTS_DEFAULTS_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_AUTO_HIGHLIGHTS</option>
+				<option
+					value="2">COM_GETBIBLE_BUTTON_HIGHLIGHTS</option>
+				<option
+					value="3">COM_GETBIBLE_NONE_HIGHLIGHTS</option>
+			</field>
+			
+			<field name="highlight_padding"
+				type="radio"
+				class="btn-group"
+				label="COM_GETBIBLE_CONFIG_HIGHLIGHT_PADDING_LABEL"
+				description="COM_GETBIBLE_CONFIG_HIGHLIGHT_PADDINGE_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_CONFIG_YES</option>
+				<option
+					value="0">COM_GETBIBLE_CONFIG_NO</option>
+			</field>
+			
+			<field type="spacer" name="search_b_spacer" hr="true" />
+			
+			<field
+				name="search_options"
+				type="radio" class="btn-group"
+				label="COM_GETBIBLE_SEARCH_OPTIONS_LABEL"
+				description="COM_GETBIBLE_SEARCH_OPTIONS_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_YES</option>
+				<option
+					value="0">COM_GETBIBLE_NO</option>
+			</field>
+			<field
+				name="search_crit1"
+				type="radio" class="btn-group"
+				label="COM_GETBIBLE_SEARCH_DEFAULTS_LABEL"
+				description="COM_GETBIBLE_SEARCH_DEFAULTS_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_ALL_WORDS</option>
+				<option
+					value="2">COM_GETBIBLE_ANY_WORDS</option>
+				<option
+					value="3">COM_GETBIBLE_PHRASE</option>
+			</field>
+			<field
+				name="search_type"
+				type="radio" class="btn-group"
+				label="COM_GETBIBLE_SEARCH_DEFAULTS_LABEL"
+				description="COM_GETBIBLE_SEARCH_DEFAULTS_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="all">COM_GETBIBLE_BIBLE</option>
+				<option
+					value="ot">COM_GETBIBLE_OT</option>
+				<option
+					value="nt">COM_GETBIBLE_NT</option>
+			</field>
+			<field
+				name="search_crit2"
+				type="radio" class="btn-group"
+				label="COM_GETBIBLE_SEARCH_DEFAULTS_LABEL"
+				description="COM_GETBIBLE_SEARCH_DEFAULTS_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_EXACT_MATCH</option>
+				<option
+					value="2">COM_GETBIBLE_PARTIAL_MATCH</option>
+			</field>
+			<field
+				name="search_crit3"
+				type="radio" class="btn-group"
+				label="COM_GETBIBLE_SEARCH_DEFAULTS_LABEL"
+				description="COM_GETBIBLE_SEARCH_DEFAULTS_DESC">
+				<option
+					value="">COM_GETBIBLE_GLOBAL</option>
+				<option
+					value="1">COM_GETBIBLE_CASE_INSENSITIVE</option>
+				<option
+					value="2">COM_GETBIBLE_CASE_SENSITIVE</option>
+			</field>
+		</fieldset>
+	</fields>
 </metadata>

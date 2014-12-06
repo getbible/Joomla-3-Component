@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.3  November 25, 2014
+* 	@version 	1.0.4  December 06, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -22,7 +22,7 @@ class GetbibleModelApp extends JModelList
 		parent::__construct();
 		
 		// get params
-		$this->app_params = JComponentHelper::getParams('com_getbible');
+		$this->app_params = JFactory::getApplication()->getParams();
 		
 	}
 	
@@ -112,20 +112,11 @@ class GetbibleModelApp extends JModelList
 	
 	public function getAppDefaults()
 	{	
-		// set the path
-		if ($this->app_params->get('jsonQueryOptions') == 1){
-			$appDefaults['getUrl'] = 'index.php?option=com_getbible&task=bible.defaults&format=json';
-		} elseif ($this->app_params->get('jsonQueryOptions') == 2) {
-			$appDefaults['getUrl'] = 'https://getbible.net/index.php?option=com_getbible&task=bible.defaults&format=json';
-		} else {			
-			$appDefaults['getUrl'] = 'http://getbible.net/index.php?option=com_getbible&task=bible.defaults&format=json';
-		}
 		// set the default version
 		$appDefaults['version'] = $this->app_params->get('defaultStartVersion');
 		// check if search form is used
 		$jinput 					= JFactory::getApplication()->input;
 		$search_app					= $jinput->post->get('search_app', 0, 'INT');
-		$appDefaults['request'] 	= false;
 		if($search_app === 1){
 			$appDefaults['version'] = $jinput->post->get('search_version', null, 'ALNUM');
 			$appDefaults['request'] = '&search_app='.$search_app;
@@ -133,6 +124,10 @@ class GetbibleModelApp extends JModelList
 			$appDefaults['request'] .= '&search_version='.$jinput->post->get('search_version', null, 'ALNUM');
 			$appDefaults['request'] .= '&search_crit='.$jinput->post->get('search_crit', null, 'CMD');
 			$appDefaults['request'] .= '&search_type='.$jinput->post->get('search_type', null, 'ALNUM');	
+		} else {
+			$appDefaults['request'] = '&search_app=1';
+			$appDefaults['request'] .= '&search='.$this->app_params->get('defaultStartBook').' '.$this->app_params->get('defaultStartChapter');
+			$appDefaults['request'] .= '&search_version='.$appDefaults['version'];
 		}
 		// set key
 		$appDefaults['defaultKey'] 	= md5(	$appDefaults['getUrl'].

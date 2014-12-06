@@ -133,10 +133,61 @@
 			
 	</fieldset>
 	<fieldset
+			name="account_tab"
+			label="COM_GETBIBLE_CONFIG_ACCOUNT_FIELDSET_LABEL"
+			description="COM_GETBIBLE_CONFIG_ACCOUNT_FIELDSET_DESC">
+		
+		<field name="account"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_ALLOW_ACCOUNTS_LABEL"
+        	description="COM_GETBIBLE_CONFIG_ALLOW_ACCOUNTS_DESC">
+			<option
+				value="1">COM_GETBIBLE_CONFIG_YES</option>
+			<option
+				value="0">COM_GETBIBLE_CONFIG_NO</option>
+		</field>
+		
+		<field 
+			name="account_header"
+			type="text" 
+			default="FREE_ACCOUNT" 
+			label="COM_GETBIBLE_CONFIG_ACCOUNT_HEADER_LABEL" 
+			description="COM_GETBIBLE_CONFIG_ACCOUNT_HEADER_DESC" 
+		/>
+		
+		<field 
+			name="account_text"
+			type="textarea"
+			default="SIGN_UP_DISCRIPTION"
+			label="COM_GETBIBLE_CONFIG_SIGN_UP_DISCRIPTION_LABEL"
+			description="COM_GETBIBLE_CONFIG_SIGN_UP_DISCRIPTION_DESC" 
+			rows="10" 
+			cols="5" 
+			filter="raw"
+		/>
+		
+		<field
+			name="account_button"
+			type="text"
+			default="SIGN_UP_NOW"
+			label="COM_GETBIBLE_CONFIG_ACCOUNT_BUTTON_LABEL"
+			description="COM_GETBIBLE_CONFIG_ACCOUNT_BUTTON_DESC"
+		/>
+		
+		<field
+			name="account_menu"
+			type="menuitem"
+			label="COM_GETBIBLE_CONFIG_SIGN_UP_PAGE_LABEL"
+			description="COM_GETBIBLE_CONFIG_SIGN_UP_PAGE_DESC"
+		/>
+	</fieldset>
+	<fieldset
 		name="bookmark"
 		label="COM_GETBIBLE_CONFIG_BOOKMARK_FIELDSET_LABEL"
 		description="COM_GETBIBLE_CONFIG_BOOKMARK_FIELDSET_DESC">
-
+		
 		<field name="hover_textcolor" type="color" default="#515456"
         label="COM_GETBIBLE_CONFIG_HOVER_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_HOVER_TEXTCOLOR_DESC" />
@@ -170,7 +221,7 @@
 		<field 
 			name="mark_a_name"
 			type="text" 
-			default="Gold" 
+			default="GOLD" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -208,7 +259,7 @@
 		<field 
 			name="mark_b_name"
 			type="text" 
-			default="Dark Red" 
+			default="DARK_RED" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -246,7 +297,7 @@
 		<field 
 			name="mark_c_name"
 			type="text" 
-			default="Orange" 
+			default="ORANGE" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -284,7 +335,7 @@
 		<field 
 			name="mark_d_name"
 			type="text" 
-			default="Yellow" 
+			default="YELLOW" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -322,7 +373,7 @@
 		<field 
 			name="mark_e_name"
 			type="text" 
-			default="Dark Blue" 
+			default="DARK_BLUE" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -360,7 +411,7 @@
 		<field 
 			name="mark_f_name"
 			type="text" 
-			default="Light Blue" 
+			default="LIGHT_BLUE" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -398,7 +449,7 @@
 		<field 
 			name="mark_g_name"
 			type="text" 
-			default="Teal" 
+			default="TEAL" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -436,7 +487,7 @@
 		<field 
 			name="mark_h_name"
 			type="text" 
-			default="Dark Purple" 
+			default="DARK_PURPLE" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -474,7 +525,7 @@
 		<field 
 			name="mark_i_name"
 			type="text" 
-			default="Light Purple" 
+			default="LIGHT_PURPULE" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -512,7 +563,7 @@
 		<field 
 			name="mark_j_name"
 			type="text" 
-			default="Dark Green" 
+			default="DARK_GREEN" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -550,7 +601,7 @@
 		<field 
 			name="mark_k_name"
 			type="text" 
-			default="Light Green" 
+			default="LIGHT_GREEN" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -588,7 +639,7 @@
 		<field 
 			name="mark_l_name"
 			type="text" 
-			default="Brown" 
+			default="BROWN" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -626,7 +677,7 @@
 		<field 
 			name="mark_m_name"
 			type="text" 
-			default="Turquoise" 
+			default="TURQUOISE" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
@@ -659,7 +710,6 @@
 				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
 		</field>
 		
-		
 	</fieldset>
 	<fieldset
 		name="search"
@@ -688,21 +738,21 @@
 		<field 
 			name="search_button"
 			type="text" 
-			default="Search" 
+			default="SEARCH" 
 			label="COM_GETBIBLE_SEARCH_BUTTON_LABEL" 
 			description="COM_GETBIBLE_SEARCH_BUTTON_DESC" 
 		/>
-		<field 
+		<field
 			name="advanced_button"
 			type="text" 
-			default="Advanced" 
+			default="ADVANCE" 
 			label="COM_GETBIBLE_ADVANCED_BUTTON_LABEL" 
 			description="COM_GETBIBLE_ADVANCED_BUTTON_DESC" 
 		/>
-		<field 
+		<field
 			name="search_phrase"
 			type="text" 
-			default="search..." 
+			default="SEARCH_PHRASE" 
 			label="COM_GETBIBLE_SEARCH_PHRASE_LABEL" 
 			description="COM_GETBIBLE_SEARCH_PHRASE_DESC" 
 		/>
