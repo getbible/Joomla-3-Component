@@ -27,11 +27,13 @@ abstract class GetHelper
 		// check if data is in session
 		$session 		= JFactory::getSession();
 		// $session->clear('get_xml_settings'); // to debug the session
-		$xml_settings 	= $session->get('get_xml_settings', false);
-		if($xml_settings !== false){
-			$xml_settings 	= json_decode(base64_decode($xml_settings));
-			self::$localVersion 	= $xml_settings->local;
-			self::$currentVersion 	= $xml_settings->current;
+		$currentVersion 	= $session->get('currentVersion', false);
+		if($currentVersion !== false){
+			$currentVersion 	= json_decode(base64_decode($currentVersion));
+			// Parse the XML
+			$local 					= @simplexml_load_file(JPATH_ADMINISTRATOR."/components/com_getbible/getbible.xml");
+			self::$localVersion 	= $local->version;
+			self::$currentVersion 	= $currentVersion;
 		} else {
 			// Parse the XML
 			$local 			= @simplexml_load_file(JPATH_ADMINISTRATOR."/components/com_getbible/getbible.xml");
@@ -58,11 +60,8 @@ abstract class GetHelper
 			}
 			// if both are set, then continue
 			if(self::$currentVersion !== false && self::$localVersion !== false){
-				$xml_settings 				= array();
-				$xml_settings['current'] 	= self::$currentVersion;
-				$xml_settings['local'] 		= self::$localVersion;
 				// add to session to speedup the page load.
-				$session->set('get_xml_settings', base64_encode(json_encode($xml_settings)));
+				$session->set('currentVersion', base64_encode(json_encode(self::$currentVersion)));
 			}
 		}
 	}
