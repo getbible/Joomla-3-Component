@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.4  December 06, 2014
+* 	@version 	1.0.5  December 08, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -27,6 +27,8 @@ class GetbibleControllerBible extends JControllerLegacy
 		$this->registerTask('setbookmarks', 'bible');
 		$this->registerTask('getbookmarks', 'bible');
 		$this->registerTask('clearbookmarks', 'bible');
+		$this->registerTask('setNote', 'bible');
+		$this->registerTask('getNotes', 'bible');
 	}
 	
 	public function bible()
@@ -121,6 +123,32 @@ class GetbibleControllerBible extends JControllerLegacy
 			{				 
 				$result = $this->getModel('control')->clearBookmarks(	$jinput->get('jsonKey', 0, 'ALNUM'),
 																		$jinput->get('tu', 0, 'BASE64') );
+				
+				echo $_GET['callback']."(".json_encode($result).");";
+			}
+				catch(Exception $e)
+			{
+			  	echo $_GET['callback']."(".json_encode($e).");";
+			}
+		} elseif ($task == 'setnote'){
+			try
+			{				 
+				$result = $this->getModel('control')->setNote(	$jinput->get('note', 0, 'STRING'),
+																$jinput->get('jsonKey', 0, 'ALNUM'),
+																$jinput->get('verse', 0, 'STRING'),
+																$jinput->get('tu', 0, 'BASE64') );
+				
+				echo $_GET['callback']."(".json_encode($result).");";
+			}
+				catch(Exception $e)
+			{
+			  	echo $_GET['callback']."(".json_encode($e).");";
+			}
+		} elseif ($task == 'getnotes'){
+			try
+			{				 
+				$result = $this->getModel('control')->getNotes(	$jinput->get('jsonKey', 0, 'ALNUM'),
+																$jinput->get('tu', 0, 'BASE64') );
 				
 				echo $_GET['callback']."(".json_encode($result).");";
 			}

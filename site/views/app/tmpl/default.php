@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.4  December 06, 2014
+* 	@version 	1.0.5  December 08, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -390,7 +390,7 @@ $versions = $this->cpanel;
                            <p>We will add more features here soon...</p>
                         <?php else: ?>
                             <h1><?php echo JText::_($this->params->get('account_header')); ?></h1>
-                            <?php echo JText::_($this->params->get('account_text')); ?>
+                            <?php echo JText::_($this->params->get('account_bookmark_text')); ?>
                             <a class="uk-button uk-width-1-1 uk-button-large uk-button-primary" href="<?php echo $this->signupUrl; ?>" >
                                 <?php echo JText::_($this->params->get('account_button')); ?>
                             </a>
@@ -422,7 +422,7 @@ $versions = $this->cpanel;
         <?php endif; ?>
     </div>
 </div>
-<?php if($this->user->id > 0): ?>
+<?php if($this->user->id > 0 && $this->params->get('account')): ?>
 <div id="bookmark_checker" class="uk-modal">
     <div class="uk-modal-dialog">
         <a class="uk-modal-close uk-close"></a>
@@ -473,6 +473,34 @@ $versions = $this->cpanel;
                 <i class="uk-icon-trash"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_BOOKMARKS_LABEL') ?>&nbsp;
             </a>        
         </div>
+    </div>
+</div>
+<?php endif; ?>
+<?php if($this->params->get('account')): ?>
+<div id="note_maker" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <?php if($this->user->id > 0): ?>
+            <form class="uk-form" id="post_note">
+                <div class="uk-form-row">
+                    <h2><span class="note_verse"></span></h2>
+                    <textarea id="active_note" name="note" cols="100%" rows="4" placeholder="add note here!" autocomplete="off"></textarea>
+                    <input class="uk-button uk-modal-close" type="submit" onclick="submitNote(); return false;" value="submit">
+                    <input type="hidden" name="jsonKey" value="<?php echo JSession::getFormToken(); ?>" />
+                    <input id="note_verse" type="hidden" name="verse" value="" />
+                    <input type="hidden" name="tu" value="<?php echo base64_encode($this->user->id); ?>" />
+            	</div>
+            </form>
+        <?php else: ?>
+        	<br />
+            <div class="uk-panel uk-panel-box uk-text-center">
+                <h1><?php echo JText::_($this->params->get('account_header')); ?></h1>
+                <?php echo JText::_($this->params->get('account_note_text')); ?>
+                <a class="uk-button uk-width-1-1 uk-button-large uk-button-primary" href="<?php echo $this->signupUrl; ?>" >
+                    <?php echo JText::_($this->params->get('account_button')); ?>
+                </a>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 <?php endif; ?>

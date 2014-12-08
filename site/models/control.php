@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.4  December 06, 2014
+* 	@version 	1.0.5  December 08, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -240,6 +240,107 @@ class GetbibleModelControl extends JModelList
 			$db->setQuery($query);
 			return $db->execute();
 		}
+	}
+	
+	public function setNote($note,$jsonKey,$verse,$tu)
+	{
+		$user = JFactory::getUser();
+		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
+			// Check Token!
+			$token = JSession::getFormToken();
+			if ($jsonKey == $token){
+				// get current date
+				$date 		= date('Y-m-d H:i:s');
+				return $this->setNote_db($note, $verse, $user->id, $date);
+			}
+		}
+		return false;
+	}
+	
+	protected function setNote_db($note, $verse, $user, $date)
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		list($books_nr,$chapter_nr,$verse_nr) = explode('_',$verse);
+		$query->select('id');
+		$query->from($db->quoteName('#__getbible_notes'));
+		$query->where($db->quoteName('books_nr') . 		' = '. $db->quote($books_nr));
+		$query->where($db->quoteName('chapter_nr') . 	' = '. $db->quote($chapter_nr));
+		$query->where($db->quoteName('verse_nr') . 		' = '. $db->quote($verse_nr));
+		$query->where($db->quoteName('user') . 			' = '. $db->quote($user));		 
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		$db->execute();
+		if($db->getNumRows()){
+			$id = $db->loadResult();
+			// update value
+			$query = $db->getQuery(true);
+			// Fields to update.
+			$fields = array(
+				$db->quoteName('note') . ' = ' . $db->quote($note),
+				$db->quoteName('access') . ' = 1',
+				$db->quoteName('modified_on') . ' = ' . $db->quote($date)
+			);
+			// Conditions for which records should be updated.
+			$conditions = array(
+				$db->quoteName('id') . ' = ' . $id
+			);
+			$query->update($db->quoteName('#__getbible_notes'))->set($fields)->where($conditions);
+			$db->setQuery($query);
+			if($db->execute()){
+				return array($verse => $note);
+			}
+			return false;
+		} else {
+			// add new value
+			$query = $db->getQuery(true);
+			// Insert columns.
+			$columns = array('user', 'books_nr', 'chapter_nr', 'verse_nr', 'note', 'access', 'created_on');
+			// Insert values.
+			$values = array($db->quote($user), $db->quote($books_nr), $db->quote($chapter_nr), $db->quote($verse_nr), $db->quote($note), 1, $db->quote($date));
+			// Prepare the insert query.
+			$query
+				->insert($db->quoteName('#__getbible_notes'))
+				->columns($db->quoteName($columns))
+				->values(implode(',', $values));
+			// Set the query using our newly populated query object and execute it.
+			$db->setQuery($query);
+			if($db->execute()){
+				return array($verse => $note);
+			}
+			return false;
+		}
+	}
+	
+	public function getNotes($jsonKey,$tu)
+	{
+		$user = JFactory::getUser();
+		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
+			// Check Token!
+			$token = JSession::getFormToken();
+			if ($jsonKey == $token){
+				// Get a db connection.
+				$db = JFactory::getDbo();
+				// Create a new query object.
+				$query = $db->getQuery(true);
+				$query->select($db->quoteName(array('books_nr','chapter_nr','verse_nr','note')));
+				$query->from($db->quoteName('#__getbible_notes'));
+				$query->where($db->quoteName('user') . ' = '. $db->quote($user->id));
+				$query->where($db->quoteName('access') . ' = 1');
+				$db->setQuery($query);
+				$db->execute();
+				if($db->getNumRows()){
+					$rows = $db->loadObjectList();
+					foreach($rows as $row){
+						$notes[$row->books_nr.'_'.$row->chapter_nr.'_'.$row->verse_nr] = $row->note;
+					}
+					return $notes;
+				}
+			}
+		}
+		return false;
 	}
 	
 	public function getAppDefaults($search_app = 0, $check_search = 'repent', $defaultVersion = 'kjv', $crit = '1_1_1', $searchType = 'all')

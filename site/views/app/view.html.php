@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.4  December 06, 2014
+* 	@version 	1.0.5  December 08, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -81,7 +81,7 @@ class GetbibleViewApp extends JViewLegacy
 		require_once( JPATH_COMPONENT.DS.'helpers'.DS.'script_checker.php' );
 		// The css
 		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'app.css');
-		if (!HeaderCheck::css_loaded('uikit')) {
+		if (!HeaderCheck::css_loaded('uikit.min')) {
 			$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'uikit.min.css');
 		}
 		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'components'.DS.'sticky.min.css');
@@ -93,14 +93,16 @@ class GetbibleViewApp extends JViewLegacy
 			JHtml::_('jquery.ui');
 		}
 		// set defaults
-		if($this->params->get('account')){
+		if($this->params->get('account') && $this->user->id > 0){
 			$setApp .=	'var openNow			= "'.base64_encode($this->user->id).'";';
-			$setApp .=  'var user_id 			= "'.$this->user->id.'";';
+			$setApp .=  'var user_id 			= '.$this->user->id.';';
 			$setApp .=  'var jsonKey 			= "'.JSession::getFormToken().'";';
+			$setApp .=  'var allowAccount 		= '.$this->params->get('account').';';
 		} else {
 			$setApp .=	'var openNow			= 0;';
 			$setApp .=  'var user_id 			= 0;';
 			$setApp .=  'var jsonKey 			= 0;';
+			$setApp .=  'var allowAccount 		= '.$this->params->get('account').';';
 		}
 		$setApp .=  'var defaultKey 		= "'.$this->AppDefaults['defaultKey'].'";';
 		$setApp .=  'var searchApp 			= 0;';
@@ -126,6 +128,7 @@ class GetbibleViewApp extends JViewLegacy
 		}
 		// verses style
 		$versStyles = '	#scripture .verse { cursor: pointer; }
+						#scripture .verse_nr { cursor: pointer; }
 						/* verse sizes */ 
 						#scripture .verse_small { font-size: '.$this->params->get('font_small').'px; line-height: 1.5;} 
 						#scripture .verse_medium { font-size: '.$this->params->get('font_medium').'px; line-height: 1.5;}
@@ -167,11 +170,15 @@ class GetbibleViewApp extends JViewLegacy
 		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'app.js');
 		
 		// Load Uikit check
-		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'uikit.min.js');
-		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'components'.DS.'sticky.min.js');
+		if (!HeaderCheck::js_loaded('uikit.min')) {
+			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'uikit.min.js');
+		}
+		if (!HeaderCheck::js_loaded('sticky.min')) {
+			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'components'.DS.'sticky.min.js');
+		}
 		
 		// Load Json check
-		if (!HeaderCheck::js_loaded('json')) {
+		if (!HeaderCheck::js_loaded('jquery.json')) {
 			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jquery.json.min.js');
 		}
 		// Load Jstorage check

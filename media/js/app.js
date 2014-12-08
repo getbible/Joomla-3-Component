@@ -1,6 +1,6 @@
 /**
 * 
-* 	@version 	1.0.4  December 06, 2014
+* 	@version 	1.0.5  December 08, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -237,6 +237,7 @@ jQuery(document).on('click', ".verse", function(e){
 	e.preventDefault();
 	setBookmark(this);
 });
+			
 // script to set all app apge features
 function appFeatures(when){
 	
@@ -262,8 +263,101 @@ function appFeatures(when){
 	} 
 	// ensure that text gets resized
 	setTextSize();
+	// load notes
+	setNotes();
 	
 }
+
+function makeNote(id){
+	var idPieces = id.split('_');
+	var bookName = jQuery(".books option:selected").text();
+	var editNote = jQuery('#edit__'+id).text();
+	if(editNote.length != 0){
+		jQuery('#active_note').val(editNote);
+	}
+	jQuery('.note_verse').html(bookName+' verse '+idPieces[2]);
+	jQuery('#note_verse').val(id);
+	jQuery.UIkit.modal("#note_maker").show();
+}
+function submitNote(){
+	setNote_db().done(function(notes) {
+		if(notes){
+			loadNotes(notes);
+			var localNotes = jQuery.jStorage.get('notes');
+			jQuery.jStorage.deleteKey('notes');
+			jQuery.each(notes, function( vers, note) {
+				localNotes[vers] = note;
+			});
+			jQuery.jStorage.set('notes',localNotes);
+		}
+	});
+}
+function loadNotes(notes){
+	jQuery.each(notes, function( vers, note) {
+		if(jQuery("#"+vers).length != 0) {
+			if(note.length != 0){
+				if(verselineMode == 2){
+					html = '&#160;<span class="verse_nr uk-text-muted ltr" onclick="makeNote(\''+vers+ '\');return false;" data-uk-tooltip="{pos:\'right\'}" title="Edit Note">[&#160;<span  id="edit__'+vers+ '" >'+note+'</span>&#160;]</span>';
+				} else {
+					html = '<br /><span class="verse_nr uk-text-muted ltr" onclick="makeNote(\''+vers+ '\');return false;" data-uk-tooltip="{pos:\'right\'}" title="Edit Note">[&#160;<span  id="edit__'+vers+ '" >'+note+'</span>&#160;]</span>';
+				}
+				jQuery('#note__'+vers).html(html);
+				jQuery('#nr__'+vers).attr('title', 'Edit Note');
+			} else {
+				jQuery('#note__'+vers).html('');
+			}
+		}
+	});
+}
+function setNote_db(){
+	// set note	on server
+	if(user_id > 0 && allowAccount > 0){
+		var request = jQuery('#post_note').serialize();
+		jQuery('#active_note').val('');
+		var getUrl 	= "index.php?option=com_getbible&task=bible.setnote&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+function setNotes(){
+	// set note	in browser memory
+	if(user_id > 0 && allowAccount > 0){
+		var localNotes = jQuery.jStorage.get('notes');
+		if(!localNotes){
+			getNotes().done(function(localNotes) {
+				if(localNotes){
+					loadNotes(localNotes);
+					jQuery.jStorage.set('notes',localNotes);
+				}
+			});
+		} else {
+			loadNotes(localNotes);
+		}
+	}
+	return false;
+}
+function getNotes(){
+	// set bookmark	on server
+	if(user_id > 0 && allowAccount > 0){
+		var request	= '&jsonKey='+jsonKey+'&tu='+openNow;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.getnotes&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+
 function mergeAllBookmarks(){
 	setBookmarks_server(3).done(function(isMerged) {
 		if(isMerged){
@@ -313,7 +407,7 @@ function clearAllBookmarks(){
 	})
 }
 function clearServerBookmarks(){
-	if(user_id > 0){
+	if(user_id > 0 && allowAccount > 0){
 		var getUrl 	= "index.php?option=com_getbible&task=bible.clearbookmarks&format=json";
 		var request = '&jsonKey='+jsonKey+'&tu='+openNow;
 		return jQuery.ajax({
@@ -329,7 +423,7 @@ function clearServerBookmarks(){
 
 function getBookmarks(){
 	// get bookmarks		
-	if(user_id > 0){
+	if(user_id > 0 && allowAccount > 0){
 		var getUrl 	= "index.php?option=com_getbible&task=bible.getbookmarks&format=json";
 		var request	= '&jsonKey='+jsonKey+'&tu='+openNow;
 		return jQuery.ajax({
@@ -344,7 +438,7 @@ function getBookmarks(){
 }
 
 function checkBookmarkSync(){
-	if(user_id > 0){
+	if(user_id > 0 && allowAccount > 0){
 		getBookmarks().done(function(server) {
 			if(!server){
 				server = {not : 'found'};
@@ -436,7 +530,7 @@ function setBookmark(verse) {
 function setBookmarks_server(action){
 	
 	// set bookmark	on server	
-	if(user_id > 0){
+	if(user_id > 0 && allowAccount > 0){
 		var getUrl		= "index.php?option=com_getbible&task=bible.setbookmarks&format=json";
 		var bookMarks 	= jQuery.jStorage.get('bookmarks');
 		if(bookMarks){
@@ -473,7 +567,7 @@ function setBookmarks_server(action){
 function setBookmark_server(publish,mark){
 	
 	// set bookmark	on server	
-	if(user_id > 0){
+	if(user_id > 0 && allowAccount > 0){
 		var getUrl = "index.php?option=com_getbible&task=bible.setBookmark&format=json";
 		if(mark.length > 0){
 			var request = 'bookmark='+mark+'&publish='+publish+'&jsonKey='+jsonKey+'&tu='+openNow;
@@ -830,7 +924,7 @@ function setVerses(json,direction,addTo){
 		jQuery('#scripture').removeClass('text_loading');
 }
 
-// Set Chapter
+// Set Chapter on App page
 function setChapter(json,direction,addTo){
 	listVers = getVerses();
 	jQuery(".booksMenu").text(json.book_name+' '+json.chapter_nr+' ('+json.version+')');
@@ -838,17 +932,36 @@ function setChapter(json,direction,addTo){
 	var output = '<p class="'+direction+'">';
 	if(addTo){	output += '<span class="chapter_nr">'+json.chapter_nr+'</span>'; }
 	jQuery.each(json.chapter, function(index, value) {
-		if(isInArray(value.verse_nr, listVers)){
-			output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '</span>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
-			output += '<span class="highlight">' +value.verse+ '</span>';
+		if(allowAccount > 0){
+			if(isInArray(value.verse_nr, listVers) ){
+				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note">' +value.verse_nr+ '&#160;</span><span oncontextmenu="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '<span class="highlight">' +value.verse+ '</span>';
+			} else {
+				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note">' +value.verse_nr+ '&#160;</span><span oncontextmenu="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += value.verse;
+			}
 		} else {
-			output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '</span>&#160;&#160;<span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
-			output += value.verse;
+			if(isInArray(value.verse_nr, listVers) ){
+				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;</span><span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '<span class="highlight">' +value.verse+ '</span>';
+			} else {
+				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;</span><span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += value.verse;
+			}
 		}
-		if(verselineMode == 2){
-			output += '</span>&#160;';
+		
+		if(allowAccount > 0){
+			if(verselineMode == 2){
+				output += '</span><span id="note__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '"></span>&#160;';
+			} else {
+				output += '</span><span id="note__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '"></span><br/>';
+			}
 		} else {
-			output += '</span><br/>';
+			if(verselineMode == 2){
+				output += '</span>&#160;';
+			} else {
+				output += '</span><br/>';
+			}
 		}
 	});
 	output += '</p>';

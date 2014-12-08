@@ -3,3 +3,5 @@ DROP TABLE `#__getbible_chapters`;
 DROP TABLE `#__getbible_verses`;
 DROP TABLE `#__getbible_versions`;
 DROP TABLE `#__getbible_setbooks`;
+DROP TABLE `#__getbible_bookmarks`;
+DROP TABLE `#__getbible_notes`;
