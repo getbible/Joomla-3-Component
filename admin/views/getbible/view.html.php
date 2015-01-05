@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -19,7 +19,8 @@ class GetbibleViewGetbible extends JViewLegacy
 	 * @var bool import success
 	 */
 	protected $params;
-	protected $versions;
+	protected $tabs;
+	protected $tab_active;
 	
 	/**
 	 * Display the view
@@ -29,14 +30,15 @@ class GetbibleViewGetbible extends JViewLegacy
 		// check for updates
 		GetHelper::update();
 		// Initialise variables.
-		$this->versions	= $this->get('AvailableVersions');
+		$this->tabs 		= $this->get('Tabs');
+		$this->tab_active 	= $this->get('Tabactive');
 		// Get app Params
-		$this->params 	= JComponentHelper::getParams('com_getbible');
+		$this->params 	= JComponentHelper::getParams('com_ipdata');
 		// We don't need toolbar in the modal window.
 		if ($this->getLayout() !== 'modal')
 		{
-			ContentHelper::addSubmenu('getbible');
-			$this->sidebar = JHtmlSidebar::render();
+			/*ContentHelper::addSubmenu('getbible');
+			$this->sidebar = JHtmlSidebar::render();*/
 			$this->addToolbar();
 		}
 		parent::display($tpl);

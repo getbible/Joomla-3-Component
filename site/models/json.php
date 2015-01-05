@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -13,9 +13,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR.'/components/com_getbible/models/getbible.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_getbible/models/get.php';
 
-class GetbibleModelJson extends GetbibleModelGetbible
+class GetbibleModelJson extends GetbibleModelGet
 {
 	
 }

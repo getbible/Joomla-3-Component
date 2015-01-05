@@ -8,24 +8,38 @@
 		<field
 			name="vdm_logo"
 			type="radio"
+			class="btn-group btn-group-yesno"
 			default="1"
 			label="COM_GETBIBLE_CONFIG_PROJECT_VDM_LOGO_LABEL"
 			description="COM_GETBIBLE_CONFIG_PROJECT_VDM_LOGO_DESC">
 			<option
+				value="1">JSHOW</option>
+			<option
 				value="0">JHIDE</option>
+		</field>
+		<field
+			name="vdm_text"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="1"
+			label="COM_GETBIBLE_CONFIG_PROJECT_VDM_TEXT_LABEL"
+			description="COM_GETBIBLE_CONFIG_PROJECT_VDM_TEXT_DESC">
 			<option
 				value="1">JSHOW</option>
+			<option
+				value="0">JHIDE</option>
 		</field>
 		<field
 			name="vdm_link"
 			type="radio"
+			class="btn-group btn-group-yesno"
 			default="1"
-			label="COM_GETBIBLE_CONFIG_PROJECT_VDM_FRONT_LABEL"
-			description="COM_GETBIBLE_CONFIG_PROJECT_VDM_FRONT_DESC">
-			<option
-				value="0">JHIDE</option>
+			label="COM_GETBIBLE_CONFIG_PROJECT_VDM_LINK_LABEL"
+			description="COM_GETBIBLE_CONFIG_PROJECT_VDM_LINK_DESC">
 			<option
 				value="1">JSHOW</option>
+			<option
+				value="0">JHIDE</option>
 		</field>
 		<field
 			name="vdm_name"
@@ -905,6 +919,19 @@
 		name="global"
 		label="COM_GETBIBLE_CONFIG_GLOBAL_FIELDSET_LABEL"
 		description="COM_GETBIBLE_CONFIG_GLOBAL_FIELDSET_DESC">
+		
+		<field
+			name="log"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_LOGGING_LABEL"
+			description="COM_GETBIBLE_CONFIG_LOGGING_DESC">
+			<option
+				value="1">COM_GETBIBLE_CONFIG_ON</option>
+			<option
+				value="0">COM_GETBIBLE_CONFIG_OFF</option>
+		</field>
 		
 		<field name="jsonQueryOptions"
 			type="list"

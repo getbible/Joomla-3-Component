@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later</license>
 	<authorEmail>llewellyn@vdm.io</authorEmail>
 	<authorUrl>www.getbible.net</authorUrl>
-	<version>1.0.5</version>
+	<version>1.0.6</version>
 	<description>The Get Bible API for Joomla</description>
 
 	<languages>
@@ -56,9 +56,13 @@
 	<administration>
 		<menu view="getbible" alt="COM_GETBIBLE">COM_GETBIBLE</menu>
 		<submenu>
-			<menu view="setbooks" alt="Set Books">COM_GETBIBLE_SET_BOOKS</menu>
-			<menu view="import" alt="Install">COM_GETBIBLE_IMPORT</menu>
-			<menu view="versions" alt="Versions Installed">COM_GETBIBLE_VERSIONS</menu>
+			<menu link="option=com_getbible&amp;view=getbible&amp;tab=1">COM_GETBIBLE_INFO</menu>
+			<menu link="option=com_getbible&amp;view=getbible&amp;tab=2">COM_GETBIBLE_API_DOC</menu>
+			<menu link="option=com_getbible&amp;view=getbible&amp;tab=3">COM_GETBIBLE_VERSIONS</menu>
+			<menu link="option=com_getbible&amp;view=getbible&amp;tab=4">COM_GETBIBLE_ACTIVITY</menu>
+			<menu view="setbooks" alt="Set Books">COM_GETBIBLE_BOOK_NAMES</menu>
+			<menu view="import" alt="Install">COM_GETBIBLE_INSTALL_BIBLES</menu>
+			<menu view="versions" alt="Versions Installed">COM_GETBIBLE_INSTALLED_BIBLES</menu>
 		</submenu>
 		<files folder="admin">
 			<filename>config.xml</filename>
@@ -72,6 +76,7 @@
 			<folder>tables</folder>
 			<folder>sql</folder>
 			<folder>views</folder>
+			<folder>assets</folder>
 		</files>
 		<languages>
 			<language tag="en-GB">languages/admin/en-GB.com_getbible.sys.ini</language>

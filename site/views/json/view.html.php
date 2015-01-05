@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -16,6 +16,7 @@ class GetbibleViewJson extends JViewLegacy
 	/**
 	 * @var bool import success
 	 */
+	protected $params;
 	protected $item;
 	protected $request;
 
@@ -27,30 +28,30 @@ class GetbibleViewJson extends JViewLegacy
 		// Initialise variables.
 		$this->item		= $this->get('Item');
 		$this->request	= $this->get('Request');
-				
-		// Include the JLog class.
-		jimport('joomla.log.log');
+		// Get app Params
+		$this->params 		= JFactory::getApplication()->getParams();
 		
-		// get ip for log
-		$ip = $this->getUserIP();
-		
-		// Add the logger.
-		JLog::addLogger(
-			 // Pass an array of configuration options
-			array(
-					// Set the name of the log file
-					'text_file' => 'getbible_query.php',
-					// (optional) you can change the directory
-					//'text_file_path' => 'logs'
-			 ),
-			 JLog::NOTICE
-		);
-		
-		// start logging...
-		$log = 'query->'.$this->request->query.' version->'.$this->request->version;
-		$log .= ' ip->'.$ip.'';
-		JLog::add( $log, JLog::NOTICE, 'json_'.$this->request->type );
-		
+		if($this->params->get('log')){
+			// Include the JLog class.
+			jimport('joomla.log.log');
+			// get ip for log
+			$ip = $this->getUserIP();
+			// Add the logger.
+			JLog::addLogger(
+				 // Pass an array of configuration options
+				array(
+						// Set the name of the log file
+						'text_file' => 'getbible_query.php',
+						// (optional) you can change the directory
+						//'text_file_path' => 'logs'
+				 ),
+				 JLog::NOTICE
+			);
+			// start logging...
+			$log = 'query->'.$this->request->query.' version->'.$this->request->version;
+			$log .= ' ip->'.$ip.'';
+			JLog::add( $log, JLog::NOTICE, 'json_'.$this->request->type );
+		}
 		parent::display($tpl);
 	}
 

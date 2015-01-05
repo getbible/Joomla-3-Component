@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -59,7 +59,7 @@ class GetbibleViewVersions extends JViewLegacy
 		
 		JHtml::stylesheet('com_getbible'.DS.'admin.stylesheet.css', array(), true, false, false);
 		
-		JToolBarHelper::title(JText::_('COM_GETBIBLE_VERSIONS_TITLE'), 'cog versions');
+		JToolBarHelper::title(JText::_('COM_GETBIBLE_VERSIONS_TITLE'), 'book versions');
 		
 		if ($canDo->get('core.create')) {
 			// JToolBarHelper::addNew('version.add');

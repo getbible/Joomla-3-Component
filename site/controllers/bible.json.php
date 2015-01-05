@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -19,7 +19,11 @@ class GetbibleControllerBible extends JControllerLegacy
 	public function __construct($config)
 	{
 		parent::__construct($config);
-		
+		// make sure all json stuff are set
+		JFactory::getDocument()->setMimeEncoding( 'application/json' );
+		JResponse::setHeader('Content-Disposition','attachment;filename="gebible.json"');
+		JResponse::setHeader("Access-Control-Allow-Origin", "*");
+		// load the tasks
 		$this->registerTask('books', 'bible');
 		$this->registerTask('chapter', 'bible');
 		$this->registerTask('defaults', 'bible');

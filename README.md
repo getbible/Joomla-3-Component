@@ -5,7 +5,7 @@ What is this?
 ---------------------
 * This is a Bible Component for Joomla! version 3.x
 * GetBible! [Official site](http://getBible.net)
-* Detailed changes in the [Changelog](https://github.com/getbible/joomla-3/commits/master)
+* Detailed changes in the [Changelog](https://github.com/getbible/Joomla-3-Component/commits/master)
 
 What is getBible?
 ---------------------
@@ -41,7 +41,7 @@ Updates are free!
 Where can you get support and help?
 ---------------------
 * [Visit our Support Desk](http://getbible.net/support)
-* Report and [issue](https://github.com/getbible/Joomla-3/issues)
+* Report an [issue](https://github.com/getbible/Joomla-3/issues)
 * Make a [function request](https://github.com/getbible/Joomla-3/issues)
 
 Copyright:

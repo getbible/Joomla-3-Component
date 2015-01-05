@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -15,897 +15,290 @@ jimport('joomla.application.component.helper');
 class GetbibleModelGetbible extends JModelList
 {
 	protected $app_params;
-	protected $request_query;
-	protected $request_type;
-	protected $request_version;
+	protected $tab_id;
 	
 	public function __construct() 
 	{		
 		parent::__construct();
 		
 		// get params
-		$this->app_params = JComponentHelper::getParams('com_getbible');
-		
+		$this->app_params	= JComponentHelper::getParams('com_getbible');
+		// get tab ID
+		$jinput				= JFactory::getApplication()->input;
+		$this->tab_id 		= $jinput->get('tab', 0, 'INT');
 	}
 	
-	public function getItem()
-	{		
-		if($this->app_params->get('jsonAPIaccess') && $this->app_params->get('jsonQueryOptions') == 1){
-
-			// Get the input data
-			$jinput 	= JFactory::getApplication()->input;
-			$URLkey 	= $jinput->get('key', NULL, 'ALNUM');
-			$APIkey 	= $this->app_params->get('jsonAPIkey');
-			$appKey 	= $jinput->get('appKey', NULL, 'ALNUM');
-			$token 		= JSession::getFormToken();
-	
-		} else {
-			$URLkey = 'free';
-			$APIkey = 'free';
-		}
-		if ($URLkey == $APIkey || $appKey == $token){	
-			// load request
-			$version = $this->getV();
-			$request = $this->getP($version);
-			$search  = $this->searchFor();
-			if ($request) {
-				$answer = $this->getPassage($request,$version);
-				return $answer;
-			} elseif ($search){
-				$type 	= $this->searchType();
-				$answer = $this->getSearch($search, $type, $version);
-				return $answer;
-			} else {
-				return NULL;
+	public function getTabs()
+	{	
+		$APIkey = $this->getAPIkey();
+		
+		$div_cPanel = '<div class="span9">
+						<h2 class="nav-header">'.JText::_('COM_GETBIBLE_CPANEL_HEADER').'</h2>
+                        <div class="well well-small">
+							'. $this->setIcons() .'
+							<div class="clearfix"></div>
+                    	</div>
+                    </div>
+                    <div class="span3">
+                        <div>
+							<h2 class="nav-header">'.JText::_('COM_GETBIBLE_EXTENSION_DETAILS').'</h2>
+                            <a target="_blank" style="float: right;"href="https://www.vdm.io/joomla" title="Vast Development Method"><img src="/administrator/components/com_getbible/assets/images/vdm.jpg" height="300"/></a>
+							<ul class="list-group">
+  								<li class="list-group-item"><img src="../media/com_getbible/images/icon.png" height="21"/> &#8482;</li>
+  								<li class="list-group-item">Copyright &#169; <a href="http://vdm.io" target="_blank">Vast Development Method</a>.<br />All rights reserved.</li>
+								<li class="list-group-item">Distributed under the GNU GPL <br />Version 2 or later</li>
+								<li class="list-group-item">See <a href="https://getbible.net/license" target="_blank">License details</a></li>';
+		$workers = $this->getWorkers();
+		if(count($workers)){
+			foreach($workers as $worker){						
+				$div_cPanel .= '<li class="list-group-item">'.$worker.'</li>';
 			}
-		} return NULL;
-		
-	}
-	
-	public function getRequest()
-	{
-		// start setup of Request Object
-		$request 			= new StdClass;
-		$request->query 	= $this->request_query;
-		$request->type 		= $this->request_type;
-		$request->version 	= $this->request_version;
-		
-		return $request;
-	}
-	protected function getSearch($search, $type, $version)
-	{
-		$how = $this->searchCriteria();
-		// Get a db connection.
-		$db = JFactory::getDbo();
-		// set default version
-		if (!$version){
-			$version = 'kjv';
 		}
-		// case sensitive swith
-		if($how['case'] == 2){ 
-			$case = 'BINARY';
+		$div_cPanel .= '</ul></div></div>';
+					
+		$div_info = '<div class="span12">
+                            <a target="_blank" style="float: right;"href="http://getbible.net/" title="Get Bible"><img src="../media/com_getbible/images/Bible.jpg" height="233"/></a>
+                            <div>
+                                <p>The purpose with this application is to take the Word of God to every person in their own language for free! We would also like it to be fast, stable, and easy to use.</p>
+                                
+                                <p>Get Bible is a member of <a href="http://www.wefeargod.com/" title="The Fear of God" target="_blank">we fear God</a> and also supports the <a href="http://www.whybible.com/" title="Why Bible" target="_blank">Why? Bible</a> initiative. We therefore strongly affirm that we choose to believe the Bible because it is a reliable collection of historical documents written by eyewitnesses during the lifetime of other eyewitnesses. They report supernatural events that took place in fulfillment of specific prophesies and claim that their writings are divine rather than human in origin. We believe the Bible is the verbally inspired Word of God and is the sole, infallible rule of faith and practice.</p>
+                                
+                                <h2 class="nav-header">This is a <a href="http://www.mountainofsuccess.com/" title="Success" target="_blank">Mountain of Success</a> project.</h2>
+                                <div>
+                                  <h3>What is Success? Well God\'s word says:</h3>
+                                  <blockquote>This book of the law shall not depart out of thy mouth; but   thou shalt meditate therein day and night, that thou mayest observe to   do according to all that is written therein: for then thou shalt make   thy way prosperous, and then thou shalt have good success. ~ Joshua 1:8</blockquote>
+                                  <p>Therefore a mountain of success can only be found in obedience to God. Looking back at the cross of Jesus planted on Golgotha; we see a mountain of success. Therefore we read in the scriptures the following</p>
+                                  <p> </p>
+                                  <blockquote>...and the stone that smote the image became a great mountain, and filled the whole earth. ~  Daniel 2:35</blockquote>
+                                  <p>Mountain of Success is an online Christian mission initiative where this victory of our Lord is proclaimed.</p>
+                                  <p>So it is all about God\'s Success!</p>
+                                </div>
+                            </div>
+                        </div>';
+					
+		$div_APIDoc = '<div class="span12">
+						<h1>'.JText::_('COM_GETBIBLE_API_HEADER').'</h1>
+                            <div>
+                            
+                                <h2>How does the API Work?</h2>
+        
+                                <p>The API render the scripture in JSON, in many different translation/languages.</p>
+                                <p>Getting a JSON response from the set url "http://getbible.net/json?" with a simple query string "p=Jn3:16" forms the base of the API.</p>
+                                
+                                <h2>Parameters</h2>
+                                
+                                <p>There are just two parameters available, both are self-explanatory, <strong>passage</strong> and <strong>version</strong>.
+                                
+								<p>Yet you can also use <strong>v</strong>, <strong>ver</strong>, <strong>lang</strong> and <strong>translation</strong> in place of <i>version</i> and <strong>p</strong>, <strong>text</strong>, <strong>scrip</strong> and <strong>scripture</strong> in place of <i>passage</i>.</p>
+								<p> You can call a book, chapter or a single verse, or even a string of verses. When the <strong>Version</strong> is omitted the KJV is provided by default. </p>
+								<p>The following are all valid:</p>
+								<ul>
+								  <li><a target="_blank" href="http://getbible.net/json?passage=1Jn3:16">http://getbible.net/json?passage=Jn3:16</a></li>
+								  <li><a target="_blank" href="http://getbible.net/json?p=James">http://getbible.net/json?p=James</a></li>
+								  <li><a target="_blank" href="http://getbible.net/json?text=ps119">http://getbible.net/json?text=ps119</a></li>
+								  <li><a target="_blank" href="http://getbible.net/json?scrip=Acts%203:17-4;2:1">http://getbible.net/json?scrip=Acts 3:17-4;2:1</a></li>
+								  <li><a target="_blank" href="http://getbible.net/json?scripture=Psa%20119:4-16;23:1-6&v=amp">http://getbible.net/json?scripture=Psa 119:4-16;23:1-6&v=amp</a></li>
+								  <li><a target="_blank" href="http://getbible.net/json?passage=Acts%2015:1-5,%2010,%2015&version=aov">http://getbible.net/json?passage=Acts 15:1-5, 10, 15&version=aov</a></li>
+								</ul>
+								<h2>VERY IMPORTANT!</h2>
+								<p>Once you have installed your own Bibles on your own website/database via the <a href="index.php?option=com_getbible&view=import">Install Bibles</a> menu you no longer need to use getBible.net\'s API, but can then use your own API.</p>
+								<p>Using the local API will make your application faster and more stable. Please watch the following <a href="https://getbible.net/main-component?tab=two" target="_blank">video</a> form more info.<br />
+								You can only query versions that is installed locally! Check the <a href="index.php?option=com_getbible&view=versions">Installed Bibles</a> list to see what versions is installed. If the list is empty then no Bibles have yet been installed locally.</p>
+								<p>Remeber to first setup the <b>json page</b>, so that '.JURI::root().'json is a published menu item on the front-end of your website.</p>
+								<p>Then the following are all valid:</p>
+								<ul>
+								  <li><a target="_blank" href="'.JURI::root().'index.php?option=com_getbible&view=json&passage=1Jn3:16">'.JURI::root().'json?passage=Jn3:16</a></li>
+								  <li><a target="_blank" href="'.JURI::root().'index.php?option=com_getbible&view=json&p=James">'.JURI::root().'json?p=James</a></li>
+								  <li><a target="_blank" href="'.JURI::root().'index.php?option=com_getbible&view=json&text=ps119">'.JURI::root().'json?text=ps119</a></li>
+								  <li><a target="_blank" href="'.JURI::root().'index.php?option=com_getbible&view=json&scrip=Acts%203:17-4;2:1">'.JURI::root().'json?scrip=Acts 3:17-4;2:1</a></li>
+								  <li><a target="_blank" href="'.JURI::root().'index.php?option=com_getbible&view=json&scripture=Psa%20119:4-16;23:1-6">'.JURI::root().'json?scripture=Psa 119:4-16;23:1-6</a></li>
+								  <li><a target="_blank" href="'.JURI::root().'index.php?option=com_getbible&view=json&passage=Acts%2015:1-5,%2010,%2015">'.JURI::root().'json?passage=Acts 15:1-5, 10, 15</a></li>
+								</ul>
+								<h2>Now for some Code!</h2>
+								<p>Here is a jQuery script to make an API call from your own application</p>
+							
+							<pre>';
+		$div_APIDoc .= "
+jQuery.ajax({
+	url:'http://getbible.net/json',
+	dataType: 'jsonp',
+	data: 'p=John1&v=kjv',
+	jsonp: 'getbible',
+	success:function(json){
+		// set text direction
+		if (json.direction == 'RTL'){
+			var direction = 'rtl';
 		} else {
-			$case = ' ';
+			var direction = 'ltr'; 
 		}
-		
-		// Create a new query object.
-		$query = $db->getQuery(true);
-			
-		// Set Query.
-		$query->select($db->quoteName(array('a.verse','a.verse_nr','a.chapter_nr','a.book_nr')));
-		$query->from('#__getbible_verses AS a');	
-		$query->where($db->quoteName('a.version') . ' = '. $db->quote($version));
-		
-		if($how['search'] == 2){ // 2 = ANY WORDS
-			if($how['match'] == 2){
-				// 2 = partial match
-				if (strpos($search,' ') !== false) {
-					$words = explode(' ', $search);
-					$dbSearch = '('.$case.' a.verse LIKE ';
-					$i = 0;
-					foreach ($words as $word){
-						if (!$i){
-							$dbSearch .= $db->quote('%' . $db->escape($word, true) . '%');
-						} else {
-							$dbSearch .= ' OR '.$case.' a.verse LIKE '.$db->quote('%' . $db->escape($word, true) . '%');
-						}
-						$i++;
-					}
-					$dbSearch .= ')';
-					$query->where($dbSearch);
+		// check response type
+		if (json.type == 'verse'){
+			var output = '';
+				jQuery.each(json.book, function(index, value) {
+					output += '&lt;center&gt;&lt;b&gt;'+value.book_name+'&#160;'+value.chapter_nr+'&lt;/b&gt;&lt;/center&gt;&lt;br/&gt;&lt;p class=\"'+direction+'\"&gt;';
+					jQuery.each(value.chapter, function(index, value) {
+						output += '&#160;&#160;&lt;small class=\"ltr\"&gt;' +value.verse_nr+ '&lt;/small&gt;&#160;&#160;';
+						output += value.verse;
+						output += '&lt;br/&gt;';
+					});
+					output += '&lt;/p&gt;';
+				});
+			jQuery('#scripture').html(output);  // <---- this is the div id we update
+		} else if (json.type == 'chapter'){
+			var output = '&lt;center&gt;&lt;b&gt;'+json.book_name+'&#160;'+json.chapter_nr+'&lt;/b&gt;&lt;/center&gt;&lt;br/&gt;&lt;p class=\"'+direction+'\"&gt;';
+			jQuery.each(json.chapter, function(index, value) {
+				output += '&#160;&#160;&lt;small class=\"ltr\"&gt;' +value.verse_nr+ '&lt;/small&gt;&#160;&#160;';
+				output += value.verse;
+				output += '&lt;br/&gt;';
+			});
+			output += '&lt;/p&gt;';
+			jQuery('#scripture').html(output);  // <---- this is the div id we update
+		} else if (json.type == 'book'){
+			var output = '';
+			jQuery.each(json.book, function(index, value) {
+				output += '&lt;center&gt;&lt;b&gt;'+json.book_name+'&#160;'+value.chapter_nr+'&lt;/b&gt;&lt;/center&gt;&lt;br/&gt;&lt;p class=\"'+direction+'\"&gt;';
+				jQuery.each(value.chapter, function(index, value) {
+					output += '&#160;&#160;&lt;small class=\"ltr\"&gt;' +value.verse_nr+ '&lt;/small&gt;&#160;&#160;';
+					output += value.verse;
+					output += '&lt;br/&gt;';
+				});
+			output += '&lt;/p&gt;';
+		});
+		if(addTo){
+			jQuery('#scripture').html(output);  // <---- this is the div id we update
+		}
+	},
+	error:function(){
+		jQuery('#scripture').html('&lt;h2&gt;No scripture was returned, please try again!&lt;/h2&gt;'); // <---- this is the div id we update
+	 },
+});  
+		</pre>
+		";
+		$div_APIDoc .= '<p>To see more example code, take a look at the [ <a href="https://github.com/getbible/Joomla-3-Component/blob/master/media/js/app.js#L713" target="_blank">App Page</a> ] javascript on Github.</p>
+						<p>If you are a Brother in the Lord and an advanced programmer we can do with some help, please contact me at <a href="mailto:'.$this->app_params->get("emailGlobal").'" title="'.$this->app_params->get("nameGlobal").'">'.$this->app_params->get("emailGlobal").'</a></p>
+										
+										<h2>Restrictions</h2>
+										<p>All of the texts currently available are in the public domain, so there are no restrictions on how the results can be stored or used.</p>
+									</div>
+							</div>';
+		// set the version tab
+		$div_version = '<div class="span12">
+					<p>Most of the translations are provided by The Unbound Bible. The code that should be passed as the version parameter is shown in brackets.</p>
+					<p>If you want a translation that is not currently listed below, contact me at <a href="mailto:'.$this->app_params->get("emailGlobal").'" title="'.$this->app_params->get("nameGlobal").'">'.$this->app_params->get("emailGlobal").'</a>. <br/>Please note that version that are currently in copyright (e.g. NIV, NKJV, etc.) cannot be added unless you are able to secure copyright permission. </p>
+					<p><a href="http://www.4-14.org.uk/xml-bible-web-service-api" target="_blank">Permission</a> has been granted for the NASB and Amplified Bibles.</p>';
+		$versions = $this->getAvailableVersions();
+        if($versions){
+			$div_version .= '<ul>';
+        	foreach($versions as $version){
+				if($version['not']){
+                	$div_version .= '<li>'. $version["versionLang"].' '. $version["versionName"].' ('.$version['versionCode'].') </li>';
 				} else {
-					$dbSearch = $db->quote('%' . $db->escape($search, true) . '%');	
-					$query->where('( '.$case.' a.verse LIKE ' . $dbSearch . ')');
-				}		
-			} elseif($how['match'] == 1) {
-				// 1 = exact match
-				if (strpos($search,' ') !== false) {
-					$words = explode(' ', $search);
-					$dbSearch = '( ' . $case . ' a.verse  REGEXP ';
-					$i = 0;
-					foreach ($words as $word){
-						if (!$i){
-							$dbSearch .=  $db->quote('[[:<:]]' . $db->escape($word, true). '[[:>:]]');
-						} else {
-							$dbSearch .= ' OR '.$case.' a.verse REGEXP '. $db->quote('[[:<:]]' . $db->escape($word, true). '[[:>:]]');
-						}
-						$i++;
-					}
-					$dbSearch .= ')';
-					$query->where($dbSearch);
+					$div_version .= '<li><a target="_blank" href="index.php?option=com_getbible&view=versions">'. $version["versionLang"].' '. $version["versionName"].' ('.$version['versionCode'].')</a></li>';
+				}
+			}
+			$div_version .= '</ul>';
+		} else {
+			$div_version .= '<p>Get Bible is offline, so we can\'t check what versions is available at this time.</p>';
+		}
+        $div_version .= '</div>';
+		
+		$div_activity = '<div class="span12"><h2>View Activity</h2><div class="well well-small">';
+		if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_getbible'.DS.'helpers'.DS.'activityCron.php')) {
+			// plugin was installed bit not active
+			$div_activity .= '<p>You need to <a href="'.JURI::base().'index.php?option=com_plugins&view=plugins&filter_search=System - getBible Activity Cron" >activate</a> the <b>System - getBible Activity Cron</b> to view the API activiy.</p>';
+		} else {
+			$div_activity .= '<p>You need to <a href="https://getbible.net/downloads?tab=plugins" target="_blank">install</a> the <b>System - getBible Activity Cron</b> to view the API activiy.</p>';
+		}
+		$div_activity .= '</div></div>';
+		
+		$tabs 				= array();
+		// cPanel setup
+		$tab_cPanel 		= new stdClass();	
+		$tab_cPanel->alias 	= 'cpanel';
+		$tab_cPanel->name 	= 'COM_GETBIBLE_CPANEL';
+		$tab_cPanel->div 	= $div_cPanel;
+		$tabs[0]			= $tab_cPanel;
+		// About us
+		$tab_info			= new stdClass();
+		$tab_info->alias 	= 'info';
+		$tab_info->name 	= 'COM_GETBIBLE_INFO';
+		$tab_info->div 		= $div_info;
+		$tabs[1]			= $tab_info;
+		// API setup
+		$tab_APIDoc			= new stdClass();
+		$tab_APIDoc->alias	= 'api_doc';
+		$tab_APIDoc->name 	= 'COM_GETBIBLE_API_DOC';
+		$tab_APIDoc->div 	= $div_APIDoc;
+		$tabs[2]			= $tab_APIDoc;
+		// versions
+		$tab_version 		= new stdClass();
+		$tab_version->alias = 'versions';
+		$tab_version->name 	= 'COM_GETBIBLE_VERSIONS';
+		$tab_version->div 	= $div_version;
+		$tabs[3]			= $tab_version;
+		// versions
+		$tab_activity 			= new stdClass();
+		$tab_activity->alias	= 'activity';
+		$tab_activity->name 	= 'COM_GETBIBLE_ACTIVITY';
+		$tab_activity->div 		= $div_activity;
+		$tabs[4]				= $tab_activity;
+						
+		$mainframe = JFactory::getApplication();
+		//Trigger Event - getbible_bk_onBefore_cPanel_display
+		$mainframe->triggerEvent('getbible_bk_onBefore_cPanel_display',array('tabs'=>&$tabs));
+		
+		return $tabs;
+	}
+	
+	public function getTabactive()
+	{
+		switch($this->tab_id){
+			case 0:
+			return 'cpanel';
+			break;
+			case 1:
+			return 'info';
+			break;
+			case 2:
+			return 'api_doc';
+			break;
+			case 3:
+			return 'versions';
+			break;
+			case 4:
+			return 'activity';
+			break;
+			default:
+			return 'cpanel';
+			break;
+		}
+		
+	}
+	
+	protected function getWorkers()
+	{
+		$workForce = array();
+		// get all workers
+		$workers = range(1,4);
+		foreach($workers as $nr){
+			if($this->app_params->get("showWorker".$nr) == 1 || $this->app_params->get("showWorker".$nr) == 3){
+				if($this->app_params->get("useWorker".$nr) == 1){
+					$link_front = '<a href="mailto:'.$this->app_params->get("emailWorker".$nr).'" target="_blank">';
+					$link_back = '</a>';
+				} elseif($this->app_params->get("useWorker".$nr) == 2) {
+					$link_front = '<a href="'.$this->app_params->get("linkWorker".$nr).'" target="_blank">';
+					$link_back = '</a>';
 				} else {
-					$dbSearch_1 = $case . ' a.verse LIKE ' . $db->quote('% ' . $db->escape($search, true) . ' %');
-					$dbSearch_2 = 'OR '. $case . ' a.verse LIKE ' . $db->quote($db->escape($search, true) . ' %');
-					$dbSearch_3 = 'OR '. $case . ' a.verse LIKE ' . $db->quote('% ' . $db->escape($search, true));
-					$query->where('( '. $dbSearch_1 . $dbSearch_2 . $dbSearch_3 . ')');	
-				}			
-			}
-		} elseif ($how['search'] == 3){ // 3 = EXACT PHRASE
-			if($how['match'] == 2){
-				// 2 = partial match
-				$dbSearch = $db->quote('%' . $db->escape($search, true) . '%');	
-				$query->where('( '.$case.' a.verse LIKE ' . $dbSearch . ')');		
-			} elseif($how['match'] == 1) {
-				// exact match
-				$dbSearch =  $case . ' a.verse  REGEXP ' . $db->quote('[[:<:]]' . $db->escape($search, true). '[[:>:]]');
-				$query->where('( '. $dbSearch . ')');			
-			}
-		} elseif ($how['search'] == 1){ // 1 = ALL WORDS
-			if($how['match'] == 2){
-				// 2 = partial match
-				if (strpos($search,' ') !== false) {
-					$words = explode(' ', $search);
-					foreach ($words as $word){
-						$dbSearch = $db->quote('%' . $db->escape($word, true) . '%');	
-						$query->where('( '.$case.' a.verse LIKE ' . $dbSearch . ')');
-					}
-				} else {
-					$dbSearch = $db->quote('%' . $db->escape($search, true) . '%');	
-					$query->where('( '.$case.' a.verse LIKE ' . $dbSearch . ')');
-				}		
-			} elseif($how['match'] == 1) {
-				// 1 = exact match
-				if (strpos($search,' ') !== false) {
-					$words = explode(' ', $search);
-					foreach ($words as $word){
-						$dbSearch	=  $case.' a.verse REGEXP '. $db->quote('[[:<:]]' . $db->escape($word, true). '[[:>:]]');
-						$query->where('( '. $dbSearch . ')');
-					}
-				} else {
-					$dbSearch	=  $case.' a.verse REGEXP '. $db->quote('[[:<:]]' . $db->escape($search, true). '[[:>:]]');
-					$query->where('( '. $dbSearch . ')');
-				}			
-			}
-		}
-		// set default type
-		if (!$type){
-			$type = 'all';
-		}
-		// load as per type option	
-		if($type == 'all'){  
-			// if search the whole bible
-		} elseif($type == 'ot'){  
-			// if search the old Testament
-			$books = range(1, 39);
-			$query->where($db->quoteName('a.book_nr') . ' IN ('.implode(',', $books).')');
-			
-		} elseif($type == 'nt'){  
-			//if search the new Testament
-			$books = range(40, 66);
-			$query->where($db->quoteName('a.book_nr') . ' IN ('.implode(',', $books).')');
-			
-		} else {
-			// if search only a book
-			$found = false;
-			// load all books
-			$books = $this->setBooks($version);
-			// set query book number and name
-			foreach ($books as $book){
-				if(!$found){						
-					$name = mb_strtoupper(preg_replace('/\s+/', '', $type), 'UTF-8');
-					foreach($book['book_names'] as $key => $value){
-						if ($value){
-							$value = mb_strtoupper(preg_replace('/\s+/', '', $value), 'UTF-8');
-							if ($name == $value){
-								$book_nr = (int)$book['nr']; $found = true; break;					
-							} else {
-								$found = false;
-							}
-						}
-					}
+					$link_front = '';
+					$link_back = '';
 				}
-				if ($found){
-					break;	
-				}
-			}
-			
-			if($found){
-				$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
+				$workForce[] = $this->app_params->get("titleWorker".$nr).' '.$link_front.$this->app_params->get("nameWorker".$nr).$link_back;
 			}
 		}
-		
-		$query->where($db->quoteName('a.access') . ' = 1');
-		$query->where($db->quoteName('a.published') . ' = 1');
-		$query->order($db->quoteName('a.book_nr') . ' ASC');
-		
-		// echo nl2br(str_replace('#__','api_',$query)); die;
-		$db->setQuery($query);
-		// Load the results
-		$verses = $db->loadAssocList();
-		$counter = 0;
-		if($verses){
-			foreach($verses as $verse){
-				$key 		= $verse['book_nr'].'_'.$verse['chapter_nr'];
-				// group verses
-				$chapters[$key][$verse['verse_nr']] = array('verse_nr'=>$verse['verse_nr'], 'verse'=>$verse['verse']);
-				$counter++;
-				
-			}
-			foreach($chapters as $key => $chapter){
-				list($book_nr,$chapter_nr,) = explode('_',$key);
-				// get book name
-				$book_name 	= $this->getBook($book_nr,$version);
-				$book_ref	= $this->getBookRef($book_nr,$version);
-				// load in to result set
-				$returns['book'][] = array('version' => $version, 'book_name'=>$book_name, 'book_ref'=>$book_ref, 'book_nr'=>$book_nr, 'chapter_nr'=>$chapter_nr, 'chapter'=>$chapter);
-				
-			}
-			// load direction
-			$direction = $this->getDirection($version);
-			$returns['direction'] 	= $direction;
-			// set the number of results
-			$returns['counter'] 	= $counter;
-			// set type
-			$returns['type'] 		= 'search';
-			return json_encode($returns);
-		} return false;
+		return $workForce;
 	}
 	
-	protected function getPassage($req,$version)
-	{
-		// Get a db connection.
-		$db = JFactory::getDbo();
-		if (!$version){
-			$version = 'kjv';
-		}
-		$found = false;
-		foreach($req as $get){
-			
-			if($get['type'] == 'n'){  // <--- if a book is requeted
-				// Create a new query object.
-				$query = $db->getQuery(true);
-				// Order it by the ordering field.
-				$query->select($db->quoteName('book'));
-				$query->from($db->quoteName('#__getbible_books'));
-				$query->where($db->quoteName('book_nr') . ' = '. $db->quote($get['book_nr']));
-				$query->where($db->quoteName('version') . ' = '. $db->quote($version));
-				$query->where($db->quoteName('access') . ' = 1');
-				$query->where($db->quoteName('published') . ' = 1');
-				//echo nl2br(str_replace('#__','api_',$query)); die;
-				// Reset the query using our newly populated query object.
-				$db->setQuery($query);
-				 
-				// Load the results
-				$results =  $db->loadResult();
-				if($results){
-					$results = substr($results, 1, -1);
-					// load direction
-					$direction = $this->getDirection($version);
-					// load book name
-					$bookName	= $this->getBook($get['book_nr'],$version);
-					// load book
-					$json 		= '{"type":"book","version":"'.$version.'","book_name":"'.$bookName.'","book_nr":'.(int)$get['book_nr'].', "direction":"'.$direction.'", '.$results.'}';
-					return $json;
-				} return false;
-			} elseif ($get['type'] == 'nc'){  // <--- if a chapter is requeted
-				// Create a new query object.
-				$query = $db->getQuery(true);
-				// load query
-				$query->select($db->quoteName('chapter'));
-				$query->from($db->quoteName('#__getbible_chapters'));
-				$query->where($db->quoteName('chapter_nr') . ' = '. $db->quote($get['chapter_nr']));
-				$query->where($db->quoteName('book_nr') . ' = '. $db->quote($get['book_nr']));
-				$query->where($db->quoteName('version') . ' = '. $db->quote($version));
-				$query->where($db->quoteName('access') . ' = 1');
-				$query->where($db->quoteName('published') . ' = 1');
-				//echo nl2br(str_replace('#__','api_',$query)); die;
-				 
-				// Reset the query using our newly populated query object.
-				$db->setQuery($query);
-				
-				$results =  $db->loadResult();
-				if($results){
-					$results = substr($results, 1, -1);
-					// load direction
-					$direction = $this->getDirection($version);
-					// load book name
-					$bookName	= $this->getBook($get['book_nr'],$version);
-					// load chapter
-					$json 		= '{"type":"chapter","version":"'.$version.'","book_name":"'.$bookName.'","book_nr":'.(int)$get['book_nr'].',"chapter_nr":'.$get['chapter_nr'].', "direction":"'.$direction.'", '.$results.'}';
-					return $json;
-				} return false;
-				
-			} elseif ($get['type'] == 'ncv') {   // <--- if verses is requeted
-				$chapter 			= $this->getVerses($get,$version);
-				if($chapter){
-					// load book name
-					$bookName			= $this->getBook($get['book_nr'],$version);
-					// load verses
-					$returns['book'][] 	= array('book_name'=>$bookName, 'book_nr'=>$get['book_nr'], 'chapter_nr'=>$get['chapter_nr'], 'chapter'=>$chapter);
-					$found = true;
-				}
-			}
-		}
-		if($found){
-			// load direction
-			$direction = $this->getDirection($version);
-			$returns['direction'] = $direction;
-			// set type
-			$returns['type'] = 'verse';
-			$returns['version'] = $version;
-			return json_encode($returns);
-		} return false;
-	}
-	
-	protected function getVerses($req,$ver)
-	{
-
-		// Get a db connection.
-		$db = JFactory::getDbo();
-		if ($req['verse_nr'][1]){
-			$verses = range($req['verse_nr'][0], $req['verse_nr'][1]);
-		} else {
-			$verses[] = $req['verse_nr'][0];
-		}
-		// Create a new query object.
-		$query = $db->getQuery(true);
-		// Order it by the ordering field.
-		$query->select($db->quoteName(array('verse')));
-		$query->from($db->quoteName('#__getbible_verses'));
-		$query->where($db->quoteName('chapter_nr') . ' = '. $db->quote($req['chapter_nr']));
-		$query->where($db->quoteName('book_nr') . ' = '. $db->quote($req['book_nr']));
-		$query->where($db->quoteName('version') . ' = '. $db->quote($ver));
-		$query->where($db->quoteName('verse_nr') . ' IN ('.implode(',', $verses).')');
-		$query->where($db->quoteName('access') . ' = 1');
-		$query->where($db->quoteName('published') . ' = 1');
-		$query->order('verse_nr ASC');
-		//echo nl2br(str_replace('#__','api_',$query)); die;
-		 
-		// Reset the query using our newly populated query object.
-		$db->setQuery($query);
-		 
-		// Load the results
-		$verses = $db->loadColumn();
-		if($verses){
-			$i = $req['verse_nr'][0];
-			foreach ($verses as $verse){
-				$text = array('verse_nr'=>$i, 'verse'=>$verse);
-				$result[$i] = $text;
-				$i++;
-			}
-			return $result;
-		} return false;
-		
-	}
-	
-	protected function getDirection($version)
-	{
-		// Get a db connection.
-		$db = JFactory::getDbo();
-		// Create a new query object.
-		$query = $db->getQuery(true);
-		// Order it by the ordering field.
-		$query->select($db->quoteName('bidi'));
-		$query->from($db->quoteName('#__getbible_versions'));
-		$query->where($db->quoteName('version') . ' = '. $db->quote($version));
-		// echo nl2br(str_replace('#__','api_',$query)); die;
-		// Reset the query using our newly populated query object.
-		$db->setQuery($query);
-		
-		return $db->loadResult();
-				
-	}
-	
-	protected function getV()
-	{
-		// Get the input data
-		$jinput = JFactory::getApplication()->input;
-		
-		$version = $jinput->get('v', NULL, 'ALNUM');
-		if (!$version){
-			$version = $jinput->get('ver', NULL, 'ALNUM');
-			if (!$version){
-				$version = $jinput->get('version', NULL, 'ALNUM');
-				if (!$version){
-					$version = $jinput->get('translation', NULL, 'ALNUM');
-					if (!$version){
-						$version = $jinput->get('lang', NULL, 'ALNUM');
-						if (!$version){
-							return false;
-						}
-					}
-				}
-			}
-		}
-		$version = strtolower($version);
-		// set request log values
-		$this->request_version = $version;
-		
-		return $version;
-	}
-	
-	protected function getP($version)
-	{
-		// Get the input data
-		$jinput = JFactory::getApplication()->input;
-		
-		// get passage query string
-		$passage = $jinput->get('p', NULL, 'SAFE_HTML');
-		if (!$passage){
-			$passage = $jinput->get('passage', NULL, 'SAFE_HTML');
-			if (!$passage){
-				$passage = $jinput->get('text', NULL, 'SAFE_HTML');
-				if (!$passage){
-					$passage = $jinput->get('scrip', NULL, 'SAFE_HTML');
-					if (!$passage){
-						$passage = $jinput->get('scripture', NULL, 'SAFE_HTML');
-						if (!$passage){
-							return false;
-						}
-					}
-				}
-			}
-		}	
-		// proces query string
-		$passage = (string) preg_replace('/[^A-Z0-9:;, \-]/i', '', $passage);
-		$passage = ltrim($passage, '.');
-		
-		// set request log values
-		$this->request_query = $passage;
-		$this->request_type = 'passage';
-		
-		if (strpos($passage,';') !== false) {
-			$passage = explode(';',$passage);
-		} else {
-			$passage = array($passage);
-		}
-		$request = array();
-		$i = 0;
-		$iChapter 	= 0;
-		$iVerse 	= 0;
-		$iBook 		= 0;
-		foreach ($passage as $get){
-			$ch		= NULL;
-			$verses = NULL;
-			$value1 = NULL;
-			$value2 = NULL;
-			$name2 	= NULL;
-			$string = (string) preg_replace('/[^A-Z0-9]/i', '', $get);
-			$value = str_split($string);
-			$value1 = array_shift($value);
-			$value2 = array_shift($value);
-			if (is_numeric($value1) && $value2 && !is_numeric($value2)){
-				$num = substr($get, 1);
-				$numbers = (string) preg_replace('/[^0-9,:-]/i', '', $num);
-				if (strpos($numbers,':') !== false) {
-					list($ch,$vers) = explode(':',$numbers);
-					if (strpos($vers,',') !== false) {
-						$arrayverses = explode(',',$vers);
-						foreach ($arrayverses as $ver){
-							if (strpos($ver,'-') !== false) {
-								$verses[] 	= explode('-',$ver);
-							} else {
-								$verses[] 	= array($ver);
-							}
-						}
-					} else {
-						if (strpos($vers,'-') !== false) {
-							$verses[] 	= explode('-',$vers);
-						} else {
-							$verses[] 	= array($vers);
-						}
-					}
-				} else {
-					$ch = (string) preg_replace('/[^0-9]/i', '', $numbers);
-				}
-				$name = (string) preg_replace('/[^A-Z]/i', '', $get);
-				$name = $value1.$name;
-			} else {
-				$numbers = (string) preg_replace('/[^0-9,:-]/i', '', $get);
-				if (strpos($numbers,':') !== false) {
-					list($ch,$vers) = explode(':',$numbers);
-					if (strpos($vers,',') !== false) {
-						$arrayverses = explode(',',$vers);
-						foreach ($arrayverses as $ver){
-							if (strpos($ver,'-') !== false) {
-								$verses[] 	= explode('-',$ver);
-							} else {
-								$verses[] 	= array($ver);
-							}
-							$i++;
-						}
-					} else {
-						if (strpos($vers,'-') !== false) {
-							$verses[] 	= explode('-',$vers);
-						} else {
-							$verses[] 	= array($vers);
-						}
-					}
-				} else {
-					$ch = (string) preg_replace('/[^0-9]/i', '', $numbers);
-				}
-				$name = (string) preg_replace('/[^A-Z]/i', '', $get);
-			}
-			
-			
-			if ($name){
-				$found = false;
-				// load all books
-				$books = $this->setBooks($version);
-				// set query book number and name
-				foreach ($books as $book){
-					if(!$found){						
-						$name = mb_strtoupper(preg_replace('/\s+/', '', $name), 'UTF-8');
-						foreach($book['book_names'] as $key => $value){
-							if ($value){
-								$value = mb_strtoupper(preg_replace('/\s+/', '', $value), 'UTF-8');
-								if ($name == $value){
-									$book_nr = $book['nr']; $book_name = $book['name']; $found = true; break;					
-								} else {
-									$found = false;
-								}
-							}
-						}
-					}
-					if ($found){
-						break;	
-					}
-				}
-			}
-			if ($found){
-				
-				$last = $i - 1;
-				if ($book_nr && !$ch) {
-					$request[] = array('type' => 'n', 'book_nr' => $book_nr, 'book_name' => $book_name);
-					$iBook++;break;
-				} elseif ($book_nr && $ch && !$verses) {
-					$request[] = array('type' => 'nc', 'book_nr' => $book_nr, 'book_name' => $book_name, 'chapter_nr' => $ch);
-					$iChapter++;break;
-				} elseif ($ch && !$verses){
-					$request[] = array('type' => 'nc', 'book_nr' => $request[$last]["book_nr"], 'book_name' => $request[$last]["book_name"], 'chapter_nr' => $ch);
-					$iChapter++;break;
-				} elseif (is_array($verses)){
-					foreach ($verses as $arrayVerse){
-						sort($arrayVerse);
-						if ($book_nr && $ch){
-							$request[] = array('type' => 'ncv', 'book_nr' => $book_nr, 'book_name' => $book_name, 'chapter_nr' => $ch, 'verse_nr' => $arrayVerse);
-							$iVerse++;
-							if ($iVerse == 12) {
-								break;
-							}
-						} elseif ($ch){
-							$request[] = array('type' => 'ncv', 'book_nr' => $request[$last]["book_nr"], 'book_name' => $request[$last]["book_name"], 'chapter_nr' => $ch, 'verse_nr' => $arrayVers);			
-							$iVers++;
-							if ($iVers == 12) {
-								break;
-							}
-						} 
-					}
-				}
-			} elseif (!$found){
-				if ($name){
-					$found2 = false;
-					// load all books again but now as KJV
-					$books = $this->setBooks($version, true);
-					// set query book number and name
-					foreach ($books as $book){
-						if(!$found2){						
-							$name = mb_strtoupper(preg_replace('/\s+/', '', $name), 'UTF-8');
-							foreach($book['book_names'] as $key => $value){
-								if ($value){
-									$value = mb_strtoupper(preg_replace('/\s+/', '', $value), 'UTF-8');
-									if ($name == $value){
-										$book_nr = $book['nr']; $book_name = $book['name']; $found2 = true; break;					
-									} else {
-										$found2 = false;
-									}
-								}
-							}
-						}
-						if ($found2){
-							break;
-						}
-					}
-				}
-				if ($found2){
-				
-					$last = $i - 1;
-					if ($book_nr && !$ch) {
-						$request[] = array('type' => 'n', 'book_nr' => $book_nr, 'book_name' => $book_name);
-						$iBook++;break;
-					} elseif ($book_nr && $ch && !$verses) {
-						$request[] = array('type' => 'nc', 'book_nr' => $book_nr, 'book_name' => $book_name, 'chapter_nr' => $ch);
-						$iChapter++;break;
-					} elseif ($ch && !$verses){
-						$request[] = array('type' => 'nc', 'book_nr' => $request[$last]["book_nr"], 'book_name' => $request[$last]["book_name"], 'chapter_nr' => $ch);
-						$iChapter++;break;
-					} elseif (is_array($verses)){
-						foreach ($verses as $arrayVers){
-							sort($arrayVers);
-							if ($book_nr && $ch){
-								$request[] = array('type' => 'ncv', 'book_nr' => $book_nr, 'book_name' => $book_name, 'chapter_nr' => $ch, 'verse_nr' => $arrayVers);
-								$iVers++;
-								if ($iVers == 12) {
-									break;
-								}
-							} elseif ($ch){
-								$request[] = array('type' => 'ncv', 'book_nr' => $request[$last]["book_nr"], 'book_name' => $request[$last]["book_name"], 'chapter_nr' => $ch, 'verse_nr' => $arrayVers);			
-								$iVers++;
-								if ($iVers == 12) {
-									break;
-								}
-							} 
-						}
-					}
-				}
-			}
-			// check point
-			if ($iVers == 7 || $iBook == 1 || $iChapter == 1) {
-				break;
-			}
-			$i++;
-		}
-		return $request;
-	}
-	
-	protected function searchFor()
-	{
-		// Get the input data
-		$jinput = JFactory::getApplication()->input;
-		
-		$search = $jinput->get('s', NULL, 'SAFE_HTML');
-		if (!$search){
-			$search = $jinput->get('for', NULL, 'SAFE_HTML');
-			if (!$search){
-				$search = $jinput->get('search', NULL, 'SAFE_HTML');
-				if (!$search){
-					$search = $jinput->get('lookup', NULL, 'SAFE_HTML');
-					if (!$search){
-						$search = $jinput->get('find', NULL, 'SAFE_HTML');
-						if (!$search){
-							return false;
-						}
-					}
-				}
-			}
-		}
-		// set request log values
-		$this->request_query = $search;
-		$this->request_type = 'search';		
-		// return search value
-		return $search;
-	}
-	
-	protected function searchType()
-	{
-		// Get the input data
-		$jinput = JFactory::getApplication()->input;
-		
-		$type = $jinput->get('t', NULL, 'ALNUM');
-		if (!$type){
-			$type = $jinput->get('in', NULL, 'ALNUM');
-			if (!$type){
-				$type = $jinput->get('type', NULL, 'ALNUM');
-				if (!$type){
-					return false;
-				}
-			}
-		}
-		return strtolower($type);
-	}
-	
-	protected function searchCriteria()
-	{
-		// Get the input data
-		$jinput = JFactory::getApplication()->input;
-		
-		$criteria = $jinput->get('crit', NULL, 'CMD');
-		if (!$criteria){
-			$criteria = $jinput->get('criteria', NULL, 'CMD');
-			if (!$criteria){
-				$criteria = $jinput->get('way', NULL, 'CMD');
-			}
-		}
-		$criteria = (string) preg_replace('/[^0-9_]/i', '', $criteria);
-		// set criteria
-		if (strpos($criteria,'_') !== false) {
-			list($search,$match,$case)  =  explode('_', $criteria);
-		}
-		// set the way search is to be made 1 = ALL WORDS, 2 = ANY WORDS, 3 = EXACT PHRASE
-		if($search){
-			$crit['search'] = (int)$search;
-		} elseif ((int)$criteria <= 3){
-			$crit['search'] = (int)$criteria;
-		} else {
-			$crit['search'] = (int)1;
-		}
-		// set the way match is made 1 = EXACT MATCH, 2 = PARTIAL MATCH
-		if((int)$match <= 2){
-			$crit['match'] = (int)$match;
-		} else {
-			$crit['match'] = (int)1;
-		}
-		// set the case sentisitivity is handled 1 = CASE INSENSITIVE, 2 = CASE SENSITIVE	 
-		if((int)$case <= 2){
-			$crit['case'] = (int)$case;
-		} else {
-			$crit['case'] = (int)1;
-		}
-		
-		return $crit;
-	}
-	
-	protected function setBooks($version = NULL, $retry = false, $default = 'kjv')
-	{
-		// Get a db connection.
-		$db = JFactory::getDbo();
-		
-		if ($version){
-			// Create a new query object.
-			$query = $db->getQuery(true);
-			// Order it by the ordering field.
-			$query->select($db->quoteName(array('book_names', 'book_nr', 'book_name')));
-			$query->from($db->quoteName('#__getbible_setbooks'));
-			$query->where($db->quoteName('version') . ' = '. $db->quote($version));
-			$query->where($db->quoteName('access') . ' = 1');
-			$query->where($db->quoteName('published') . ' = 1');
-			$query->order('book_nr ASC');
-			 
-			// Reset the query using our newly populated query object.
-			$db->setQuery($query);
-			 
-			// Load the results
-			$results = $db->loadAssocList();
-			
-			if($results){
-				foreach ($results as $book){
-					$books[$book['book_nr']]['nr'] 			= $book['book_nr'];
-					$books[$book['book_nr']]['book_names'] 	= (array)json_decode($book['book_names']);
-					// if retry do't change name
-					$books[$book['book_nr']]['name'] 		= $book['book_name'];
-				}
-			}
-		}
-		if(!isset($books)){
-			 
-			// Create a new query object.
-			$query = $db->getQuery(true);
-			// Order it by the ordering field.
-			$query->select($db->quoteName(array('book_names', 'book_nr', 'book_name')));
-			$query->from($db->quoteName('#__getbible_setbooks'));
-			$query->where($db->quoteName('version') . ' = '. $db->quote($default));
-			$query->where($db->quoteName('access') . ' = 1');
-			$query->where($db->quoteName('published') . ' = 1');
-			$query->order('book_nr ASC');
-			 
-			// Reset the query using our newly populated query object.
-			$db->setQuery($query);
-			 
-			// Load the results
-			$results = $db->loadAssocList();
-			foreach ($results as $book){
-				$books[$book['book_nr']]['nr'] 			= $book['book_nr'];
-				$books[$book['book_nr']]['book_names'] 	= (array)json_decode($book['book_names']);
-				$books[$book['book_nr']]['name'] 		= $book['book_name'];
-			}
-		}
-		if($retry){
-			 
-			// Create a new query object.
-			$query = $db->getQuery(true);
-			// Order it by the ordering field.
-			$query->select($db->quoteName(array('book_names', 'book_nr', 'book_name')));
-			$query->from($db->quoteName('#__getbible_setbooks'));
-			$query->where($db->quoteName('version') . ' = '. $db->quote($default));
-			$query->where($db->quoteName('access') . ' = 1');
-			$query->where($db->quoteName('published') . ' = 1');
-			$query->order('book_nr ASC');
-			 
-			// Reset the query using our newly populated query object.
-			$db->setQuery($query);
-			 
-			// Load the results
-			$results = $db->loadAssocList();
-			foreach ($results as $book){
-				$books[$book['book_nr']]['nr'] 			= $book['book_nr'];
-				$books[$book['book_nr']]['book_names'] 	= (array)json_decode($book['book_names']);
-			}
-		}
-		return $books;		
-	}
-	
-	protected function getBook($book_nr, $version, $default = 'kjv')
-	{
-		// Get a db connection.
-		$db = JFactory::getDbo();
-		
-		if ($version){
-			// Create a new query object.
-			$query = $db->getQuery(true);
-			// load query
-			$query->select('book_name');
-			$query->from($db->quoteName('#__getbible_setbooks'));
-			$query->where($db->quoteName('version') . ' = '. $db->quote($version));
-			$query->where($db->quoteName('book_nr') . ' = '. (int) $book_nr);
-			$query->where($db->quoteName('access') . ' = 1');
-			$query->where($db->quoteName('published') . ' = 1');
-			 
-
-			//echo nl2br(str_replace('#__','api_',$query)); die;
-			// Reset the query using our newly populated query object.
-			$db->setQuery($query);
-			
-			$book = $db->loadResult();
-		}
-		if(!isset($book)){
-			 
-			// Create a new query object.
-			$query = $db->getQuery(true);
-			// load query
-			$query->select('book_name');
-			$query->from($db->quoteName('#__getbible_setbooks'));
-			$query->where($db->quoteName('version') . ' = '. $db->quote($default));
-			$query->where($db->quoteName('book_nr') . ' = '. (int) $book_nr);
-			$query->where($db->quoteName('access') . ' = 1');
-			$query->where($db->quoteName('published') . ' = 1');
-			 
-			// Reset the query using our newly populated query object.
-			$db->setQuery($query);
-			
-			$book = $db->loadResult();
-		}
-		if ($book){
-			return $book;
-		}
-		return false;
-	}
-	
-	protected function getBookRef($book_nr,$version,$tryAgain = false)
-	{
-		
-		// Get a db connection.
-		$db = JFactory::getDbo();
-		
-		// Create a new query object.
-		$query = $db->getQuery(true);
-		
-		$query->select('a.book_names');
-		$query->from('#__getbible_setbooks AS a');		
-		$query->where($db->quoteName('a.access') . ' = 1');
-		$query->where($db->quoteName('a.published') . ' = 1');
-		if($tryAgain){
-			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($tryAgain));
-		} else {
-			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($version));
-		}
-		$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
-			 
-		// Reset the query using our newly populated query object.
-		$db->setQuery($query);
-		$db->execute();
-		$num_rows = $db->getNumRows();
-		 if($num_rows){
-			// Load the results
-			$result 			= $db->loadObject();
-			return json_decode($result->book_names)->name2;
-		} else {
-			// fall back on default
-			return $this->getBookRef($book_nr,$version,'kjv');
-		}
-	}
-	
-	
-	public function getAvailableVersions()
+	protected function getAvailableVersions()
 	{
 		// Base this model on the backend version.
 		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_getbible'.DS.'models'.DS.'import.php';
@@ -924,5 +317,204 @@ class GetbibleModelGetbible extends JModelList
 			return $availableVersions;
 		} return false;
 	}
+	
+	protected function setIcons()
+	{
+		// setup icons
+		$icons 			= array();
+		// INFO
+		$info 			= new stdClass();	
+		$info->other	= 'data-toggle="tab" onclick="changeTab(\'info\');"';
+		$info->url 		= '#info';
+		$info->name 	= 'COM_GETBIBLE_INFO';
+		$info->title 	= 'COM_GETBIBLE_INFO_DESC';
+		$info->image 	= 'administrator/components/com_getbible/assets/images/icons/info.png';
+		$icons[0]		= $info;
+		// API
+		$api_doc 			= new stdClass();	
+		$api_doc->other		= 'data-toggle="tab" onclick="changeTab(\'api_doc\');"';
+		$api_doc->url 		= '#api_doc';
+		$api_doc->name 		= 'COM_GETBIBLE_API_DOC';
+		$api_doc->title 	= 'COM_GETBIBLE_API_DOC_DESC';
+		$api_doc->image 	= 'administrator/components/com_getbible/assets/images/icons/api_doc.png';
+		$icons[1]			= $api_doc;
+		// Exchange Rate Updater
+		$versions 			= new stdClass();
+		$versions->other	= 'data-toggle="tab" onclick="changeTab(\'versions\');"';
+		$versions->url 		= '#versions';
+		$versions->name 	= 'COM_GETBIBLE_VERSIONS';
+		$versions->title 	= 'COM_GETBIBLE_VERSIONS_DESC';
+		$versions->image 	= 'administrator/components/com_getbible/assets/images/icons/versions.png';
+		$icons[2]			= $versions;
+		// Activity
+		$activity 			= new stdClass();
+		$activity->other	= 'data-toggle="tab" onclick="changeTab(\'activity\');"';
+		$activity->url		= '#activity';
+		$activity->name 	= 'COM_GETBIBLE_ACTIVITY';
+		$activity->title 	= 'COM_GETBIBLE_ACTIVITY_DESC';
+		$activity->image 	= 'administrator/components/com_getbible/assets/images/icons/activity.png';
+		$icons[3]			= $activity;
+		// Book Names
+		$book_names 		= new stdClass();	
+		$book_names->other	= '';
+		$book_names->url 	= 'index.php?option=com_getbible&view=setbooks';
+		$book_names->name 	= 'COM_GETBIBLE_BOOK_NAMES';
+		$book_names->title 	= 'COM_GETBIBLE_BOOK_NAMES_DESC';
+		$book_names->image 	= 'administrator/components/com_getbible/assets/images/icons/book_names.png';
+		$icons[4]			= $book_names;
+		// Install Bibles
+		$install_bibles 		= new stdClass();	
+		$install_bibles->other	= '';	
+		$install_bibles->url 	= 'index.php?option=com_getbible&view=import';
+		$install_bibles->name 	= 'COM_GETBIBLE_INSTALL_BIBLES';
+		$install_bibles->title	= 'COM_GETBIBLE_INSTALL_BIBLES_DESC';
+		$install_bibles->image	= 'administrator/components/com_getbible/assets/images/icons/install_bibles.png';
+		$icons[5]				= $install_bibles;
+		// Installed Bibles
+		$installed_bibles 			= new stdClass();	
+		$installed_bibles->other	= '';	
+		$installed_bibles->url 		= 'index.php?option=com_getbible&view=versions';
+		$installed_bibles->name 	= 'COM_GETBIBLE_INSTALLED_BIBLES';
+		$installed_bibles->title	= 'COM_GETBIBLE_INSTALLED_BIBLES_DESC';
+		$installed_bibles->image	= 'administrator/components/com_getbible/assets/images/icons/installed_bibles.png';
+		$icons[6]					= $installed_bibles;
+		// First check user access
+		$canDo = JHelperContent::getActions('com_getbible', 'getbible');
+		if ($canDo->get('core.admin')) {
+			// setu the return url
+			$uri = (string) JUri::getInstance();
+			$return = urlencode(base64_encode($uri));
+			// Global Settings
+			$global_settings 			= new stdClass();	
+			$global_settings->other		= '';	
+			$global_settings->url 		= 'index.php?option=com_config&amp;view=component&amp;component=com_getbible&amp;path=&amp;return=' . $return;
+			$global_settings->name		= 'COM_GETBIBLE_OPTIONS';
+			$global_settings->title		= 'COM_GETBIBLE_OPTIONS_DESC';
+			$global_settings->image		= 'administrator/components/com_getbible/assets/images/icons/options.png';
+			$icons[111]					= $global_settings;
+		}
+		
+		$mainframe = JFactory::getApplication();
+		// Trigger Event - ipdata_bk_onBefore_icon_display
+		$mainframe->triggerEvent('ipdata_bk_onBefore_icon_display',array('icons'=>&$icons));
+		
+		// setup template
+		$temp = '';
+		foreach($icons as $icon){
+			$temp .= '<div class="dashboard-wraper"><div class="dashboard-content"><a class="icon hasTip" '.$icon->other.' href="'.$icon->url.'" title="';
+			$temp .= JText::_($icon->title);
+			$temp .= '">';
+            $temp .= JHTML::_('image', $icon->image, JText::_($icon->name));
+            $temp .= '<span class="dashboard-title">';
+			$temp .= JText::_($icon->name);
+			$temp .= '</span></a></div></div>';
+        }
+		return $temp;
+	}
+	
+	protected function getAPIkey()
+	{
+		if($this->app_params->get('api_access') > 0){
+			$privateKey = $this->app_params->get('api_privatekey');
+			if(strlen($privateKey) > 0){
+				switch($this->app_params->get('api_access')){
+					case 1:
+					// only private key
+					return md5($privateKey);
+					break;
+					case 2:
+					// all users					
+					return md5(JFactory::getUser()->username.'_'.$privateKey);
+					break;
+					case 3:
+					// only users in certain groups
+					if(is_array($this->app_params->get('api_accessgroup'))){
+						$ids = $this->getUserIdsInGroups($this->app_params->get('api_accessgroup'));
+						if(is_array($ids)){
+							$users = $this->getUserNames($ids);
+							if(is_array($users)){
+								foreach($users as $user){
+									return md5($user.'_'.$privateKey);
+								}
+							}
+						}
+					}
+					break;
+					case 4:
+					// only users with certain access level
+					if(is_array($this->app_params->get('api_accesslevel'))){
+						$groups = $this->getUserGroupsWithAccess($this->app_params->get('api_accesslevel'));
+						if(is_array($groups)){
+							$ids = $this->getUserIdsInGroups($groups);
+							if(is_array($ids)){
+								$users = $this->getUserNames($ids);
+								if(is_array($users)){
+									foreach($users as $user){
+										return md5($user.'_'.$privateKey);
+									}
+								}
+							}
+						}
+					}
+					break;
+					case 5:
+					// only selected users
+					if(is_array($this->app_params->get('api_accessuser'))){
+						foreach($this->app_params->get('api_accessuser') as $user){
+							return md5($user.'_'.$privateKey);
+						}
+					}						
+					break;
+				}
+			}
+		}
 
+		return 0;
+	}
+	
+	protected function getUserNames($ids)
+	{
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query->select('#__users.username');
+		$query->from('#__users');
+		if(is_array($ids)){
+			$query->where('#__users.id IN ('.implode(',', $ids).')');
+		}
+		$db->setQuery((string)$query);
+		return $db->loadColumn();
+	}
+	
+	protected function getUserIdsInGroups($groups)
+	{
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query->select('#__user_usergroup_map.user_id');
+		$query->from('#__user_usergroup_map');
+		$query->where('#__user_usergroup_map.group_id IN ('.implode(',', $groups).')');
+		$db->setQuery((string)$query);
+		return $db->loadColumn();
+	}
+	
+	protected function getUserGroupsWithAccess($levels)
+	{
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query->select('#__viewlevels.rules');
+		$query->from('#__viewlevels');
+		$query->where('#__viewlevels.id IN ('.implode(',', $levels).')');
+		$db->setQuery((string)$query);
+		$group_levels =  $db->loadColumn();
+		if(is_array($group_levels)){
+			$groups = array();
+			foreach($group_levels as $level){
+				$group_ids = json_decode($level, true);
+				if(is_array($group_ids)){
+					$groups = $groups + $group_ids;
+				}
+			}
+			return array_unique($groups);
+		}
+		return false;
+	}
 }

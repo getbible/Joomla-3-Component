@@ -1,6 +1,6 @@
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -8,124 +8,154 @@
 *
 **/
 
-/* --- Books --- */
-.icon-48-book-edit {
-  background: url('../images/book-edit-48.png') 0 0 no-repeat;
+.dashboard-container {
+    margin-left: 10px;
+    margin-top: 10px;
+    width: 100%;
 }
-.icon-48-book-add{
-  background: url('../images/book-add-48.png') 0 0 no-repeat;
+.dashboard-container [class*="span"] {
+    display: block;
+    float: none;
+    margin-left: 0;
+    width: auto;
 }
-.icon-48-books{
-  background: url('../images/books-48.png') 0 0 no-repeat;
+.dashboard-container:before, .dashboard-container:after {
+    content: "";
+    display: table;
 }
-
-/* --- Categories --- */
-.icon-48-category-edit {
-  background: url('../images/icon-48-category-add.png') 0 0 no-repeat;
+.dashboard-container:after {
+    clear: both;
 }
-.icon-48-category-add{
-  background: url('../images/icon-48-category-add.png') 0 0 no-repeat;
-}
-.icon-48-categories{
-  background: url('../images/icon-48-category.png') 0 0 no-repeat;
-}
-
-/* --- Pages --- */
-.icon-48-page-edit {
-  background: url('../images/icon-48-article-edit.png') 0 0 no-repeat;
-}
-.icon-48-page-add{
-  background: url('../images/icon-48-article-add.png') 0 0 no-repeat;
-}
-.icon-48-pages{
-  background: url('../images/icon-48-article.png') 0 0 no-repeat;
-}
-
-/* --- Update --- */
-.icon-48-update-edit{
-  background: url('../images/mount-48.jpg') 0 0 no-repeat;
-}
-
-/* --- MAIN OVERVIEW --- */
-.icon-48-main{
-  background: url('../images/mount-48.jpg') 0 0 no-repeat;
-}
-#jmcrm h2 {
-	padding: 0 12px;
-	font-size:19px;
-	color:#0D3379;
-}
-#jmcrm h3 {
-	padding: 0 20px;
-	font-size:17px;
-	color:#0D3379;
-	background: none;
-}
-
-/* --- MAIN OVERVIEW ICONS --- */
-#jmcrm div.icon {
-    float: left;
-    margin-bottom: 15px;
-    margin-right: 15px;
-    text-align: center;
-}
-#jmcrm div.icon a{
-	background-color: #FFFFFF;
-    background-position: -30px center;
-    border: 1px solid #CCCCCC;
-    border-radius: 5px 5px 5px 5px;
-    color: #565656;
+.dashboard-container [class*="span"] {
+    box-sizing: border-box;
     display: block;
     float: left;
-    height: 97px;
+    min-height: 145px;
+    min-width: 96px;
+    width: 100%;
+}
+.dashboard-container [class*="span"]:first-child {
+    margin-left: 0;
+}
+.dashboard-wraper {
+    background: none repeat scroll 0 0 hsl(0, 0%, 93%);
+    border-radius: 5px;
+    float: left;
+    margin: 1%;
+    padding: 3px;
+    width: 17%;
+    min-height: 145px;
+    min-width: 96px;
+}
+.dashboard-content a {
+    background: linear-gradient(to bottom, hsl(0, 0%, 100%) 0%, hsl(0, 0%, 96%) 47%, hsl(0, 0%, 93%) 100%) repeat scroll 0 0 hsla(0, 0%, 0%, 0);
+    border: 1px solid hsl(0, 0%, 85%);
+    border-radius: 4px;
+    box-shadow: 0 0 3px hsla(0, 0%, 0%, 0.1) inset;
+    color: hsl(0, 0%, 20%);
+    display: block;
+    min-height: 89px;
+    padding: 10px;
+    text-align: center;
     text-decoration: none;
-    transition-duration: 0.8s;
-    transition-property: background-position, -moz-border-radius-bottomleft, -moz-box-shadow;
-    vertical-align: middle;
-    width: 108px;
 }
-#jmcrm div.icon a:hover, 
-#jmcrm div.icon a:focus, 
-#jmcrm div.icon a:active {
-    background-position: 0 center;
-    border-bottom-left-radius: 50% 20px;
-    box-shadow: -5px 10px 15px rgba(0, 0, 0, 0.25);
-    position: relative;
-    z-index: 10;
+.dashboard-content a:hover {
+    background: linear-gradient(to bottom, hsl(0, 0%, 90%) 0%, hsl(0, 0%, 100%) 100%) repeat scroll 0 0 hsla(0, 0%, 0%, 0);
+    color: hsl(200, 100%, 30%);
+    text-decoration: none;
 }
-#jmcrm .icon img {
-	float: none;
-    margin: 0 auto;
-    padding: 10px 0;
+.dashboard-title {
+    display: block;
+    padding-top: 5px;
 }
-#jmcrm .icon span {
+.dashboard-info {
+    background: linear-gradient(to bottom, hsl(0, 0%, 100%) 0%, hsl(0, 0%, 96%) 47%, hsl(0, 0%, 93%) 100%) repeat scroll 0 0 hsla(0, 0%, 0%, 0);
+    border: 1px solid hsl(0, 0%, 85%);
+    border-radius: 4px;
+    box-shadow: 0 0 3px hsla(0, 0%, 0%, 0.1) inset;
+    color: hsl(0, 0%, 20%);
+    display: block;
+    font-size: 12px;
+    padding: 10px;
+    text-align: center;
+}
+.dashboard-info span {
     display: block;
     text-align: center;
 }
-
-/* --- Vertical menu --- */
-#jmcrm .menuList{
-        padding:0;
-        margin:0;
-        list-style-type:none;
-        font-size:15px;
-        color:#717171;
-        width:60%;
+.dashboard-info img {
+    margin: 0 auto;
 }
-#jmcrm .menuList li{
-        border-bottom:1px solid #eeeeee;
-        padding:7px 10px 7px 10px;
+.dashboard-table {
+    border-top: 1px solid hsl(0, 0%, 87%);
+    margin-top: 5px;
+    width: 100%;
 }
-#jmcrm .menuList li:hover{
-        background-color:#D6D6D6;
+.dashboard-info h5 {
+    font-size: 11px;
+    font-weight: bold;
 }
-#jmcrm .menuList li:hover a{
-        color:White;
+.dashboard-block {
+    background: linear-gradient(to bottom, hsl(0, 0%, 95%) 0%, hsl(0, 0%, 86%) 100%) repeat scroll 0 0 hsla(0, 0%, 0%, 0);
+    border: 1px solid hsl(0, 0%, 76%);
+    border-radius: 3px;
+    box-shadow: 0 1px 0 hsl(0, 0%, 98%) inset;
+    margin-bottom: 20px;
 }
-#jmcrm .menuList a:link{
-        color:#717171;
-        text-decoration:none;
+.dashboard-block .dashboard-block-head {
+    background: linear-gradient(to bottom, hsl(0, 0%, 95%) 0%, hsl(0, 0%, 86%) 100%) repeat scroll 0 0 hsla(0, 0%, 0%, 0);
+    border-bottom: 1px solid hsl(0, 0%, 76%);
+    border-radius: 3px 3px 0 0;
+    box-shadow: 0 1px 0 hsl(0, 0%, 98%) inset, 0 0 3px hsl(0, 0%, 87%);
+    height: 40px;
+    position: relative;
 }
-#jmcrm .menuList a:hover{
-        color:White;
+.dashboard-block .dashboard-block-head h5 {
+    font-size: 12px;
+    margin: 0;
+    padding-left: 10px;
+    padding-top: 11px;
+    text-transform: uppercase;
+}
+.dashboard-block .dashboard-block-content {
+    background: none repeat scroll 0 0 hsl(0, 0%, 93%);
+    border-radius: 0 0 3px 3px;
+}
+.dashboard-block .dashboard-block-box {
+    background: none repeat scroll 0 0 hsl(0, 0%, 100%);
+    border-top: 1px solid hsl(0, 0%, 82%);
+    box-shadow: 0 0 5px hsl(0, 0%, 87%) inset;
+}
+.dashboard-block .dashboard-block-content .dashboard-block-box {
+    margin-top: 0 !important;
+}
+.dashboard-block .dashboard-block-content .dashboard-block-box .dashboard-block-table {
+    margin-bottom: 0 !important;
+}
+.dashboard-block-table {
+    background-color: hsla(0, 0%, 0%, 0);
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 20px;
+    max-width: 100%;
+    width: 100%;
+}
+.dashboard-block-table th, .dashboard-block-table td {
+    border-top: 1px solid hsl(0, 0%, 87%);
+    line-height: 20px;
+    padding: 5px;
+    text-align: left;
+    vertical-align: middle;
+}
+.dashboard-badge {
+    background-color: hsl(0, 0%, 60%);
+    border-radius: 9px;
+    color: hsl(0, 0%, 100%);
+    font-size: 11.844px;
+    font-weight: bold;
+    line-height: 14px;
+    padding: 1px 9px 2px;
+    text-shadow: 0 -1px 0 hsla(0, 0%, 0%, 0.25);
+    vertical-align: baseline;
+    white-space: nowrap;
 }

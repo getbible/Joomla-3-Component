@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -46,28 +46,6 @@ class GetbibleTableSetbook extends JTable
 	{
 		// get current user
 		$user = JFactory::getUser();
-		
-		// Include the JLog class.
-		jimport('joomla.log.log');
-		
-		// get ip for log
-		$ip = $this->getUserIP();
-		
-		// Add the logger.
-		JLog::addLogger(
-			 // Pass an array of configuration options
-			array(
-					// Set the name of the log file
-					'text_file' => 'getbible_saves.php',
-					// (optional) you can change the directory
-					//'text_file_path' => 'logs'
-			 ),
-			 JLog::NOTICE
-		);
-		
-		// start logging...
-		JLog::add('id->['.$this->id.'] name->['.$this->book_name.'] saved by ' . $user->name.'->['. $user->id.'] ip->['.$ip.']', JLog::NOTICE, 'Setbook');
-		
 		if ($this->id){
 			// set modified data
 			$this->modified_by = $user->id;
@@ -80,28 +58,4 @@ class GetbibleTableSetbook extends JTable
 
 		return true;
 	}
-	
-	protected function getUserIP()
-	{
-		$ip = "";
-		
-		if (isset($_SERVER)) {
-			if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])){
-				$ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
-			} elseif (isset($_SERVER["HTTP_CLIENT_IP"])) {
-				$ip = $_SERVER["HTTP_CLIENT_IP"];
-			} else {
-				$ip = $_SERVER["REMOTE_ADDR"];
-			}
-		} else {
-			if ( getenv( 'HTTP_X_FORWARDED_FOR' ) ) {
-				$ip = getenv( 'HTTP_X_FORWARDED_FOR' );
-			} elseif ( getenv( 'HTTP_CLIENT_IP' ) ) {
-				$ip = getenv( 'HTTP_CLIENT_IP' );
-			} else {
-				$ip = getenv( 'REMOTE_ADDR' );
-			}
-		}
-		return $ip;
-    }
 }

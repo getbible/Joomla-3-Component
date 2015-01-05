@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -607,41 +607,41 @@ $versions = $this->cpanel;
     </div>
 </div>
 <?php if ($this->params->get('vdm_logo') == 1): ?>
-    <div class="uk-panel uk-align-right uk-hidden-small">
-        <?php if ($this->params->get('vdm_link') == 1): ?>
-            <a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
-        <?php endif; ?>
-            <span class="uk-hidden-small" data-uk-tooltip="{pos:'left'}" title="The words of eternal life!" ><img src="/media/com_getbible/images/icon.png" /></span>
-        <?php if ($this->params->get('vdm_link') == 1): ?>
-            </a>
-        <?php endif; ?>
-    </div>
-     <div class="uk-panel uk-align-center uk-container-center uk-visible-small"><br /><center>
-        <?php if ($this->params->get('vdm_link') == 1): ?>
-            <a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
-        <?php endif; ?>
-            <span><img src="/media/com_getbible/images/icon.png" /></span>
-        <?php if ($this->params->get('vdm_link') == 1): ?>
-            </a>
-        <?php endif; ?>
-    </center></div>
-<?php else: ?>
-    <div class="uk-panel uk-align-right uk-hidden-small">
-        <?php if ($this->params->get('vdm_link') == 1): ?>
-            <a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
-        <?php endif; ?>
-            <span data-uk-tooltip="{pos:'left'}" title="The words of eternal life!" ><?php echo $this->params->get('vdm_name');  ?></span>
-        <?php if ($this->params->get('vdm_link') == 1): ?>
-            </a>
-        <?php endif; ?>
-    </div>
-    <div class="uk-panel uk-align-right uk-hidden-small"><br />
-        <?php if ($this->params->get('vdm_link') == 1): ?>
-            <a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
-        <?php endif; ?>
-        	<span><?php echo $this->params->get('vdm_name');  ?></span>
-        <?php if ($this->params->get('vdm_link') == 1): ?>
-            </a>
-        <?php endif; ?>
-    </div>
+	<div class="uk-panel uk-align-right uk-hidden-small">
+		<?php if ($this->params->get('vdm_link') == 1): ?>
+			<a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
+		<?php endif; ?>
+			<span class="uk-hidden-small" data-uk-tooltip="{pos:'left'}" title="The words of eternal life!" ><img src="/media/com_getbible/images/icon.png" /></span>
+		<?php if ($this->params->get('vdm_link') == 1): ?>
+			</a>
+		<?php endif; ?>
+	</div>
+	 <div class="uk-panel uk-align-center uk-container-center uk-visible-small"><br /><center>
+		<?php if ($this->params->get('vdm_link') == 1): ?>
+			<a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
+		<?php endif; ?>
+			<span><img src="/media/com_getbible/images/icon.png" /></span>
+		<?php if ($this->params->get('vdm_link') == 1): ?>
+			</a>
+		<?php endif; ?>
+	</center></div>
+<?php elseif($this->params->get('vdm_text') == 1): ?>
+	<div class="uk-panel uk-align-right uk-hidden-small">
+		<?php if ($this->params->get('vdm_link') == 1): ?>
+			<a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
+		<?php endif; ?>
+			<span data-uk-tooltip="{pos:'left'}" title="The words of eternal life!" ><?php echo $this->params->get('vdm_name');  ?></span>
+		<?php if ($this->params->get('vdm_link') == 1): ?>
+			</a>
+		<?php endif; ?>
+	</div>
+	<div class="uk-panel uk-align-center uk-container-center uk-visible-small"><br /><center>
+		<?php if ($this->params->get('vdm_link') == 1): ?>
+			<a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
+		<?php endif; ?>
+			<span><?php echo $this->params->get('vdm_name');  ?></span>
+		<?php if ($this->params->get('vdm_link') == 1): ?>
+			</a>
+		<?php endif; ?>
+	</center></div>
 <?php endif; ?>

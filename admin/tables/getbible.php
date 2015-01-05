@@ -1,18 +1,16 @@
 <?php
 /**
- * @package     Joomla.Administrator
- * @subpackage  com_contact
- *
- * @copyright   Copyright (C) 2005 - 2014 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
- */
+* 
+* 	@version 	1.0.6  January 06, 2015
+* 	@package 	Get Bible API
+* 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
+* 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
+* 	@license	GNU General Public License <http://www.gnu.org/copyleft/gpl.html>
+*
+**/
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
-/**
- * @package     Joomla.Administrator
- * @subpackage  com_contact
- */
 class GetbibleTableGetbible extends JTable
 {
 	

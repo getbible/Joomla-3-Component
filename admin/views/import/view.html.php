@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -30,7 +30,8 @@ class GetbibleViewImport extends JViewLegacy
 		GetHelper::update();
 		// Initialise variables.
 		$this->import	= $this->get('Import');
-		$this->versions	= $this->get('Versions');// Get app Params
+		$this->versions	= $this->get('Versions');
+		// Get app Params
 		$this->params 	= JComponentHelper::getParams('com_getbible');
 		// We don't need toolbar in the modal window.
 		if ($this->getLayout() !== 'modal')
