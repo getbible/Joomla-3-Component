@@ -207,7 +207,7 @@ jQuery.ajax({
 			// plugin was installed bit not active
 			$div_activity .= '<p>You need to <a href="'.JURI::base().'index.php?option=com_plugins&view=plugins&filter_search=System - getBible Activity Cron" >activate</a> the <b>System - getBible Activity Cron</b> to view the API activiy.</p>';
 		} else {
-			$div_activity .= '<p>You need to <a href="https://getbible.net/downloads?tab=plugins" target="_blank">install</a> the <b>System - getBible Activity Cron</b> to view the API activiy.</p>';
+			$div_activity .= '<p>You need to <a href="https://getbible.net/downloads?tab=cron" target="_blank">install</a> the <b>System - getBible Activity Cron</b> to view the API activiy.</p>';
 		}
 		$div_activity .= '</div></div>';
 		
