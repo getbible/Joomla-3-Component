@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.6  January 06, 2015
+* 	@version 	1.0.5  December 08, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -343,6 +343,253 @@ class GetbibleModelControl extends JModelList
 		return false;
 	}
 	
+	public function setTaged($action,$tag,$jsonKey,$verse,$tu)
+	{
+		$user = JFactory::getUser();
+		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
+			// Check Token!
+			$token = JSession::getFormToken();
+			if ($jsonKey == $token){
+				// get current date
+				$date 		= date('Y-m-d H:i:s');
+				return $this->setTaged_db($action,$tag,$verse,$user->id,$date);
+			}
+		}
+		return false;
+	}
+	
+	protected function setTaged_db($action, $name, $verse, $user, $date)
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		// set the verse to its actual values
+		list($books_nr,$chapter_nr,$verse_nr) = explode('_',$verse);
+		$tag = $this->getTagId($user,$name);
+		if($tag){
+			if($action == 1){
+				// firt check if it already is set
+				$query = $db->getQuery(true);
+				$query->select('id');
+				$query->from($db->quoteName('#__getbible_taged'));
+				$query->where($db->quoteName('books_nr') . 		' = '. $db->quote($books_nr));
+				$query->where($db->quoteName('chapter_nr') . 	' = '. $db->quote($chapter_nr));
+				$query->where($db->quoteName('verse_nr') . 		' = '. $db->quote($verse_nr));
+				$query->where($db->quoteName('tag') . 			' = '. $db->quote($tag));
+				$query->where($db->quoteName('user') . 			' = '. $db->quote($user));		 
+				// Reset the query using our newly populated query object.
+				$db->setQuery($query);
+				$db->execute();
+				if($db->getNumRows()){
+					return array($verse => $name);
+				} else {
+					// add tag
+					$query = $db->getQuery(true);
+					// Insert columns.
+					$columns = array('user', 'books_nr', 'chapter_nr', 'verse_nr', 'tag', 'created_on');
+					// Insert values.
+					$values = array($db->quote($user), $db->quote($books_nr), $db->quote($chapter_nr), $db->quote($verse_nr), $db->quote($tag), $db->quote($date));
+					// Prepare the insert query.
+					$query
+						->insert($db->quoteName('#__getbible_taged'))
+						->columns($db->quoteName($columns))
+						->values(implode(',', $values));
+					$db->setQuery($query);
+					if($db->execute()){
+						return array($verse => $name);
+					}
+				}
+				return false;
+			} elseif($action == 0){
+				// remove the tag
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
+				$conditions = array(
+					$db->quoteName('user') . 		' = '.$db->quote($user), 
+					$db->quoteName('books_nr') . 	' = '.$db->quote($books_nr), 
+					$db->quoteName('chapter_nr') . 	' = '.$db->quote($chapter_nr), 
+					$db->quoteName('verse_nr') . 	' = '.$db->quote($verse_nr), 
+					$db->quoteName('tag') . 		' = '.$db->quote($tag)
+				);
+				 
+				$query->delete($db->quoteName('#__getbible_taged'));
+				$query->where($conditions);
+				$db->setQuery($query);
+				return  $db->execute();
+			}
+		}
+		return false;
+	}
+		
+	public function getTaged($jsonKey,$verse,$tu)
+	{
+		$user = JFactory::getUser();
+		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
+			// Check Token!
+			$token = JSession::getFormToken();
+			if ($jsonKey == $token){
+				// set the verse to its actual values
+				list($books_nr,$chapter_nr) = explode('_',$verse);
+				// Get a db connection.
+				$db = JFactory::getDbo();
+				// Create a new query object.
+				$query = $db->getQuery(true);
+				$query->select($db->quoteName(array('a.verse_nr','a.tag')));
+				$query->select($db->quoteName('b.name'));
+				$query->from($db->quoteName('#__getbible_taged', 'a'));
+				$query->join('LEFT', $db->quoteName('#__getbible_tags', 'b') . ' ON (' . $db->quoteName('a.tag') . ' = ' . $db->quoteName('b.id') . ')');
+				$query->where($db->quoteName('a.user') . ' = '. $db->quote($user->id));
+				$query->where($db->quoteName('a.books_nr') . ' = '. $db->quote($books_nr));
+				$query->where($db->quoteName('a.chapter_nr') . ' = '. $db->quote($chapter_nr));
+				// echo nl2br(str_replace('#__','api_',$query)); die;
+				$db->setQuery($query);
+				$db->execute();
+				if($db->getNumRows()){
+					$rows = $db->loadObjectList();
+					foreach($rows as $row){
+						$taged[$row->verse_nr][$row->tag] = $row->name;
+					}
+					return $taged;
+				}
+			}
+		}
+		return false;
+	}
+	
+	protected function getTagId($user,$name)
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('id'));
+		$query->from($db->quoteName('#__getbible_tags'));
+		$query->where($db->quoteName('user') . ' = '. $db->quote($user));
+		$query->where($db->quoteName('name') . ' = '. $db->quote($name));
+		$query->where($db->quoteName('published') . ' = 1');
+		$db->setQuery($query);
+		$db->execute();
+		if($db->getNumRows()){
+			return $db->loadResult();
+		} else {
+			// get current date
+			$date = date('Y-m-d H:i:s');
+			// add new value
+			$query = $db->getQuery(true);
+			// Insert columns.
+			$columns = array('user', 'name', 'access', 'published', 'created_on');
+			// Insert values.
+			$values = array($db->quote($user), $db->quote($name), $db->quote(1), $db->quote(1), $db->quote($date));
+			// Prepare the insert query.
+			$query
+				->insert($db->quoteName('#__getbible_tags'))
+				->columns($db->quoteName($columns))
+				->values(implode(',', $values));
+			// Set the query using our newly populated query object and execute it.
+			$db->setQuery($query);
+			if($db->execute()){
+				return $this->getTagId($user,$name);
+			}
+		}
+	}
+	
+	public function setTags($name,$note,$access,$published,$jsonKey,$tu)
+	{
+		$user = JFactory::getUser();
+		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
+			// Check Token!
+			$token = JSession::getFormToken();
+			if ($jsonKey == $token){
+				// get current date
+				$date 		= date('Y-m-d H:i:s');
+				return $this->setTags_db($name,$note,$access,$published,$user->id,$date);
+			}
+		}
+		return false;
+	}
+	
+	protected function setTags_db($name, $note, $access, $published, $user, $date)
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		$query->select('id');
+		$query->from($db->quoteName('#__getbible_tags'));
+		$query->where($db->quoteName('name') . 		' = '. $db->quote($name));
+		$query->where($db->quoteName('user') . 		' = '. $db->quote($user));		 
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		$db->execute();
+		if($db->getNumRows()){
+			$id = $db->loadResult();
+			// update value
+			$query = $db->getQuery(true);
+			// Fields to update.
+			$fields = array(
+				$db->quoteName('note') . ' = ' . $db->quote($note),
+				$db->quoteName('access') . ' = ' . $db->quote($access),
+				$db->quoteName('published') . ' = ' . $db->quote($published),
+				$db->quoteName('modified_on') . ' = ' . $db->quote($date)
+			);
+			// Conditions for which records should be updated.
+			$conditions = array(
+				$db->quoteName('id') . ' = ' . $id
+			);
+			$query->update($db->quoteName('#__getbible_tags'))->set($fields)->where($conditions);
+			$db->setQuery($query);
+			if($db->execute()){
+				return true;
+			}
+			return false;
+		} else {
+			// add new value
+			$query = $db->getQuery(true);
+			// Insert columns.
+			$columns = array('user', 'name', 'note', 'access', 'published', 'created_on');
+			// Insert values.
+			$values = array($db->quote($user), $db->quote($name), $db->quote($note), $db->quote($access), $db->quote($published), $db->quote($date));
+			// Prepare the insert query.
+			$query
+				->insert($db->quoteName('#__getbible_tags'))
+				->columns($db->quoteName($columns))
+				->values(implode(',', $values));
+			// Set the query using our newly populated query object and execute it.
+			$db->setQuery($query);
+			if($db->execute()){
+				return true;
+			}
+			return false;
+		}
+	}
+		
+	public function getTags($jsonKey,$tu)
+	{
+		$user = JFactory::getUser();
+		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
+			// Check Token!
+			$token = JSession::getFormToken();
+			if ($jsonKey == $token){
+				$tags = array();
+				// Get a db connection.
+				$db = JFactory::getDbo();
+				// Create a new query object.
+				$query = $db->getQuery(true);
+				$query->select($db->quoteName(array('id','name','note','access','published')));
+				$query->from($db->quoteName('#__getbible_tags'));
+				$query->where($db->quoteName('user') . ' = '. $db->quote($user->id));
+				$query->where($db->quoteName('published') . ' = 1');
+				$db->setQuery($query);
+				$db->execute();
+				if($db->getNumRows()){
+					$rows = $db->loadObjectList();
+					foreach($rows as $row){
+						$tags[] = $row->name;
+					}
+					return $tags;
+				}
+			}
+		}
+		return false;
+	}															
+	
 	public function getAppDefaults($search_app = 0, $check_search = 'repent', $defaultVersion = 'kjv', $crit = '1_1_1', $searchType = 'all')
 	{
 		if($this->app_params->get('jsonAPIaccess') && $this->app_params->get('jsonQueryOptions') == 1){
@@ -352,6 +599,7 @@ class GetbibleModelControl extends JModelList
 			$URLkey 	= $jinput->get('key', NULL, 'ALNUM');
 			$APIkey 	= $this->app_params->get('jsonAPIkey');
 			$appKey 	= $jinput->get('appKey', NULL, 'ALNUM');
+
 			$token 		= JSession::getFormToken();
 	
 		} else {

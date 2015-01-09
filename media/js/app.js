@@ -1,6 +1,6 @@
 /**
 * 
-* 	@version 	1.0.6  January 06, 2015
+* 	@version 	1.0.5  December 08, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -230,7 +230,9 @@ jQuery(document).ready(function() {
 		}, function() {
 			jQuery(this).removeClass('hoverStyle');
 		}
-	);	
+	);
+	// set tag vars
+	var defaultTags = [];	
 });
 
 jQuery(document).on('click', ".verse", function(e){
@@ -265,6 +267,8 @@ function appFeatures(when){
 	setTextSize();
 	// load notes
 	setNotes();
+	// load tags
+	getTags();
 	
 }
 
@@ -277,7 +281,7 @@ function makeNote(id){
 	}
 	jQuery('.note_verse').html(bookName+' verse '+idPieces[2]);
 	jQuery('#note_verse').val(id);
-	jQuery.UIkit.modal("#note_maker").show();
+	setTagDiv(id);
 }
 function submitNote(){
 	setNote_db().done(function(notes) {
@@ -466,6 +470,208 @@ function checkBookmarkSync(){
 		});	
 	}
 }
+function setTagDiv(id){
+	var localVerseTags = jQuery.jStorage.get('taged__'+id, null);
+	if(localVerseTags){
+		var html = '<ul id="tags__'+id+'">';
+			jQuery.each(localVerseTags, function(tag, name) {
+				html += '<li>'+name+'</li>';
+			});
+		html += '</ul>';
+	} else {
+		var html = '<ul id="tags__'+id+'"></ul>';
+	}					
+	jQuery('#tagDiv').html(html);
+	jQuery('#tags__'+id).tagit({
+		// Options
+		availableTags: defaultTags,
+		autocomplete: {delay: 0, minLength: 2},
+		allowSpaces: true,
+		showAutocompleteOnFocus: true,
+		afterTagAdded: function(evt, ui) {
+			if (!ui.duringInitialization) {
+				var taged = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
+				// set the taged verse
+				setTaged(taged,1,id);
+				// if new tag add to tag list
+				if(!isInArray(taged,defaultTags)){
+					defaultTags.push(taged);
+					jQuery.jStorage.set('tags',defaultTags);
+				}
+			}
+		},
+		afterTagRemoved: function(evt, ui) {
+			var untaged = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
+			// set the taged verse
+			setTaged(untaged,0,id);
+		}
+	});
+	jQuery.UIkit.modal("#note_maker").show();
+}
+function setTaged(tag,action,verse){
+	// set tags
+	if(user_id > 0 && allowAccount > 0){
+		if(action == 1){
+			// add the tag
+			setTaged_db(tag,action,verse).done(function(set) {
+				if(set){
+					var localVerseTags = jQuery.jStorage.get('taged__'+verse, null);
+					if(localVerseTags){
+						if(!isInArray(tag, localVerseTags)){
+							localVerseTags.push(tag);
+							jQuery.jStorage.set('taged__'+verse,localVerseTags);
+						}
+					} else {
+						localVerseTags = [];
+						localVerseTags.push(tag);
+						jQuery.jStorage.set('taged__'+verse,localVerseTags);
+					}
+				}
+			});	
+		} else if(action == 0){
+			// remove the tag
+			setTaged_db(tag,action,verse).done(function(set) {
+				if(set){
+					var localVerseTags = jQuery.jStorage.get('taged__'+verse, null);
+					if(localVerseTags){
+						if(isInArray(tag, localVerseTags)){
+							// remove from local array
+							localVerseTags = jQuery.grep(localVerseTags, function(value) {
+								return value != tag;
+							});
+							jQuery.jStorage.set('taged__'+verse,localVerseTags);
+						}
+					}
+				}
+			});
+		}
+	}
+	return false;
+}
+function setTaged_db(tag,action,verse){
+	// set note	on server
+	if(user_id > 0 && allowAccount > 0){
+		var request = '&jsonKey='+jsonKey+'&tu='+openNow+'&action='+action+'&tag='+tag+'&verse='+verse;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.settaged&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+function getTaged(verse){
+	// set Taged in browser memory
+	if(user_id > 0 && allowAccount > 0){
+		getTaged_db(verse).done(function(dbVerseTags) {
+			if(dbVerseTags){
+				jQuery.each(dbVerseTags, function( vers, tags) {
+					var localVerseTag = jQuery.jStorage.get('taged__'+verse+'_'+vers, null);
+					if(localVerseTag){
+						jQuery.each(tags, function(id,tag) {
+							if(!isInArray(tag, localVerseTag)){
+								localVerseTag.push(tag);
+							}
+						});
+					} else {
+						localVerseTag = [];
+						jQuery.each(tags, function(id,tag) {
+							if(!isInArray(tag, localVerseTag)){
+								localVerseTag.push(tag);
+							}
+						});
+					}
+					jQuery.jStorage.set('taged__'+verse+'_'+vers,localVerseTag);
+				}); 
+			}
+		});
+	}
+	return false;
+}
+function getTaged_db(verse){
+	// set note	on server
+	if(user_id > 0 && allowAccount > 0){
+		var request = '&jsonKey='+jsonKey+'&tu='+openNow+'&verse='+verse;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.gettaged&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+function addTag(tag){
+	setTags_db(tag,1).done(function(set) {
+		if(set){
+			defaultTags.push(tag);
+			jQuery.jStorage.set('tags',defaultTags);
+		}
+	});
+}
+function removeTag(tag){
+	setTags_db(tag,0).done(function(set) {
+		if(set){
+			defaultTags = jQuery.grep(defaultTags, function(value) {
+				return value != tag;
+			});
+			jQuery.jStorage.set('tags',defaultTags);
+		}
+	});	
+}
+function setTags_db(tag,published){
+	// set note	on server
+	if(user_id > 0 && allowAccount > 0){
+		var request = '&jsonKey='+jsonKey+'&tu='+openNow+'&access=1&published='+published+'&note=null&name='+tag;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.settags&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+function getTags(){
+	// set note	in browser memory
+	if(user_id > 0 && allowAccount > 0){
+		var localTags = jQuery.jStorage.get('tags');
+		if(!localTags){
+			getTags_db().done(function(localTags) {
+				if(localTags){
+					jQuery.jStorage.set('tags',localTags);
+					defaultTags = localTags;
+				}
+			});
+		} else {
+			defaultTags = localTags;
+		}
+	}
+	return false;
+}
+function getTags_db(){
+	// set bookmark	on server
+	if(user_id > 0 && allowAccount > 0){
+		var request	= '&jsonKey='+jsonKey+'&tu='+openNow;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.gettags&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+
 // check if object is the same
 function sameObject(a,b) {
 	if (!b || !a || b.length != a.length) {
@@ -929,6 +1135,8 @@ function setChapter(json,direction,addTo){
 	listVers = getVerses();
 	jQuery(".booksMenu").text(json.book_name+' '+json.chapter_nr+' ('+json.version+')');
 	jQuery(".books :selected").text(json.book_name+' '+json.chapter_nr);
+	var bookNr = null;
+	var chapterNr = null;
 	var output = '<p class="'+direction+'">';
 	if(addTo){	output += '<span class="chapter_nr">'+json.chapter_nr+'</span>'; }
 	jQuery.each(json.chapter, function(index, value) {
@@ -963,7 +1171,13 @@ function setChapter(json,direction,addTo){
 				output += '</span><br/>';
 			}
 		}
+		if(!bookNr && !chapterNr){
+			bookNr = json.book_nr;
+			chapterNr = json.chapter_nr;
+		}
 	});
+	// load verse tags
+	getTaged(bookNr+'_'+chapterNr);
 	output += '</p>';
 	if(addTo){
 		jQuery('#scripture').append(output);

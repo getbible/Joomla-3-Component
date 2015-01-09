@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.6  January 06, 2015
+* 	@version 	1.0.5  December 08, 2014
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -86,12 +86,15 @@ class GetbibleViewApp extends JViewLegacy
 		}
 		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'components'.DS.'sticky.min.css');
 		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'offline.css');
+		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'tagit.css');
 		
 		// The JS
 		// Load jQuery check
 		if (!HeaderCheck::js_loaded('jquery')) {
 			JHtml::_('jquery.ui');
 		}
+		// load highlight javascript plugin
+		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jquery-ui-custom.js');
 		// set defaults
 		if($this->params->get('account') && $this->user->id > 0){
 			$setApp .=	'var openNow			= "'.base64_encode($this->user->id).'";';
@@ -185,6 +188,10 @@ class GetbibleViewApp extends JViewLegacy
 		if (!HeaderCheck::js_loaded('jstorage')) {
 			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jstorage.min.js');
 		}
+		// Load Tag It check
+		if (!HeaderCheck::js_loaded('tag-it')) {
+			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'tag-it.js');
+		}
 		// Load Offline check
 		if (!HeaderCheck::js_loaded('offline')) {
 			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'offline.min.js');
@@ -204,6 +211,7 @@ class GetbibleViewApp extends JViewLegacy
 							}, 3000);
 						});';
 		$this->document->addScriptDeclaration($offline);
+		
 	}
 	
 	/**

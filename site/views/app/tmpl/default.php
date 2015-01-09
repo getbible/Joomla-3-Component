@@ -422,6 +422,7 @@ $versions = $this->cpanel;
         <?php endif; ?>
     </div>
 </div>
+
 <?php if($this->user->id > 0 && $this->params->get('account')): ?>
 <div id="bookmark_checker" class="uk-modal">
     <div class="uk-modal-dialog">
@@ -479,18 +480,28 @@ $versions = $this->cpanel;
 <?php if($this->params->get('account')): ?>
 <div id="note_maker" class="uk-modal">
     <div class="uk-modal-dialog">
-        <a class="uk-modal-close uk-close"></a>
+        <a class="uk-modal-close uk-close"></a><br />
         <?php if($this->user->id > 0): ?>
-            <form class="uk-form" id="post_note">
-                <div class="uk-form-row">
-                    <h2><span class="note_verse"></span></h2>
-                    <textarea id="active_note" name="note" cols="100%" rows="4" placeholder="add note here!" autocomplete="off"></textarea>
-                    <input class="uk-button uk-modal-close" type="submit" onclick="submitNote(); return false;" value="submit">
-                    <input type="hidden" name="jsonKey" value="<?php echo JSession::getFormToken(); ?>" />
-                    <input id="note_verse" type="hidden" name="verse" value="" />
-                    <input type="hidden" name="tu" value="<?php echo base64_encode($this->user->id); ?>" />
-            	</div>
-            </form>
+        <div class="uk-grid">
+        	<div class="uk-grid-width-1-1 uk-width-medium-1-2">
+                <form class="uk-form" id="post_note">
+                    <div class="uk-form-row">
+                        <h2><span class="note_verse"></span></h2>
+                        <textarea id="active_note" name="note" cols="100%" rows="4" placeholder="add note here!" autocomplete="off"></textarea>
+                        <input class="uk-button uk-modal-close" type="submit" onclick="submitNote(); return false;" value="submit">
+                        <input type="hidden" name="jsonKey" value="<?php echo JSession::getFormToken(); ?>" />
+                        <input id="note_verse" type="hidden" name="verse" value="" />
+                        <input type="hidden" name="tu" value="<?php echo base64_encode($this->user->id); ?>" />
+                    </div>
+                </form>
+            </div>
+       		<div class="uk-grid-width-1-1 uk-width-medium-1-2">
+                <div class="uk-panel">
+                    <h2>Add Tags</h2>
+					<div id="tagDiv"></div>
+                </div>
+            </div>
+		</div>
         <?php else: ?>
         	<br />
             <div class="uk-panel uk-panel-box uk-text-center">
@@ -642,6 +653,7 @@ $versions = $this->cpanel;
 			<span><?php echo $this->params->get('vdm_name');  ?></span>
 		<?php if ($this->params->get('vdm_link') == 1): ?>
 			</a>
+
 		<?php endif; ?>
 	</center></div>
 <?php endif; ?>
