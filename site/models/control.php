@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -96,7 +96,7 @@ class GetbibleModelControl extends JModelList
 		return false;
 	}
 	
-	public function setBookmark($bookmark,$publish,$jsonKey,$tu)
+	public function setHighlight($highlight,$publish,$jsonKey,$tu)
 	{
 		$user = JFactory::getUser();
 		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
@@ -105,15 +105,15 @@ class GetbibleModelControl extends JModelList
 			if ($jsonKey == $token){
 				// get current date
 				$date 		= date('Y-m-d H:i:s');
-				$aBookmark 	= (string) preg_replace('/[^A-Z0-9_]/i', '', $bookmark);
-				list($mark, $color) = explode('__',$aBookmark);
-				return $this->setBookmark_db($mark, $color, $publish, $user->id, $date);
+				$aHighlight 	= (string) preg_replace('/[^A-Z0-9_]/i', '', $highlight);
+				list($mark, $color) = explode('__',$aHighlight);
+				return $this->setHighlight_db($mark, $color, $publish, $user->id, $date);
 			}
 		}
 		return false;
 	}
 	
-	public function setBookmarks($bookmark,$action,$publish,$jsonKey,$tu)
+	public function setHighlights($highlight,$action,$publish,$jsonKey,$tu)
 	{
 		$user = JFactory::getUser();
 		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
@@ -121,14 +121,14 @@ class GetbibleModelControl extends JModelList
 			$token = JSession::getFormToken();
 			if ($jsonKey == $token){
 				if($action == 2){
-					$this->clearBookmarks($jsonKey,$tu);
+					$this->clearHighlights($jsonKey,$tu);
 				}
 				// get current date
 				$date 		= date('Y-m-d H:i:s');
-				$bookmarks 	= json_decode(base64_decode($bookmark),true);
-				if(is_array($bookmarks)){
-					foreach($bookmarks as $mark => $color){
-						$this->setBookmark_db($mark, $color, $publish, $user->id, $date);
+				$highlights 	= json_decode(base64_decode($highlight),true);
+				if(is_array($highlights)){
+					foreach($highlights as $mark => $color){
+						$this->setHighlight_db($mark, $color, $publish, $user->id, $date);
 					}
 					return true;
 				}
@@ -137,7 +137,7 @@ class GetbibleModelControl extends JModelList
 		return false;
 	}
 	
-	public function getBookmarks($jsonKey,$tu)
+	public function getHighlights($jsonKey,$tu)
 	{
 		$user = JFactory::getUser();
 		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
@@ -149,7 +149,7 @@ class GetbibleModelControl extends JModelList
 				// Create a new query object.
 				$query = $db->getQuery(true);
 				$query->select($db->quoteName(array('books_nr','chapter_nr','verse_nr','color')));
-				$query->from($db->quoteName('#__getbible_bookmarks'));
+				$query->from($db->quoteName('#__getbible_highlights'));
 				$query->where($db->quoteName('user') . ' = '. $db->quote($user->id));
 				$query->where($db->quoteName('published') . ' = 1');
 				$db->setQuery($query);
@@ -166,7 +166,7 @@ class GetbibleModelControl extends JModelList
 		return false;
 	}
 	
-	public function clearBookmarks($jsonKey,$tu)
+	public function clearHighlights($jsonKey,$tu)
 	{
 		$user = JFactory::getUser();
 		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
@@ -180,7 +180,7 @@ class GetbibleModelControl extends JModelList
 				$conditions = array(
 					$db->quoteName('user') . ' = '. $db->quote($user->id)
 				);
-				$query->delete($db->quoteName('#__getbible_bookmarks'));
+				$query->delete($db->quoteName('#__getbible_highlights'));
 				$query->where($conditions);
 				$db->setQuery($query);
 				return $db->execute();
@@ -189,7 +189,7 @@ class GetbibleModelControl extends JModelList
 		return false;		
 	}
 	
-	protected function setBookmark_db($mark, $color, $publish, $user, $date)
+	protected function setHighlight_db($mark, $color, $publish, $user, $date)
 	{
 		// Get a db connection.
 		$db = JFactory::getDbo();
@@ -199,7 +199,7 @@ class GetbibleModelControl extends JModelList
 		$color 	= (string) preg_replace('/[^A-Z]/i', '', $color);
 		list($books_nr,$chapter_nr,$verse_nr) = explode('_',$mark);
 		$query->select('id');
-		$query->from($db->quoteName('#__getbible_bookmarks'));
+		$query->from($db->quoteName('#__getbible_highlights'));
 		$query->where($db->quoteName('books_nr') . 		' = '. $db->quote($books_nr));
 		$query->where($db->quoteName('chapter_nr') . 	' = '. $db->quote($chapter_nr));
 		$query->where($db->quoteName('verse_nr') . 		' = '. $db->quote($verse_nr));
@@ -221,7 +221,7 @@ class GetbibleModelControl extends JModelList
 			$conditions = array(
 				$db->quoteName('id') . ' = ' . $id
 			);
-			$query->update($db->quoteName('#__getbible_bookmarks'))->set($fields)->where($conditions);
+			$query->update($db->quoteName('#__getbible_highlights'))->set($fields)->where($conditions);
 			$db->setQuery($query);
 			return $db->execute();
 		} else {
@@ -233,7 +233,7 @@ class GetbibleModelControl extends JModelList
 			$values = array($db->quote($user), $db->quote($books_nr), $db->quote($chapter_nr), $db->quote($verse_nr), $db->quote($color), $db->quote($publish), $db->quote($date));
 			// Prepare the insert query.
 			$query
-				->insert($db->quoteName('#__getbible_bookmarks'))
+				->insert($db->quoteName('#__getbible_highlights'))
 				->columns($db->quoteName($columns))
 				->values(implode(',', $values));
 			// Set the query using our newly populated query object and execute it.

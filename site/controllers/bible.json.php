@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -27,10 +27,10 @@ class GetbibleControllerBible extends JControllerLegacy
 		$this->registerTask('books', 'bible');
 		$this->registerTask('chapter', 'bible');
 		$this->registerTask('defaults', 'bible');
-		$this->registerTask('setbookmark', 'bible');
-		$this->registerTask('setbookmarks', 'bible');
-		$this->registerTask('getbookmarks', 'bible');
-		$this->registerTask('clearbookmarks', 'bible');
+		$this->registerTask('sethighlight', 'bible');
+		$this->registerTask('sethighlights', 'bible');
+		$this->registerTask('gethighlights', 'bible');
+		$this->registerTask('clearhighlights', 'bible');
 		$this->registerTask('setnote', 'bible');
 		$this->registerTask('getnotes', 'bible');
 		$this->registerTask('settaged', 'bible');
@@ -89,10 +89,10 @@ class GetbibleControllerBible extends JControllerLegacy
 					echo $_GET['callback']."(".json_encode($e).");";
 				}
 			break;
-			case 'setBookmark':
+			case 'setHighlight':
 				try
 				{				 
-					$result = $this->getModel('control')->setBookmark(	$jinput->get('bookmark', 0, 'STRING'),
+					$result = $this->getModel('control')->setHighlight(	$jinput->get('highlight', 0, 'STRING'),
 																		$jinput->get('publish', 0, 'INT'),
 																		$jinput->get('jsonKey', 0, 'ALNUM'),
 																		$jinput->get('tu', 0, 'BASE64') );
@@ -104,10 +104,10 @@ class GetbibleControllerBible extends JControllerLegacy
 					echo $_GET['callback']."(".json_encode($e).");";
 				}
 			break;
-			case 'setbookmarks':
+			case 'sethighlights':
 				try
 				{				 
-					$result = $this->getModel('control')->setBookmarks(	$jinput->get('bookmark', 0, 'BASE64'),
+					$result = $this->getModel('control')->setHighlights(	$jinput->get('highlight', 0, 'BASE64'),
 																		$jinput->get('act', 0, 'INT'),
 																		$jinput->get('publish', 0, 'INT'),
 																		$jinput->get('jsonKey', 0, 'ALNUM'),
@@ -120,10 +120,10 @@ class GetbibleControllerBible extends JControllerLegacy
 					echo $_GET['callback']."(".json_encode($e).");";
 				}
 			break;
-			case 'getbookmarks':
+			case 'gethighlights':
 				try
 				{				 
-					$result = $this->getModel('control')->getBookmarks(	$jinput->get('jsonKey', 0, 'ALNUM'),
+					$result = $this->getModel('control')->getHighlights(	$jinput->get('jsonKey', 0, 'ALNUM'),
 																		$jinput->get('tu', 0, 'BASE64') );
 					
 					echo $_GET['callback']."(".json_encode($result).");";
@@ -133,10 +133,10 @@ class GetbibleControllerBible extends JControllerLegacy
 					echo $_GET['callback']."(".json_encode($e).");";
 				}
 			break;
-			case 'clearbookmarks':
+			case 'clearhighlights':
 				try
 				{				 
-					$result = $this->getModel('control')->clearBookmarks(	$jinput->get('jsonKey', 0, 'ALNUM'),
+					$result = $this->getModel('control')->clearHighlights(	$jinput->get('jsonKey', 0, 'ALNUM'),
 																			$jinput->get('tu', 0, 'BASE64') );
 					
 					echo $_GET['callback']."(".json_encode($result).");";

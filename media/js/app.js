@@ -1,6 +1,6 @@
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -24,9 +24,9 @@ var defaultBookNr 		= 0;
 var defaultChapter 		= 0;
 var setQuery 			= 0;
 
-// set bookmark array
-var alpha 			= "abcdefghijklm";
-var bookmarksArray 	= alpha.split("");
+// set highlight array
+var alpha 			= "abcdefghijklmnopqrstuvwxyz";
+var highlightsArray = alpha.split("");
 
 // get the data from the API
 jQuery(function() {
@@ -34,8 +34,8 @@ jQuery(function() {
 	getDefaults(defaultRequest, defaultKey);
 	appFeatures(1);
 	setTextSize();
-	// check if bookmarks are in sync
-	checkBookmarkSync();
+	// check if highlights are in sync
+	checkHighLightSync();
 		
 });
 // Load this after page is fully loaded
@@ -237,7 +237,7 @@ jQuery(document).ready(function() {
 
 jQuery(document).on('click', ".verse", function(e){
 	e.preventDefault();
-	setBookmark(this);
+	setHighLight(this);
 });
 			
 // script to set all app apge features
@@ -251,17 +251,17 @@ function appFeatures(when){
 		}
 	);
 	
-	var bookMarks = jQuery.jStorage.get('bookmarks');
+	var highLights = jQuery.jStorage.get('highlights');
 	
-	if(bookMarks){
-		jQuery.jStorage.deleteKey('bookmarks');
-		jQuery.each( bookMarks, function( val, mark ) {
+	if(highLights){
+		jQuery.jStorage.deleteKey('highlights');
+		jQuery.each( highLights, function( val, mark ) {
 			if(jQuery("#" + val).length != 0) {
-			  jQuery("#" + val).addClass('bookmark_'+mark);
+			  jQuery("#" + val).addClass('highlight_'+mark);
 			}
 		});
-		//save bookmarks
-		jQuery.jStorage.set('bookmarks',bookMarks);
+		//save highlights
+		jQuery.jStorage.set('highlights',highLights);
 	} 
 	// ensure that text gets resized
 	setTextSize();
@@ -301,12 +301,12 @@ function loadNotes(notes){
 		if(jQuery("#"+vers).length != 0) {
 			if(note.length != 0){
 				if(verselineMode == 2){
-					html = '&#160;<span class="verse_nr uk-text-muted ltr" onclick="makeNote(\''+vers+ '\');return false;" data-uk-tooltip="{pos:\'right\'}" title="Edit Note">[&#160;<span  id="edit__'+vers+ '" >'+note+'</span>&#160;]</span>';
+					html = '&#160;<span class="verse_nr uk-text-muted ltr" onclick="makeNote(\''+vers+ '\');return false;" data-uk-tooltip="{pos:\'right\'}" title="Edit Note & Tags">[&#160;<span  id="edit__'+vers+ '" >'+note+'</span>&#160;]</span>';
 				} else {
-					html = '<br /><span class="verse_nr uk-text-muted ltr" onclick="makeNote(\''+vers+ '\');return false;" data-uk-tooltip="{pos:\'right\'}" title="Edit Note">[&#160;<span  id="edit__'+vers+ '" >'+note+'</span>&#160;]</span>';
+					html = '<br /><span class="verse_nr uk-text-muted ltr" onclick="makeNote(\''+vers+ '\');return false;" data-uk-tooltip="{pos:\'right\'}" title="Edit Note & Tags">[&#160;<span  id="edit__'+vers+ '" >'+note+'</span>&#160;]</span>';
 				}
 				jQuery('#note__'+vers).html(html);
-				jQuery('#nr__'+vers).attr('title', 'Edit Note');
+				jQuery('#nr__'+vers).attr('title', 'Edit Note & Tags');
 			} else {
 				jQuery('#note__'+vers).html('');
 			}
@@ -347,7 +347,7 @@ function setNotes(){
 	return false;
 }
 function getNotes(){
-	// set bookmark	on server
+	// set highlight	on server
 	if(user_id > 0 && allowAccount > 0){
 		var request	= '&jsonKey='+jsonKey+'&tu='+openNow;
 		var getUrl 	= "index.php?option=com_getbible&task=bible.getnotes&format=json";
@@ -362,57 +362,57 @@ function getNotes(){
 	return false;
 }
 
-function mergeAllBookmarks(){
-	setBookmarks_server(3).done(function(isMerged) {
+function mergeAllHighlights(){
+	setHighlights_server(3).done(function(isMerged) {
 		if(isMerged){
-			loadServerBookmarks(true);
+			loadServerHighlights(true);
 		}
 	})
 }
-function saveBrowserBookmarks(act){
-	setBookmarks_server(act);
+function saveBrowserHighlights(act){
+	setHighlights_server(act);
 }
-function loadServerBookmarks(removeLocal){
-	getBookmarks().done(function(server) {
+function loadServerHighlights(removeLocal){
+	getHighlights().done(function(server) {
 		if(removeLocal){
-			var bookMarks = jQuery.jStorage.get('bookmarks');
-			if(bookMarks){
-				jQuery.each(bookMarks, function(id, color) {
+			var highLights = jQuery.jStorage.get('highlights');
+			if(highLights){
+				jQuery.each(highLights, function(id, color) {
 					// remove the class
-					jQuery('#'+id).removeClass('bookmark_'+color);
+					jQuery('#'+id).removeClass('highlight_'+color);
 				});
-				jQuery.jStorage.deleteKey('bookmarks');
+				jQuery.jStorage.deleteKey('highlights');
 			}
 		}
 		if(server){
 			serverBookMarks = JSON.parse(Base64.decode(server));
 			jQuery.each( serverBookMarks, function( id, color ) {
 				if(jQuery("#" + id).length != 0) {
-				  jQuery("#" + id).addClass('bookmark_'+color);
+				  jQuery("#" + id).addClass('highlight_'+color);
 				}
 			});
-			//save bookmarks
-			jQuery.jStorage.set('bookmarks',serverBookMarks);
+			//save highlights
+			jQuery.jStorage.set('highlights',serverBookMarks);
 		}
 	})	
 }
-function clearAllBookmarks(){
-	clearServerBookmarks().done(function(isCleared) {
+function clearAllHighlights(){
+	clearServerHighlights().done(function(isCleared) {
 		if(isCleared){
-			var bookMarks = jQuery.jStorage.get('bookmarks');
-			if(bookMarks){
-				jQuery.each(bookMarks, function(id, color) {
+			var highLights = jQuery.jStorage.get('highlights');
+			if(highLights){
+				jQuery.each(highLights, function(id, color) {
 					// remove the class
-					jQuery('#'+id).removeClass('bookmark_'+color);
+					jQuery('#'+id).removeClass('highlight_'+color);
 				});
-				jQuery.jStorage.deleteKey('bookmarks');
+				jQuery.jStorage.deleteKey('highlights');
 			}
 		}
 	})
 }
-function clearServerBookmarks(){
+function clearServerHighlights(){
 	if(user_id > 0 && allowAccount > 0){
-		var getUrl 	= "index.php?option=com_getbible&task=bible.clearbookmarks&format=json";
+		var getUrl 	= "index.php?option=com_getbible&task=bible.clearhighlights&format=json";
 		var request = '&jsonKey='+jsonKey+'&tu='+openNow;
 		return jQuery.ajax({
 			 type: 'GET',
@@ -425,10 +425,10 @@ function clearServerBookmarks(){
 	return false;
 }
 
-function getBookmarks(){
-	// get bookmarks		
+function getHighlights(){
+	// get highlights		
 	if(user_id > 0 && allowAccount > 0){
-		var getUrl 	= "index.php?option=com_getbible&task=bible.getbookmarks&format=json";
+		var getUrl 	= "index.php?option=com_getbible&task=bible.gethighlights&format=json";
 		var request	= '&jsonKey='+jsonKey+'&tu='+openNow;
 		return jQuery.ajax({
 			 type: 'GET',
@@ -441,29 +441,29 @@ function getBookmarks(){
 	return false;
 }
 
-function checkBookmarkSync(){
+function checkHighLightSync(){
 	if(user_id > 0 && allowAccount > 0){
-		getBookmarks().done(function(server) {
+		getHighlights().done(function(server) {
 			if(!server){
 				server = {not : 'found'};
 			} else {
 				server = JSON.parse(Base64.decode(server));
 			}
-			var local = jQuery.jStorage.get('bookmarks');
+			var local = jQuery.jStorage.get('highlights');
 			if(!local){
 				local 	= {not : 'found'};
 			}
 			if(!sameObject(local,server)){
 				jQuery('.slectionSync').hide();
-				jQuery.UIkit.modal("#bookmark_checker").show();
+				jQuery.UIkit.modal("#highlight_checker").show();
 				if(local.not){
-					// server has bookmarks but not browser
+					// server has highlights but not browser
 					jQuery('.server_has').show();
 				}else if(server.not){
-					// Browser has bookmarks but not server
+					// Browser has highlights but not server
 					jQuery('.browser_has').show();
 				} else {
-					// both has bookmarks
+					// both has highlights
 					jQuery('.both_has').show();
 				}
 			}			
@@ -471,42 +471,47 @@ function checkBookmarkSync(){
 	}
 }
 function setTagDiv(id){
-	var localVerseTags = jQuery.jStorage.get('taged__'+id, null);
-	if(localVerseTags){
-		var html = '<ul id="tags__'+id+'">';
-			jQuery.each(localVerseTags, function(tag, name) {
-				html += '<li>'+name+'</li>';
-			});
-		html += '</ul>';
-	} else {
-		var html = '<ul id="tags__'+id+'"></ul>';
-	}					
-	jQuery('#tagDiv').html(html);
-	jQuery('#tags__'+id).tagit({
-		// Options
-		availableTags: defaultTags,
-		autocomplete: {delay: 0, minLength: 2},
-		allowSpaces: true,
-		showAutocompleteOnFocus: true,
-		afterTagAdded: function(evt, ui) {
-			if (!ui.duringInitialization) {
-				var taged = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
-				// set the taged verse
-				setTaged(taged,1,id);
-				// if new tag add to tag list
-				if(!isInArray(taged,defaultTags)){
-					defaultTags.push(taged);
-					jQuery.jStorage.set('tags',defaultTags);
+	// set tags
+	if(user_id > 0 && allowAccount > 0){
+		var localVerseTags = jQuery.jStorage.get('taged__'+id, null);
+		if(localVerseTags){
+			var html = '<ul id="tags__'+id+'">';
+				jQuery.each(localVerseTags, function(tag, name) {
+					html += '<li>'+name+'</li>';
+				});
+			html += '</ul>';
+		} else {
+			var html = '<ul id="tags__'+id+'"></ul>';
+		}					
+		jQuery('#tagDiv').html(html);
+		jQuery('#tags__'+id).tagit({
+			// Options
+			availableTags: defaultTags,
+			autocomplete: {delay: 0, minLength: 2},
+			allowSpaces: true,
+			showAutocompleteOnFocus: true,
+			afterTagAdded: function(evt, ui) {
+				if (!ui.duringInitialization) {
+					var taged = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
+					// set the taged verse
+					setTaged(taged,1,id);
+					// if new tag add to tag list
+					if(!isInArray(taged,defaultTags)){
+						defaultTags.push(taged);
+						jQuery.jStorage.set('tags',defaultTags);
+					}
 				}
+			},
+			afterTagRemoved: function(evt, ui) {
+				var untaged = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
+				// set the taged verse
+				setTaged(untaged,0,id);
 			}
-		},
-		afterTagRemoved: function(evt, ui) {
-			var untaged = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
-			// set the taged verse
-			setTaged(untaged,0,id);
-		}
-	});
-	jQuery.UIkit.modal("#note_maker").show();
+		});
+		jQuery.UIkit.modal("#note_maker").show();
+	} else {
+		jQuery.UIkit.modal("#note_maker").show();
+	}
 }
 function setTaged(tag,action,verse){
 	// set tags
@@ -657,7 +662,7 @@ function getTags(){
 	return false;
 }
 function getTags_db(){
-	// set bookmark	on server
+	// set highlight	on server
 	if(user_id > 0 && allowAccount > 0){
 		var request	= '&jsonKey='+jsonKey+'&tu='+openNow;
 		var getUrl 	= "index.php?option=com_getbible&task=bible.gettags&format=json";
@@ -693,63 +698,63 @@ function sameObject(a,b) {
 	return same;
 }
 
-// set the bookmark
-function setBookmark(verse) {
-	// get default current bookmark
+// set the highlight
+function setHighLight(verse) {
+	// get default current highlight
 	var currentMark = jQuery.jStorage.get('currentMark', 'a');
-	// get bookmarks
-	var bookMarksStore = jQuery.jStorage.get('bookmarks');
-	if(!bookMarksStore){
-		bookMarksStore = {};
+	// get highlights
+	var highLightsStore = jQuery.jStorage.get('highlights');
+	if(!highLightsStore){
+		highLightsStore = {};
 	}
 	var id 		= jQuery(verse).attr("id");
 	var add 	= true;
 	var delet 	= false;
 	var deletMark;
-	jQuery(bookmarksArray).each(function(index, mark) {
+	jQuery(highlightsArray).each(function(index, mark) {
 		// remove the class and unset values
 		jQuery('#'+id+' span').removeClass('highlight');
-		if(jQuery('#'+id).hasClass('bookmark_'+mark)){
+		if(jQuery('#'+id).hasClass('highlight_'+mark)){
 			deletMark 	= mark;
 			delet 		= true;
 			return false;
 		}
 	});
 	if(delet){
-		jQuery('#'+id).removeClass('bookmark_'+deletMark);
-		delete bookMarksStore[id];
-		if('bookmark_'+deletMark == 'bookmark_'+currentMark){
+		jQuery('#'+id).removeClass('highlight_'+deletMark);
+		delete highLightsStore[id];
+		if('highlight_'+deletMark == 'highlight_'+currentMark){
 			add = false;
-			setBookmark_server(0,id+'__'+deletMark);
+			setHighLight_server(0,id+'__'+deletMark);
 		}
 	}
 	if(add){
-		setBookmark_server(1,id+'__'+currentMark);
+		setHighLight_server(1,id+'__'+currentMark);
 		// add the class and set the values
-		bookMarksStore[id] = currentMark;
-		jQuery('#'+id).addClass('bookmark_'+currentMark);
+		highLightsStore[id] = currentMark;
+		jQuery('#'+id).addClass('highlight_'+currentMark);
 	}
-	//save bookmarks
-	jQuery.jStorage.set('bookmarks',bookMarksStore);
+	//save highlights
+	jQuery.jStorage.set('highlights',highLightsStore);
 }
 
-function setBookmarks_server(action){
+function setHighlights_server(action){
 	
-	// set bookmark	on server	
+	// set highlight	on server	
 	if(user_id > 0 && allowAccount > 0){
-		var getUrl		= "index.php?option=com_getbible&task=bible.setbookmarks&format=json";
-		var bookMarks 	= jQuery.jStorage.get('bookmarks');
-		if(bookMarks){
-			var checker = JSON.stringify(bookMarks);
-			var request = 'bookmark='+Base64.encode(checker)+'&publish=1';
+		var getUrl		= "index.php?option=com_getbible&task=bible.sethighlights&format=json";
+		var highLights 	= jQuery.jStorage.get('highlights');
+		if(highLights){
+			var checker = JSON.stringify(highLights);
+			var request = 'highlight='+Base64.encode(checker)+'&publish=1';
 		} else {
 			return false;
 		}
 		/************************************
 		* action has the following options	*
-		* 1 = first set of bookmarks		*
-		* 2 = replace all server bookmarks	*
-		* 3 = merge with server bookmarks	*
+		* 1 = first set of highlights		*
+		* 2 = replace all server highlights	*
+		* 3 = merge with server highlights	*
 		************************************/
 		switch(action){
 			case 2:
@@ -770,13 +775,13 @@ function setBookmarks_server(action){
 	}
 	return false;
 }
-function setBookmark_server(publish,mark){
+function setHighLight_server(publish,mark){
 	
-	// set bookmark	on server	
+	// set highlight	on server	
 	if(user_id > 0 && allowAccount > 0){
-		var getUrl = "index.php?option=com_getbible&task=bible.setBookmark&format=json";
+		var getUrl = "index.php?option=com_getbible&task=bible.setHighLight&format=json";
 		if(mark.length > 0){
-			var request = 'bookmark='+mark+'&publish='+publish+'&jsonKey='+jsonKey+'&tu='+openNow;
+			var request = 'highlight='+mark+'&publish='+publish+'&jsonKey='+jsonKey+'&tu='+openNow;
 		} else {
 			return false;
 		}
@@ -801,9 +806,9 @@ function getSelectionText() {
     }
     return text;
 }
-// set the bookmark color
+// set the highlight color
 function setCurrentColor(mark){
-	//save current bookmark
+	//save current highlight
 	jQuery.jStorage.set('currentMark',mark);
 }
 // set the text size
@@ -1142,10 +1147,10 @@ function setChapter(json,direction,addTo){
 	jQuery.each(json.chapter, function(index, value) {
 		if(allowAccount > 0){
 			if(isInArray(value.verse_nr, listVers) ){
-				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note">' +value.verse_nr+ '&#160;</span><span oncontextmenu="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;</span><span oncontextmenu="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 				output += '<span class="highlight">' +value.verse+ '</span>';
 			} else {
-				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note">' +value.verse_nr+ '&#160;</span><span oncontextmenu="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;</span><span oncontextmenu="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 				output += value.verse;
 			}
 		} else {

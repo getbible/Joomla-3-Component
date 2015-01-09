@@ -87,7 +87,7 @@ $versions = $this->cpanel;
 	<?php if($this->params->get('search_display') == 1): ?>
     <form class="uk-form uk-display-block">
         <div class="uk-button-group">
-            <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+            <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
             <div class="uk-button-dropdown" data-uk-dropdown="">
                 <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
                 <div class="uk-dropdown uk-dropdown-small">
@@ -141,7 +141,7 @@ $versions = $this->cpanel;
                                 </ul>
                             </div>
                         </div>
-                        <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+                        <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
                     </div>
                 </div>
         	</fieldset>
@@ -164,7 +164,7 @@ $versions = $this->cpanel;
                         </ul>
                     </div>
                 </div>
-                <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+                <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
             </div>
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
             value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
@@ -194,7 +194,7 @@ $versions = $this->cpanel;
                         </ul>
                     </div>
                 </div>
-                <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+                <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
             </div>
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
             value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
@@ -239,7 +239,7 @@ $versions = $this->cpanel;
                             </ul>
                         </div>
                     </div>
-                    <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+                    <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
                 </div>
             </div>
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
@@ -253,7 +253,7 @@ $versions = $this->cpanel;
     <form class="uk-form uk-display-block">
         <fieldset data-uk-margin="">
             <div class="uk-button-group">
-                <a class="uk-button" href="#bookmark_cpanel" data-uk-modal><i class="uk-icon-bookmark"></i></a>
+                <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
                 <div class="uk-button-dropdown" data-uk-dropdown="">
                     <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
                     <div class="uk-dropdown uk-dropdown-small">
@@ -352,18 +352,18 @@ $versions = $this->cpanel;
 </div>
 <div id="b_loader" style="display:none; text-align:center;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div>
 
-<div id="bookmark_cpanel" class="uk-modal">
+<div id="highlight_cpanel" class="uk-modal">
     <div class="uk-modal-dialog">
         <a class="uk-modal-close uk-close"></a>
         <?php if($this->params->get('account') && $this->user->id == 0): ?>
-            <ul class="uk-tab" data-uk-tab="{connect:'#bookmark_tab'}">
+            <ul class="uk-tab" data-uk-tab="{connect:'#highlight_tab'}">
                 <li><a href=""><i class="uk-icon-paint-brush"></i> <?php echo JText::_('COM_GETBIBLE_COLORS'); ?></a></li>
                 <li><a href=""><i class="uk-icon-cog uk-icon-spin"></i> <?php echo JText::_('COM_GETBIBLE_ACCOUNT'); ?></a></li>
             </ul>
-            <ul id="bookmark_tab" class="uk-switcher uk-margin">
+            <ul id="highlight_tab" class="uk-switcher uk-margin">
                 <li>
                     <div class="uk-hidden-small" data-uk-margin>
-                        <?php foreach($this->bookmarks as $mark => $details): ?>
+                        <?php foreach($this->highlights as $mark => $details): ?>
                             <a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-large uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
                                 <?php echo JText::_($details['name']); ?>&nbsp;&nbsp;&nbsp;
                                 <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>; font-size: <?php echo $this->params->get('font_medium'); ?>px;">
@@ -373,7 +373,7 @@ $versions = $this->cpanel;
                         <?php endforeach; ?>
                     </div>
                     <div class="uk-visible-small" data-uk-margin>
-                        <?php foreach($this->bookmarks as $mark => $details): ?>
+                        <?php foreach($this->highlights as $mark => $details): ?>
                             <a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-small uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
                                 <?php echo JText::_($details['name']); ?>&nbsp;&nbsp;&nbsp;
                                 <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>;">
@@ -390,7 +390,7 @@ $versions = $this->cpanel;
                            <p>We will add more features here soon...</p>
                         <?php else: ?>
                             <h1><?php echo JText::_($this->params->get('account_header')); ?></h1>
-                            <?php echo JText::_($this->params->get('account_bookmark_text')); ?>
+                            <?php echo JText::_($this->params->get('account_highlight_text')); ?>
                             <a class="uk-button uk-width-1-1 uk-button-large uk-button-primary" href="<?php echo $this->signupUrl; ?>" >
                                 <?php echo JText::_($this->params->get('account_button')); ?>
                             </a>
@@ -400,7 +400,7 @@ $versions = $this->cpanel;
             </ul>
         <?php else: ?>
         	<div class="uk-hidden-small" data-uk-margin>
-				<?php foreach($this->bookmarks as $mark => $details): ?>
+				<?php foreach($this->highlights as $mark => $details): ?>
                     <a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-large uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
                         <?php echo JText::_($details['name']); ?>&nbsp;&nbsp;&nbsp;
                         <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>; font-size: <?php echo $this->params->get('font_medium'); ?>px;">
@@ -410,7 +410,7 @@ $versions = $this->cpanel;
                 <?php endforeach; ?>
             </div>
             <div class="uk-visible-small" data-uk-margin>
-                <?php foreach($this->bookmarks as $mark => $details): ?>
+                <?php foreach($this->highlights as $mark => $details): ?>
                     <a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-small uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
                         <?php echo JText::_($details['name']); ?>&nbsp;&nbsp;&nbsp;
                         <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>;">
@@ -424,54 +424,54 @@ $versions = $this->cpanel;
 </div>
 
 <?php if($this->user->id > 0 && $this->params->get('account')): ?>
-<div id="bookmark_checker" class="uk-modal">
+<div id="highlight_checker" class="uk-modal">
     <div class="uk-modal-dialog">
         <a class="uk-modal-close uk-close"></a>
             <h1><?php echo JText::_('COM_GETBIBLE_NOT_IN_SYNC') ?></h1>
         <div class="both_has slectionSync" style="display:none;">
             <a 	class="uk-modal-close uk-button uk-width-1-1 uk-margin-small-bottom" 
-            	href="javascript:void(0)" onClick="saveBrowserBookmarks(2)" 
-                title="<?php echo JText::_('COM_GETBIBLE_KEEP_ONLY_BROWSER_BOOKMARKS_DESC') ?>" data-uk-tooltip="{pos:'top'}">
-                <i class="uk-icon-arrow-up"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_KEEP_ONLY_BROWSER_BOOKMARKS_LABEL') ?>&nbsp;
+            	href="javascript:void(0)" onClick="saveBrowserHighlights(2)" 
+                title="<?php echo JText::_('COM_GETBIBLE_KEEP_ONLY_BROWSER_HIGHLIGHT_DESC') ?>" data-uk-tooltip="{pos:'top'}">
+                <i class="uk-icon-arrow-up"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_KEEP_ONLY_BROWSER_HIGHLIGHT_LABEL') ?>&nbsp;
             </a>
             <a 	class="uk-modal-close uk-button uk-width-1-1 uk-margin-small-bottom" 
-            	href="javascript:void(0)" onClick="mergeAllBookmarks()" 
-                title="<?php echo JText::_('COM_GETBIBLE_MERGE_ALL_BOOKMARKS_DESC') ?>" data-uk-tooltip="{pos:'top'}">
-                <i class="uk-icon-refresh uk-icon-spin"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_MERGE_ALL_BOOKMARKS_LABEL') ?>&nbsp;
+            	href="javascript:void(0)" onClick="mergeAllHighlights()" 
+                title="<?php echo JText::_('COM_GETBIBLE_MERGE_ALL_HIGHLIGHT_DESC') ?>" data-uk-tooltip="{pos:'top'}">
+                <i class="uk-icon-refresh uk-icon-spin"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_MERGE_ALL_HIGHLIGHT_LABEL') ?>&nbsp;
             </a>
             <a 	class="uk-modal-close uk-button uk-width-1-1 uk-margin-small-bottom" 
-            	href="javascript:void(0)" onClick="loadServerBookmarks(true)" 
-                title="<?php echo JText::_('COM_GETBIBLE_KEEP_ONLY_ACCOUNT_BOOKMARKS_DESC') ?>" data-uk-tooltip="{pos:'top'}">
-                <i class="uk-icon-arrow-down"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_KEEP_ONLY_ACCOUNT_BOOKMARKS_LABEL') ?>&nbsp;
+            	href="javascript:void(0)" onClick="loadServerHighlights(true)" 
+                title="<?php echo JText::_('COM_GETBIBLE_KEEP_ONLY_ACCOUNT_HIGHLIGHT_DESC') ?>" data-uk-tooltip="{pos:'top'}">
+                <i class="uk-icon-arrow-down"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_KEEP_ONLY_ACCOUNT_HIGHLIGHT_LABEL') ?>&nbsp;
             </a>
             <a 	class="uk-modal-close uk-button uk-width-1-1 uk-margin-small-bottom" 
-            	href="javascript:void(0)" onClick="clearAllBookmarks()" 
-                title="<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_BOOKMARKS_DESC') ?>" data-uk-tooltip="{pos:'top'}">
-                <i class="uk-icon-trash"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_BOOKMARKS_LABEL') ?>&nbsp;
+            	href="javascript:void(0)" onClick="clearAllHighlights()" 
+                title="<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_HIGHLIGHT_DESC') ?>" data-uk-tooltip="{pos:'top'}">
+                <i class="uk-icon-trash"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_HIGHLIGHT_LABEL') ?>&nbsp;
             </a>
         </div>
         <div class="server_has slectionSync"  style="display:none;">
             <a 	class="uk-modal-close uk-button uk-width-1-1 uk-margin-small-bottom" 
-            	href="javascript:void(0)" onClick="loadServerBookmarks()" 
-                title="<?php echo JText::_('COM_GETBIBLE_LOAD_ACCOUNT_BOOKMARKS_DESC') ?>" data-uk-tooltip="{pos:'top'}">
-                <i class="uk-icon-arrow-down"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_LOAD_ACCOUNT_BOOKMARKS_LABEL') ?>&nbsp;
+            	href="javascript:void(0)" onClick="loadServerHighlights()" 
+                title="<?php echo JText::_('COM_GETBIBLE_LOAD_ACCOUNT_HIGHLIGHT_DESC') ?>" data-uk-tooltip="{pos:'top'}">
+                <i class="uk-icon-arrow-down"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_LOAD_ACCOUNT_HIGHLIGHT_LABEL') ?>&nbsp;
             </a>
             <a 	class="uk-modal-close uk-button uk-width-1-1 uk-margin-small-bottom" 
-            	href="javascript:void(0)" onClick="clearAllBookmarks()" 
-                title="<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_BOOKMARKS_DESC') ?>" data-uk-tooltip="{pos:'top'}">
-                <i class="uk-icon-trash"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_BOOKMARKS_LABEL') ?>&nbsp;
+            	href="javascript:void(0)" onClick="clearAllHighlights()" 
+                title="<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_HIGHLIGHT_DESC') ?>" data-uk-tooltip="{pos:'top'}">
+                <i class="uk-icon-trash"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_HIGHLIGHT_LABEL') ?>&nbsp;
             </a>        
         </div>
         <div class="browser_has slectionSync"  style="display:none;">
             <a 	class="uk-modal-close uk-button uk-width-1-1 uk-margin-small-bottom" 
-            	href="javascript:void(0)" onClick="saveBrowserBookmarks(1)" 
-                title="<?php echo JText::_('COM_GETBIBLE_ADD_BOOKMARKS_TO_ACCOUNT_DESC') ?>" data-uk-tooltip="{pos:'top'}">
-                <i class="uk-icon-arrow-up"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_ADD_BOOKMARKS_TO_ACCOUNT_LABEL') ?>&nbsp;
+            	href="javascript:void(0)" onClick="saveBrowserHighlights(1)" 
+                title="<?php echo JText::_('COM_GETBIBLE_ADD_HIGHLIGHT_TO_ACCOUNT_DESC') ?>" data-uk-tooltip="{pos:'top'}">
+                <i class="uk-icon-arrow-up"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_ADD_HIGHLIGHT_TO_ACCOUNT_LABEL') ?>&nbsp;
             </a>
             <a 	class="uk-modal-close uk-button uk-width-1-1 uk-margin-small-bottom" 
-            	href="javascript:void(0)" onClick="clearAllBookmarks()" 
-                title="<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_BOOKMARKS_DESC') ?>" data-uk-tooltip="{pos:'top'}">
-                <i class="uk-icon-trash"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_BOOKMARKS_LABEL') ?>&nbsp;
+            	href="javascript:void(0)" onClick="clearAllHighlights()" 
+                title="<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_HIGHLIGHT_DESC') ?>" data-uk-tooltip="{pos:'top'}">
+                <i class="uk-icon-trash"></i>&nbsp;&nbsp;<?php echo JText::_('COM_GETBIBLE_CLEAR_ALL_HIGHLIGHT_LABEL') ?>&nbsp;
             </a>        
         </div>
     </div>

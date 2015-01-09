@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.5  December 08, 2014
+* 	@version 	1.0.6  January 06, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -19,7 +19,7 @@ class GetbibleViewApp extends JViewLegacy
 	protected $params;
 	protected $cpanel;
 	protected $AppDefaults;
-	protected $bookmarks;
+	protected $highlights;
 	protected $signupUrl;
 	protected $user;
 	/**
@@ -149,15 +149,15 @@ class GetbibleViewApp extends JViewLegacy
 		// hover styles
 		$hoverStyle = '.hoverStyle { color: '.$this->params->get('hover_textcolor').'; border-bottom: 1px '.$this->params->get('hover_linetype').' '.$this->params->get('hover_linecolor').'; background-color: '.$this->params->get('hover_background').'; }';
 		$this->document->addStyleDeclaration( $hoverStyle );
-		// bookmark styles
-		$marks = range('a','m');
+		// highlight styles
+		$marks = range('a','z');
 		foreach($marks as $mark){
-			$this->bookmarks[$mark] =  array(
+			$this->highlights[$mark] =  array(
 											'name' => $this->params->get('mark_'.$mark.'_name'), 
 											'text' => $this->params->get('mark_'.$mark.'_textcolor'), 
 											'background' => $this->params->get('mark_'.$mark.'_background')
 											);
-			$markStyle = '.bookmark_'.$mark.' { 
+			$markStyle = '.highlight_'.$mark.' { 
 								color: '.$this->params->get('mark_'.$mark.'_textcolor').'; 
 								border-bottom: 1px '.$this->params->get('mark_'.$mark.'_linetype').' '.$this->params->get('mark_'.$mark.'_linecolor').'; 
 								background-color: '.$this->params->get('mark_'.$mark.'_background').'; 

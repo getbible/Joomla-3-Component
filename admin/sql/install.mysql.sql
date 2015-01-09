@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `#__getbible_versions` (
   UNIQUE KEY `version` (`version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-CREATE TABLE IF NOT EXISTS `#__getbible_bookmarks` (
+CREATE TABLE IF NOT EXISTS `#__getbible_highlights` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user` int(11) NOT NULL DEFAULT '0',
   `books_nr` int(11) DEFAULT NULL,

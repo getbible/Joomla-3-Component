@@ -172,11 +172,11 @@
 		/>
 		
 		<field 
-			name="account_bookmark_text"
+			name="account_highlight_text"
 			type="textarea"
-			default="SIGN_UP_BOOKMARKS_DISCRIPTION"
-			label="COM_GETBIBLE_CONFIG_SIGN_UP_BOOKMARKS_DISCRIPTION_LABEL"
-			description="COM_GETBIBLE_CONFIG_SIGN_UP_BOOKMARKS_DISCRIPTION_DESC" 
+			default="SIGN_UP_HIGHLIGHT_DISCRIPTION"
+			label="COM_GETBIBLE_CONFIG_SIGN_UP_HIGHLIGHT_DISCRIPTION_LABEL"
+			description="COM_GETBIBLE_CONFIG_SIGN_UP_HIGHLIGHT_DISCRIPTION_DESC" 
 			rows="10" 
 			cols="7" 
 			filter="raw"
@@ -209,9 +209,9 @@
 		/>
 	</fieldset>
 	<fieldset
-		name="bookmark"
-		label="COM_GETBIBLE_CONFIG_BOOKMARK_FIELDSET_LABEL"
-		description="COM_GETBIBLE_CONFIG_BOOKMARK_FIELDSET_DESC">
+		name="highlight"
+		label="COM_GETBIBLE_CONFIG_HIGHLIGHT_FIELDSET_LABEL"
+		description="COM_GETBIBLE_CONFIG_HIGHLIGHT_FIELDSET_DESC">
 		
 		<field name="hover_textcolor" type="color" default="#515456"
         label="COM_GETBIBLE_CONFIG_HOVER_TEXTCOLOR_LABEL"
@@ -720,6 +720,500 @@
         description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
 		
 		<field name="mark_m_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_n_spacer" hr="true" />
+		
+		<field 
+			name="mark_n_name"
+			type="text" 
+			default="GOLD" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_n_textcolor" type="color" default="#ffd700"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_n_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_n_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_n_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_o_spacer" hr="true" />
+		
+		<field 
+			name="mark_o_name"
+			type="text" 
+			default="DARK_RED" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_o_textcolor" type="color" default="#8b0000"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_o_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_o_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_o_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_p_spacer" hr="true" />
+		
+		<field 
+			name="mark_p_name"
+			type="text" 
+			default="ORANGE" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_p_textcolor" type="color" default="#ff6600"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_p_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_p_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_p_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_q_spacer" hr="true" />
+		
+		<field 
+			name="mark_q_name"
+			type="text" 
+			default="YELLOW" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_q_textcolor" type="color" default="#ffff00"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_q_background" type="color" default="#d4d4d4"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_q_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_q_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_r_spacer" hr="true" />
+		
+		<field 
+			name="mark_r_name"
+			type="text" 
+			default="DARK_BLUE" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_r_textcolor" type="color" default="#000080"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_r_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_r_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_r_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_s_spacer" hr="true" />
+		
+		<field 
+			name="mark_s_name"
+			type="text" 
+			default="LIGHT_BLUE" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_s_textcolor" type="color" default="#63b8ff"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_s_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_s_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_s_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_t_spacer" hr="true" />
+		
+		<field 
+			name="mark_t_name"
+			type="text" 
+			default="TEAL" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_t_textcolor" type="color" default="#008080"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_t_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_t_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_t_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_u_spacer" hr="true" />
+		
+		<field 
+			name="mark_u_name"
+			type="text" 
+			default="DARK_PURPLE" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_u_textcolor" type="color" default="#663399"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_u_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_u_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_u_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_v_spacer" hr="true" />
+		
+		<field 
+			name="mark_v_name"
+			type="text" 
+			default="LIGHT_PURPULE" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_v_textcolor" type="color" default="#cc99ff"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_v_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_v_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_v_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_w_spacer" hr="true" />
+		
+		<field 
+			name="mark_w_name"
+			type="text" 
+			default="DARK_GREEN" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_w_textcolor" type="color" default="#006400"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_w_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_w_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_w_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_x_spacer" hr="true" />
+		
+		<field 
+			name="mark_x_name"
+			type="text" 
+			default="LIGHT_GREEN" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_x_textcolor" type="color" default="#00ee76"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_x_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_x_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_x_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_y_spacer" hr="true" />
+		
+		<field 
+			name="mark_y_name"
+			type="text" 
+			default="BROWN" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_y_textcolor" type="color" default="#d2691e"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_y_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_y_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_y_linetype"
+			type="radio"
+			class="btn-group"
+			default="none"
+			label="COM_GETBIBLE_CONFIG_MARK_LINETYPE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_MARK_LINETYPE_DESC">
+			<option
+				value="dashed">COM_GETBIBLE_CONFIG_LINEDASHED</option>
+			<option
+				value="solid">COM_GETBIBLE_CONFIG_LINESOLID</option>
+			<option
+				value="dotted">COM_GETBIBLE_CONFIG_LINEDOTTED</option>
+			<option
+				value="none">COM_GETBIBLE_CONFIG_LINENONE</option>
+		</field>
+		
+		<field type="spacer" name="mark_z_spacer" hr="true" />
+		
+		<field 
+			name="mark_z_name"
+			type="text" 
+			default="TURQUOISE" 
+			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
+			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
+		/>
+        
+		<field name="mark_z_textcolor" type="color" default="#40e0d0"
+        label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
+		
+		<field name="mark_z_background" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_BACKGROUND_DESC" />
+		
+		<field name="mark_z_linecolor" type="color" default="#fff"
+        label="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_LABEL"
+        description="COM_GETBIBLE_CONFIG_MARK_LINECOLOR_DESC" />
+		
+		<field name="mark_z_linetype"
 			type="radio"
 			class="btn-group"
 			default="none"
