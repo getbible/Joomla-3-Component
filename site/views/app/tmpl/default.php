@@ -87,7 +87,7 @@ $versions = $this->cpanel;
 	<?php if($this->params->get('search_display') == 1): ?>
     <form class="uk-form uk-display-block">
         <div class="uk-button-group">
-            <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
+            <a class="uk-button" href="#user_cPanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
             <div class="uk-button-dropdown" data-uk-dropdown="">
                 <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
                 <div class="uk-dropdown uk-dropdown-small">
@@ -141,7 +141,7 @@ $versions = $this->cpanel;
                                 </ul>
                             </div>
                         </div>
-                        <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
+                        <a class="uk-button" href="#user_cPanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
                     </div>
                 </div>
         	</fieldset>
@@ -164,7 +164,7 @@ $versions = $this->cpanel;
                         </ul>
                     </div>
                 </div>
-                <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
+                <a class="uk-button" href="#user_cPanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
             </div>
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
             value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
@@ -194,7 +194,7 @@ $versions = $this->cpanel;
                         </ul>
                     </div>
                 </div>
-                <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
+                <a class="uk-button" href="#user_cPanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
             </div>
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
             value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
@@ -239,7 +239,7 @@ $versions = $this->cpanel;
                             </ul>
                         </div>
                     </div>
-                    <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
+                    <a class="uk-button" href="#user_cPanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
                 </div>
             </div>
             <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
@@ -253,7 +253,7 @@ $versions = $this->cpanel;
     <form class="uk-form uk-display-block">
         <fieldset data-uk-margin="">
             <div class="uk-button-group">
-                <a class="uk-button" href="#highlight_cpanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
+                <a class="uk-button" href="#user_cPanel" data-uk-modal><i class="uk-icon-cog uk-icon-spin"></i></a>
                 <div class="uk-button-dropdown" data-uk-dropdown="">
                     <a href="javascript:void(0)" class="uk-button"><i class="uk-icon-font"></i></a>
                     <div class="uk-dropdown uk-dropdown-small">
@@ -352,15 +352,15 @@ $versions = $this->cpanel;
 </div>
 <div id="b_loader" style="display:none; text-align:center;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div>
 
-<div id="highlight_cpanel" class="uk-modal">
+<div id="user_cPanel" class="uk-modal">
     <div class="uk-modal-dialog">
         <a class="uk-modal-close uk-close"></a>
         <?php if($this->params->get('account') && $this->user->id == 0): ?>
-            <ul class="uk-tab" data-uk-tab="{connect:'#highlight_tab'}">
+            <ul class="uk-tab" data-uk-tab="{connect:'#user_cPanel_tab'}">
                 <li><a href=""><i class="uk-icon-paint-brush"></i> <?php echo JText::_('COM_GETBIBLE_COLORS'); ?></a></li>
                 <li><a href=""><i class="uk-icon-cog uk-icon-spin"></i> <?php echo JText::_('COM_GETBIBLE_ACCOUNT'); ?></a></li>
             </ul>
-            <ul id="highlight_tab" class="uk-switcher uk-margin">
+            <ul id="user_cPanel_tab" class="uk-switcher uk-margin">
                 <li>
                     <div class="uk-hidden-small" data-uk-margin>
                         <?php foreach($this->highlights as $mark => $details): ?>
@@ -399,29 +399,55 @@ $versions = $this->cpanel;
                 </li>
             </ul>
         <?php else: ?>
-        	<div class="uk-hidden-small" data-uk-margin>
-				<?php foreach($this->highlights as $mark => $details): ?>
-                    <a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-large uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
-                        <?php echo JText::_($details['name']); ?>&nbsp;&nbsp;&nbsp;
-                        <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>; font-size: <?php echo $this->params->get('font_medium'); ?>px;">
-                            &nbsp;<i class="uk-icon-pencil"></i>&nbsp;<?php echo JText::_('COM_GETBIBLE_TEXT'); ?>&nbsp;&nbsp;
-                        </span>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-            <div class="uk-visible-small" data-uk-margin>
-                <?php foreach($this->highlights as $mark => $details): ?>
-                    <a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-small uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
-                        <?php echo JText::_($details['name']); ?>&nbsp;&nbsp;&nbsp;
-                        <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>;">
-                            &nbsp;<i class="uk-icon-pencil"></i>&nbsp;<?php echo JText::_('COM_GETBIBLE_TEXT'); ?>&nbsp;&nbsp;
-                        </span>
-                    </a>
-                <?php endforeach; ?>
-            </div>
+            <ul class="uk-tab" data-uk-tab="{connect:'#user_cPanel_tab'}">
+                <li><a href=""><i class="uk-icon-paint-brush"></i> <?php echo JText::_('COM_GETBIBLE_COLORS'); ?></a></li>
+                <li><a href=""><i class="uk-icon-tags"></i> <?php echo JText::_('COM_GETBIBLE_TAGS'); ?></a></li>
+            </ul>
+      		<ul id="user_cPanel_tab" class="uk-switcher uk-margin">
+                <li>
+        			<div class="uk-hidden-small" data-uk-margin>
+						<?php foreach($this->highlights as $mark => $details): ?>
+                            <a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-large uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
+                                <?php echo JText::_($details['name']); ?>&nbsp;&nbsp;&nbsp;
+                                <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>; font-size: <?php echo $this->params->get('font_medium'); ?>px;">
+                                    &nbsp;<i class="uk-icon-pencil"></i>&nbsp;<?php echo JText::_('COM_GETBIBLE_TEXT'); ?>&nbsp;&nbsp;
+                                </span>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="uk-visible-small" data-uk-margin>
+						<?php foreach($this->highlights as $mark => $details): ?>
+                            <a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-small uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
+                                <?php echo JText::_($details['name']); ?>&nbsp;&nbsp;&nbsp;
+                                <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>;">
+                                    &nbsp;<i class="uk-icon-pencil"></i>&nbsp;<?php echo JText::_('COM_GETBIBLE_TEXT'); ?>&nbsp;&nbsp;
+                                </span>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </li>
+                <li>
+					<div id="user_active_tags"></div>
+                </li>
+        	</ul>
         <?php endif; ?>
     </div>
 </div>
+
+<?php if($this->user->id > 0 && $this->params->get('account')): ?>
+<div id="setup_email" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <form class="uk-form">
+            <div class="uk-form-row">
+                <h2>Send Email</h2>
+                <input class="uk-margin-small-top" id="email_address" type="text" placeholder="email address">
+                <input class="uk-button uk-modal-close" type="submit" onclick="sendEmail(); return false;" value="send">
+            </div>
+        </form>
+    </div>
+</div>
+<?php endif; ?>
 
 <?php if($this->user->id > 0 && $this->params->get('account')): ?>
 <div id="highlight_checker" class="uk-modal">
@@ -497,7 +523,7 @@ $versions = $this->cpanel;
             </div>
        		<div class="uk-grid-width-1-1 uk-width-medium-1-2">
                 <div class="uk-panel">
-                    <h2>Add Tags</h2>
+                    <h2><?php echo JText::_('COM_GETBIBLE_TAGS'); ?></h2>
 					<div id="tagDiv"></div>
                 </div>
             </div>

@@ -145,6 +145,18 @@
 			last="25" 
 			step="1" />
 			
+		<field name="right_click"
+			type="radio"
+			class="btn-group"
+			default="2"
+			label="COM_GETBIBLE_CONFIG_RIGHT_CLICK_LABEL"
+        	description="COM_GETBIBLE_CONFIG_RIGHT_CLICK_DESC">
+			<option
+				value="1">COM_GETBIBLE_NOTE_TAG</option>
+			<option
+				value="2">COM_GETBIBLE_NORMAL</option>
+		</field>
+			
 	</fieldset>
 	<fieldset
 			name="account_tab"
@@ -207,6 +219,92 @@
 			label="COM_GETBIBLE_CONFIG_SIGN_UP_PAGE_LABEL"
 			description="COM_GETBIBLE_CONFIG_SIGN_UP_PAGE_DESC"
 		/>
+	</fieldset>
+	<fieldset
+		name="tags"
+		label="COM_GETBIBLE_CONFIG_TAGS_FIELDSET_LABEL"
+		description="COM_GETBIBLE_CONFIG_TAGS_FIELDSET_DESC">
+		
+		<field name="allow_spaces"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="true"
+			label="COM_GETBIBLE_CONFIG_TAG_ALLOW_SPACES_LABEL"
+        	description="COM_GETBIBLE_CONFIG_TAG_ALLOW_SPACES_DESC">
+			<option
+				value="true">COM_GETBIBLE_CONFIG_YES</option>
+			<option
+				value="false">COM_GETBIBLE_CONFIG_NO</option>
+		</field>
+		
+		<field name="autocomplete_show"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="true"
+			label="COM_GETBIBLE_CONFIG_TAG_AUTOCOMPLETE_SHOW_LABEL"
+        	description="COM_GETBIBLE_CONFIG_TAG_AUTOCOMPLETE_SHOW_DESC">
+			<option
+				value="true">COM_GETBIBLE_CONFIG_YES</option>
+			<option
+				value="false">COM_GETBIBLE_CONFIG_NO</option>
+		</field>
+		
+		<field name="autocomplete_min_length"
+			type="list"
+			default="1"
+			label="COM_GETBIBLE_CONFIG_TAG_AUTOCOMPLETE_MIN_LENGTH_LABEL"
+        	description="COM_GETBIBLE_CONFIG_TAG_AUTOCOMPLETE_MIN_LENGTH_DESC">
+			<option
+				value="0">COM_GETBIBLE_ZERO</option>
+			<option
+				value="1">COM_GETBIBLE_ONE</option>
+			<option
+				value="2">COM_GETBIBLE_TWO</option>
+		</field>
+		
+		<field name="autocomplete_delay"
+			type="list"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_TAG_AUTOCOMPLETE_DELAY_LABEL"
+        	description="COM_GETBIBLE_CONFIG_TAG_AUTOCOMPLETE_DELAY_DESC">
+			<option
+				value="0">COM_GETBIBLE_ZERO</option>
+			<option
+				value="1">COM_GETBIBLE_ONE</option>
+			<option
+				value="2">COM_GETBIBLE_TWO</option>
+			<option
+				value="3">COM_GETBIBLE_THREE</option>
+		</field>
+		
+		<field name="case_sensitive"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="true"
+			label="COM_GETBIBLE_CONFIG_TAG_CASE_SENSITIVE_LABEL"
+        	description="COM_GETBIBLE_CONFIG_TAG_CASE_SENSITIVE_DESC">
+			<option
+				value="true">COM_GETBIBLE_CONFIG_YES</option>
+			<option
+				value="false">COM_GETBIBLE_CONFIG_NO</option>
+		</field>
+		
+		<field 
+			name="placeholder_text"
+			type="text" 
+			default=""
+			label="COM_GETBIBLE_CONFIG_TAG_PLACEHOLDER_TEXT_LABEL" 
+			description="COM_GETBIBLE_CONFIG_TAG_PLACEHOLDER_TEXT_DESC" 
+		/>
+		
+		<field 
+			name="tags_defaults"
+			type="text" 
+			default=""
+			label="COM_GETBIBLE_CONFIG_TAG_DEFAULTS_LABEL" 
+			description="COM_GETBIBLE_CONFIG_TAG_DEFAULTS_DESC" 
+		/>
+			
 	</fieldset>
 	<fieldset
 		name="highlight"

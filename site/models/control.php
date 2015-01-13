@@ -367,7 +367,7 @@ class GetbibleModelControl extends JModelList
 		$tag = $this->getTagId($user,$name);
 		if($tag){
 			if($action == 1){
-				// firt check if it already is set
+				// first check if it already is set
 				$query = $db->getQuery(true);
 				$query->select('id');
 				$query->from($db->quoteName('#__getbible_taged'));
@@ -455,7 +455,7 @@ class GetbibleModelControl extends JModelList
 		return false;
 	}
 	
-	protected function getTagId($user,$name)
+	protected function getTagId($user,$name,$create = true)
 	{
 		// Get a db connection.
 		$db = JFactory::getDbo();
@@ -470,7 +470,7 @@ class GetbibleModelControl extends JModelList
 		$db->execute();
 		if($db->getNumRows()){
 			return $db->loadResult();
-		} else {
+		} elseif($create) {
 			// get current date
 			$date = date('Y-m-d H:i:s');
 			// add new value
@@ -490,6 +490,7 @@ class GetbibleModelControl extends JModelList
 				return $this->getTagId($user,$name);
 			}
 		}
+		return false;
 	}
 	
 	public function setTags($name,$note,$access,$published,$jsonKey,$tu)
@@ -588,20 +589,130 @@ class GetbibleModelControl extends JModelList
 			}
 		}
 		return false;
-	}															
+	}
 	
-	public function getAppDefaults($search_app = 0, $check_search = 'repent', $defaultVersion = 'kjv', $crit = '1_1_1', $searchType = 'all')
+	public function getTagverse($jsonKey,$version,$name,$tu)
+	{
+		$user = JFactory::getUser();
+		if($user->id != 0 && $user->id == (int) base64_decode($tu)){
+			// Check Token!
+			$token = JSession::getFormToken();
+			if ($jsonKey == $token){
+				$tag = $this->getTagId($user->id,$name,false);
+				if($tag){
+					// Get a db connection.
+					$db = JFactory::getDbo();
+					$query = $db->getQuery(true);
+					$query->select($db->quoteName(array('books_nr','chapter_nr','verse_nr')));
+					$query->from($db->quoteName('#__getbible_taged'));
+					$query->where($db->quoteName('tag') .	' = '. $db->quote($tag));
+					$query->where($db->quoteName('user') .	' = '. $db->quote($user->id));
+					$query->order($db->quoteName('books_nr') . ' ASC');	 
+					// Reset the query using our newly populated query object.
+					$db->setQuery($query);
+					$db->execute();
+					if($db->getNumRows()){
+						$verses 	= $db->loadObjectList();
+						$verseList	= array();
+						$book_nrs	= array();
+						foreach($verses as $verse){
+							if(!array_key_exists($verse->books_nr, $book_nrs)){
+								$book_nrs[$verse->books_nr] = $this->getBookRef($verse->books_nr,$version);
+							}
+							$verseList[$book_nrs[$verse->books_nr]][$verse->chapter_nr][$verse->verse_nr] = $verse->verse_nr;
+						}
+						unset($verses);
+						unset($book_nrs);
+						
+						// now build return query
+						$query = 'p=';
+						$counter = 0;
+						foreach($verseList as $book => $chapters){
+							if($counter){
+								$query .= ';'.$book;
+							} else {
+								$query .= $book;
+							}
+							$chaCounter = 0;
+							ksort($chapters, SORT_NUMERIC);
+							foreach($chapters as $chapter => $verses){
+								if($chaCounter){
+									$query .= ';'.$chapter.':';
+								} else {
+									$query .= $chapter.':';
+								}
+								$verCounter = 0;
+								asort($verses, SORT_NUMERIC);
+								$verses = $this->joinConsecutiveVerses($verses);
+								foreach($verses as $verse){
+									if($verCounter){
+										$query .=  ','.$verse;										
+									} else {
+										$query .=  $verse;
+									}									
+									$verCounter++;
+								}
+								$chaCounter++;
+							}
+							$counter++;
+						}
+						unset($verseList);
+						// return query string
+						return $query.'&v='.$version;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	protected function joinConsecutiveVerses($array) {
+	   $ret  = array();
+	   $temp = array();
+	   foreach($array as $val) {
+		  if(next($array) == ($val + 1))
+			 $temp[] = $val;
+		  else
+			 if(count($temp) > 0) {
+				$temp[] = $val;
+				$ret[]  = $temp[0].'-'.end($temp);
+				$temp   = array();
+			 }
+			 else
+				$ret[] = $val;
+	   }
+	   return $ret;
+	}
+
+	protected function getBookRef($nr,$version)
+	{
+		// Get a db connection.
+		$db = JFactory::getDbo();
+		// Create a new query object.
+		$query = $db->getQuery(true);
+		$query->select('a.book_names');
+		$query->from('#__getbible_setbooks AS a');		
+		$query->where($db->quoteName('a.access') . ' = 1');
+		$query->where($db->quoteName('a.published') . ' = 1');
+		$query->where($db->quoteName('a.version') . ' = ' . $db->quote($version));
+		$query->where($db->quoteName('a.book_nr') . ' = ' . $db->quote($nr));
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		$db->execute();
+		if($db->getNumRows()){
+			// return ref
+			return json_decode($db->loadResult())->name2;
+		} else {
+			return $this->getBookRef($nr,'kjv');
+		}
+	}
+	
+	public function getAppDefaults($search_app = 0, $check_search = 'repent', $defaultVersion = 'kjv', $URLkey, $appKey, $crit = '1_1_1', $searchType = 'all')
 	{
 		if($this->app_params->get('jsonAPIaccess') && $this->app_params->get('jsonQueryOptions') == 1){
-
-			// Get the input data
-			$jinput 	= JFactory::getApplication()->input;
-			$URLkey 	= $jinput->get('key', NULL, 'ALNUM');
-			$APIkey 	= $this->app_params->get('jsonAPIkey');
-			$appKey 	= $jinput->get('appKey', NULL, 'ALNUM');
-
-			$token 		= JSession::getFormToken();
-	
+			// Get the global data
+			$APIkey = $this->app_params->get('jsonAPIkey');
+			$token 	= JSession::getFormToken();
 		} else {
 			$URLkey = 'free';
 			$APIkey = 'free';
@@ -720,17 +831,14 @@ class GetbibleModelControl extends JModelList
 	{
 		// Get a db connection.
 		$db = JFactory::getDbo();
-		
 		// Create a new query object.
 		$query = $db->getQuery(true);
-		
 		$query->select('a.book_nr ,a.book_names');
 		$query->from('#__getbible_setbooks AS a');		
 		$query->where($db->quoteName('a.access') . ' = 1');
 		$query->where($db->quoteName('a.published') . ' = 1');
 		$query->where($db->quoteName('a.version') . ' = ' . $db->quote($version));
 		$query->where($db->quoteName('a.book_name') . ' = ' . $db->quote($book));
-			 
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
 		$db->execute();
@@ -789,7 +897,6 @@ class GetbibleModelControl extends JModelList
 			$result->chapter 		= $this->app_params->get('defaultStartChapter');
 			$result->lastchapter 	= $this->app_params->get('defaultStartChapter') - 1;
 			$result->version 		= $version;
-			
 			return $result;
 		}
 	}

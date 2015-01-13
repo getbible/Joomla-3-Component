@@ -37,6 +37,7 @@ class GetbibleControllerBible extends JControllerLegacy
 		$this->registerTask('gettaged', 'bible');
 		$this->registerTask('settags', 'bible');
 		$this->registerTask('gettags', 'bible');
+		$this->registerTask('gettagverse', 'bible');
 	}
 	
 	public function bible()
@@ -77,11 +78,13 @@ class GetbibleControllerBible extends JControllerLegacy
 			case 'defaults':
 				try
 				{				 
-					$result = $this->getModel('control')->getAppDefaults(	$jinput->get('search_app', null, 'INT'), 
-																			$jinput->get('search', null, 'SAFE_HTML'), 
-																			$jinput->get('search_version', null, 'ALNUM'), 
-																			$jinput->get('search_crit', null, 'CMD'), 
-																			$jinput->get('search_type', null, 'ALNUM') );
+					$result = $this->getModel('control')->getAppDefaults(	$jinput->get('search_app', NULL, 'INT'), 
+																			$jinput->get('search', NULL, 'SAFE_HTML'), 
+																			$jinput->get('search_version', NULL, 'ALNUM'),
+																			$jinput->get('key', NULL, 'ALNUM'), 
+																			$jinput->get('appKey', NULL, 'ALNUM'),
+																			$jinput->get('search_crit', NULL, 'CMD'), 
+																			$jinput->get('search_type', NULL, 'ALNUM') );
 					echo $_GET['callback']."(".json_encode($result).");";
 				}
 					catch(Exception $e)
@@ -89,7 +92,7 @@ class GetbibleControllerBible extends JControllerLegacy
 					echo $_GET['callback']."(".json_encode($e).");";
 				}
 			break;
-			case 'setHighlight':
+			case 'sethighlight':
 				try
 				{				 
 					$result = $this->getModel('control')->setHighlight(	$jinput->get('highlight', 0, 'STRING'),
@@ -226,6 +229,21 @@ class GetbibleControllerBible extends JControllerLegacy
 				{				 
 					$result = $this->getModel('control')->getTags(	$jinput->get('jsonKey', 0, 'ALNUM'),
 																	$jinput->get('tu', 0, 'BASE64') );
+					
+					echo $_GET['callback']."(".json_encode($result).");";
+				}
+					catch(Exception $e)
+				{
+					echo $_GET['callback']."(".json_encode($e).");";
+				}
+			break;
+			case 'gettagverse':
+				try
+				{				 
+					$result = $this->getModel('control')->getTagverse(	$jinput->get('jsonKey', 0, 'ALNUM'),
+																		$jinput->get('version', NULL, 'ALNUM'),
+																		$jinput->get('tag', 0, 'STRING'),
+																		$jinput->get('tu', 0, 'BASE64') );
 					
 					echo $_GET['callback']."(".json_encode($result).");";
 				}
