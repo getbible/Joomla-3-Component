@@ -33,7 +33,7 @@ class GetbibleViewGetbible extends JViewLegacy
 		$this->tabs 		= $this->get('Tabs');
 		$this->tab_active 	= $this->get('Tabactive');
 		// Get app Params
-		$this->params 	= JComponentHelper::getParams('com_ipdata');
+		$this->params 	= JComponentHelper::getParams('com_getbible');
 		// We don't need toolbar in the modal window.
 		if ($this->getLayout() !== 'modal')
 		{
