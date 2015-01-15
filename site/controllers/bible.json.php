@@ -38,6 +38,8 @@ class GetbibleControllerBible extends JControllerLegacy
 		$this->registerTask('settags', 'bible');
 		$this->registerTask('gettags', 'bible');
 		$this->registerTask('gettagverse', 'bible');
+		$this->registerTask('getstatustags', 'bible');
+		$this->registerTask('sendemail', 'bible');
 	}
 	
 	public function bible()
@@ -110,7 +112,7 @@ class GetbibleControllerBible extends JControllerLegacy
 			case 'sethighlights':
 				try
 				{				 
-					$result = $this->getModel('control')->setHighlights(	$jinput->get('highlight', 0, 'BASE64'),
+					$result = $this->getModel('control')->setHighlights($jinput->get('highlight', 0, 'BASE64'),
 																		$jinput->get('act', 0, 'INT'),
 																		$jinput->get('publish', 0, 'INT'),
 																		$jinput->get('jsonKey', 0, 'ALNUM'),
@@ -244,6 +246,37 @@ class GetbibleControllerBible extends JControllerLegacy
 																		$jinput->get('version', NULL, 'ALNUM'),
 																		$jinput->get('tag', 0, 'STRING'),
 																		$jinput->get('tu', 0, 'BASE64') );
+					
+					echo $_GET['callback']."(".json_encode($result).");";
+				}
+					catch(Exception $e)
+				{
+					echo $_GET['callback']."(".json_encode($e).");";
+				}
+			break;
+			case 'getstatustags':
+				try
+				{				 
+					$result = $this->getModel('control')->getStatusTags($jinput->get('jsonKey', 0, 'ALNUM'),
+																		$jinput->get('tu', 0, 'BASE64'));
+					
+					echo $_GET['callback']."(".json_encode($result).");";
+				}
+					catch(Exception $e)
+				{
+					echo $_GET['callback']."(".json_encode($e).");";
+				}
+			break;
+			case 'sendemail':
+				try
+				{				 
+					$result = $this->getModel('control')->sendEmail($jinput->get('jsonKey', 0, 'ALNUM'),
+																	$jinput->get('tu', 0, 'BASE64'),
+																	$jinput->get('version', 0, 'ALNUM'),
+																	$jinput->get('email', 0, 'BASE64'),
+																	$jinput->get('html', 0, 'BASE64'),
+																	$jinput->get('title', 0, 'STRING'),
+																	$jinput->get('type', 0, 'INT'));
 					
 					echo $_GET['callback']."(".json_encode($result).");";
 				}

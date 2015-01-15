@@ -126,7 +126,7 @@
 			label="COM_GETBIBLE_CONFIG_FONT_SMALL_LABEL" 
 			description="COM_GETBIBLE_CONFIG_FONT_SMALL_DESC" 
 			first="10" 
-			last="15" 
+			last="25" 
 			step="1" />
 		<field name="font_medium" 
 			type="integer" 
@@ -134,7 +134,7 @@
 			label="COM_GETBIBLE_CONFIG_FONT_MEDIUM_LABEL" 
 			description="COM_GETBIBLE_CONFIG_FONT_MEDIUM_DESC" 
 			first="15" 
-			last="20" 
+			last="30" 
 			step="1" />
 		<field name="font_large" 
 			type="integer" 
@@ -142,7 +142,7 @@
 			label="COM_GETBIBLE_CONFIG_FONT_LARGE_LABEL" 
 			description="COM_GETBIBLE_CONFIG_FONT_LARGE_DESC" 
 			first="20" 
-			last="25" 
+			last="45" 
 			step="1" />
 			
 		<field name="right_click"
@@ -838,12 +838,12 @@
 		<field 
 			name="mark_n_name"
 			type="text" 
-			default="GOLD" 
+			default="APRICOT" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_n_textcolor" type="color" default="#ffd700"
+		<field name="mark_n_textcolor" type="color" default="#fbceb1"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -876,12 +876,12 @@
 		<field 
 			name="mark_o_name"
 			type="text" 
-			default="DARK_RED" 
+			default="BITTERSWEET" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_o_textcolor" type="color" default="#8b0000"
+		<field name="mark_o_textcolor" type="color" default="#fe6f5e"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -914,12 +914,12 @@
 		<field 
 			name="mark_p_name"
 			type="text" 
-			default="ORANGE" 
+			default="BRIGHT_PINK" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_p_textcolor" type="color" default="#ff6600"
+		<field name="mark_p_textcolor" type="color" default="#ff007f"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -952,12 +952,12 @@
 		<field 
 			name="mark_q_name"
 			type="text" 
-			default="YELLOW" 
+			default="CARNATION_PINK" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_q_textcolor" type="color" default="#ffff00"
+		<field name="mark_q_textcolor" type="color" default="#ffa6c9"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -990,12 +990,12 @@
 		<field 
 			name="mark_r_name"
 			type="text" 
-			default="DARK_BLUE" 
+			default="AQUA" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_r_textcolor" type="color" default="#000080"
+		<field name="mark_r_textcolor" type="color" default="#00ffff"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -1028,12 +1028,12 @@
 		<field 
 			name="mark_s_name"
 			type="text" 
-			default="LIGHT_BLUE" 
+			default="BRONZE" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_s_textcolor" type="color" default="#63b8ff"
+		<field name="mark_s_textcolor" type="color" default="#cd7f32"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -1066,12 +1066,12 @@
 		<field 
 			name="mark_t_name"
 			type="text" 
-			default="TEAL" 
+			default="CHERRY" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_t_textcolor" type="color" default="#008080"
+		<field name="mark_t_textcolor" type="color" default="#de3163"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -1104,12 +1104,12 @@
 		<field 
 			name="mark_u_name"
 			type="text" 
-			default="DARK_PURPLE" 
+			default="DARK_CHESTNUT" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_u_textcolor" type="color" default="#663399"
+		<field name="mark_u_textcolor" type="color" default="#986960"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -1142,12 +1142,12 @@
 		<field 
 			name="mark_v_name"
 			type="text" 
-			default="LIGHT_PURPULE" 
+			default="DARK_GOLDENROD" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_v_textcolor" type="color" default="#cc99ff"
+		<field name="mark_v_textcolor" type="color" default="#b8860b"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -1180,12 +1180,12 @@
 		<field 
 			name="mark_w_name"
 			type="text" 
-			default="DARK_GREEN" 
+			default="DARK_KHAKI" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_w_textcolor" type="color" default="#006400"
+		<field name="mark_w_textcolor" type="color" default="#bdb76b"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -1218,12 +1218,12 @@
 		<field 
 			name="mark_x_name"
 			type="text" 
-			default="LIGHT_GREEN" 
+			default="SILVER" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_x_textcolor" type="color" default="#00ee76"
+		<field name="mark_x_textcolor" type="color" default="#89cff0"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -1256,12 +1256,12 @@
 		<field 
 			name="mark_y_name"
 			type="text" 
-			default="BROWN" 
+			default="BABY_BLUE" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_y_textcolor" type="color" default="#d2691e"
+		<field name="mark_y_textcolor" type="color" default="#89cff0"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		
@@ -1294,12 +1294,12 @@
 		<field 
 			name="mark_z_name"
 			type="text" 
-			default="TURQUOISE" 
+			default="LIME" 
 			label="COM_GETBIBLE_CONFIG_MARK_NAME_LABEL" 
 			description="COM_GETBIBLE_CONFIG_MARK_NAME_DESC" 
 		/>
         
-		<field name="mark_z_textcolor" type="color" default="#40e0d0"
+		<field name="mark_z_textcolor" type="color" default="#bfff00"
         label="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_LABEL"
         description="COM_GETBIBLE_CONFIG_MARK_TEXTCOLOR_DESC" />
 		

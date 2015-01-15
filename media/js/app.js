@@ -23,6 +23,7 @@ var defaultBook 		= 0;
 var defaultBookNr 		= 0;
 var defaultChapter 		= 0;
 var setQuery 			= 0;
+var viewType			= 0;
 
 // set highlight array
 var alpha 			= "abcdefghijklmnopqrstuvwxyz";
@@ -37,6 +38,7 @@ jQuery(function() {
 	getDefaults(defaultRequest, defaultKey, tagQuery);
 	appFeatures(1);
 	setTextSize();
+	setCpanelTags();
 	// check if highlights are in sync
 	checkHighLightSync();
 		
@@ -401,6 +403,7 @@ function setTagDiv(id){
 						jQuery.jStorage.set('tags',defaultTags);
 					}
 					tagVerse(taged,1,id);
+					setTimeout(function() { setCpanelTags(); }, 1000);
 				}
 			},
 			afterTagRemoved: function(evt, ui) {
@@ -408,6 +411,7 @@ function setTagDiv(id){
 				// unset the taged verse
 				setTaged(untaged,0,id);
 				tagVerse(untaged,0,id);
+				setTimeout(function() { setCpanelTags(); }, 1000);
 			},
 			onTagClicked: function(event, ui) {
 				// do something special
@@ -550,6 +554,61 @@ function getTaged(verse){
 	}
 	return false;
 }
+function setCpanelTags(){
+	if(user_id > 0 && allowAccount > 0){
+		getStatusTags_db().done(function(tags) {
+			if(tags){
+				var usedTags = '';
+				var unusedTags = '';
+				var defaultTags = '';
+				jQuery.each(tags, function( status, tagStatus) {
+					jQuery.each(tagStatus, function( alpha, tagName) {
+						if('used' == status && tagName) {
+							var id = tagName.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
+							usedTags += ' <button id="cp_used_'+id+'" class="uk-button uk-button-primary uk-margin-small-bottom" rel="'+htmlspecialchars(tagName)+'" onclick="getTagVerseButton(\'cp_used_'+id+'\')" type="button">'+htmlspecialchars(tagName)+'</button> ';
+						} else if('unused' == status && tagName) {
+							var id = tagName.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
+							unusedTags += ' <button id="cp_unused_'+id+'" class="uk-button uk-button-danger uk-margin-small-bottom" rel="'+htmlspecialchars(tagName)+'" onclick="removeTag(\'cp_unused_'+id+'\')" type="button"><i class="uk-icon-remove"></i> '+tagName+'</button> ';
+						} else if('default' == status && tagName) {
+							defaultTags += ' <button class="uk-button uk-margin-small-bottom" type="button" disabled>'+htmlspecialchars(tagName)+'</button> ';
+						}
+					});
+				});
+				if(usedTags.length > 0){
+					jQuery('#usedTags').html('<p data-uk-margin>'+usedTags+'</p>');
+				} else {
+					jQuery('#usedTags').html('No Active tags');
+				}
+				if(unusedTags.length > 0){
+					jQuery('#unusedTags').html('<p data-uk-margin>'+unusedTags+'</p>');
+				} else {
+					jQuery('#unusedTags').html('No Inactive tags');					
+				}
+				if(defaultTags.length > 0){
+					jQuery('#defaultTags').html('<p data-uk-margin>'+defaultTags+'</p>');
+				} else {
+					jQuery('#defaultTags').html('No Inactive Defaults tags');
+				}
+			}
+		});
+	}
+}
+
+function getStatusTags_db(){
+	// get status of tags from server
+	if(user_id > 0 && allowAccount > 0){
+		var request = '&jsonKey='+jsonKey+'&tu='+openNow;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.getstatustags&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
 function getTaged_db(verse){
 	// set note	on server
 	if(user_id > 0 && allowAccount > 0){
@@ -573,15 +632,19 @@ function addTag(tag){
 		}
 	});
 }
-function removeTag(tag){
-	setTags_db(tag,0).done(function(set) {
-		if(set){
-			defaultTags = jQuery.grep(defaultTags, function(value) {
-				return value != tag;
-			});
-			jQuery.jStorage.set('tags',defaultTags);
-		}
-	});	
+function removeTag(id){
+	if(user_id > 0 && allowAccount > 0){
+		var tag = jQuery('#'+id).attr('rel');
+		setTags_db(tag,0).done(function(set) {
+			if(set){
+				defaultTags = jQuery.grep(defaultTags, function(value) {
+					return value != tag;
+				});
+				jQuery.jStorage.set('tags',defaultTags);
+				setCpanelTags();
+			}
+		});
+	}
 }
 function setTags_db(tag,published){
 	// set note	on server
@@ -603,15 +666,15 @@ function getTags(){
 	if(user_id > 0 && allowAccount > 0){
 		var localTags = jQuery.jStorage.get('tags');
 		if(!localTags){
-			getTags_db().done(function(localTags) {
-				if(localTags){
+			getTags_db().done(function(allTags) {
+				if(allTags){
 					if(tags_defaults){
-						var newArray	= jQuery.merge(localTags, tags_defaults);
-						localTags		= uniqueArray(newArray);
+						var newArray	= jQuery.merge(allTags, tags_defaults);
+						allTags			= uniqueArray(newArray);
 					}
 					
-					jQuery.jStorage.set('tags',localTags);
-					defaultTags = localTags;
+					jQuery.jStorage.set('tags',allTags);
+					defaultTags = allTags;
 				}
 			});
 		} else {
@@ -662,6 +725,30 @@ function getTagVerse(name){
 	}
 	return false;
 }
+function getTagVerseButton(id){
+	if(user_id > 0 && allowAccount > 0){
+		var name = jQuery('#'+id).attr('rel');
+		getTagVerse_db(name).done(function(tagVerseQuery) {
+			if(tagVerseQuery){
+				if(typeof timerInterval_1 !== 'undefined'){
+					clearInterval(timerInterval_1); // stop the interval
+				}
+				TagVerseName = name;
+				// get the verses
+				getData(tagVerseQuery, false, false);
+				// hide stuff not needed for tag view
+				jQuery('.searchbuttons').hide();
+				jQuery('.navigation').hide();
+				jQuery('.button_chapters').hide();
+			 	jQuery('#cPanel').hide();
+				// close the modal if open
+				jQuery.UIkit.modal("#user_cPanel").hide();
+				return true;
+			}
+		});
+	}
+	return false;
+}
 function getTagVerse_db(tag){
 	// set highlight	on server
 	if(user_id > 0 && allowAccount > 0){
@@ -678,6 +765,7 @@ function getTagVerse_db(tag){
 	return false;
 }
 function printTag(){
+	
 	window.print();
 	return false;
 }
@@ -691,12 +779,16 @@ function setupEmail(){
 function sendEmail(){
 	jQuery.UIkit.modal("#setup_email").hide();
 	if(user_id > 0 && allowAccount > 0){
+		// get html to send in email
 		var html 	= jQuery('#printTagArea').html();
-		var email 	= jQuery('#email_address').val();
+		html		= encodeURIComponent(html);
 		html		= Base64.encode(html);
+		// get the email address to send the email to
+		var email 	= jQuery('#email_address').val();
 		email		= Base64.encode(email);
+		// and then send the email!!!
 		sendEmail_server(html,email).done(function(response) {
-			console.log(response);
+			jQuery.UIkit.notify({message: response.message, timeout: 5000, status: response.status, pos: 'top-right'});
 		});
 	}
 	return false;
@@ -705,10 +797,19 @@ function sendEmail(){
 function sendEmail_server(html,email){
 	// set highlight	on server
 	if(user_id > 0 && allowAccount > 0){
-		var request	= '&jsonKey='+jsonKey+'&tu='+openNow+'&email='+email+'&html='+html;
+		if(viewType == 1){
+			// a tag type
+			var title = encodeURIComponent(TagVerseName);
+		} else if(viewType == 2){
+			// a search type
+			var title = encodeURIComponent(searchFor);
+		} else {
+			var title = encodeURIComponent('not found');
+		}
+		var request	= '&jsonKey='+jsonKey+'&tu='+openNow+'&version='+BIBLE_VERSION+'&email='+email+'&html='+html+'&title='+title+'&type='+viewType;
 		var getUrl 	= "index.php?option=com_getbible&task=bible.sendemail&format=json";
 		return jQuery.ajax({
-			type: 'GET',
+			type: 'POST',
 			url: getUrl,
 			dataType: 'jsonp',
 			data: request,
@@ -1269,7 +1370,7 @@ function getDefaults(request, requestStore, tagview) {
 
 // Set Verses
 function setVerses(json,direction,addTo){
-	var output		= '<div id="tagheader" class="uk-button-group"><a class="uk-button" data-uk-modal="" href="#user_cPanel"><i class="uk-icon-cog uk-icon-spin"></i></a><button class="uk-button" type="button" disabled>'+TagVerseName+'&#160;<i class="uk-icon-tag"></i></button><button onclick="printTag(\''+TagVerseName+'\')" class="uk-button" type="button"><i class="uk-icon-print"></i></button><button onclick="setupEmail()" class="uk-button" type="button"><i class="uk-icon-envelope-o"></i></button></div><div id="printTagArea">';
+	var output		= '<div id="tagheader" class="uk-button-group"><a class="uk-button" data-uk-modal="" href="#user_cPanel"><i class="uk-icon-cog uk-icon-spin"></i></a><button class="uk-button" type="button" disabled>'+TagVerseName+'&#160;<i class="uk-icon-tag"></i></button><button onclick="printTag()" class="uk-button" type="button"><i class="uk-icon-print"></i></button><button onclick="setupEmail()" class="uk-button" type="button"><i class="uk-icon-envelope-o"></i></button></div><div id="printTagArea">';
 	var bookTags	= [];
 		jQuery.each(json.book, function(index, books) {
 			var book_ref 	= books.book_ref.replace(/\s+/g, '');
@@ -1311,6 +1412,7 @@ function setVerses(json,direction,addTo){
 		output += '</div>';
 		jQuery('#scripture').html(output);  // <---- this is the div id we update
 		appFeatures(2);
+		viewType = 1;
 		jQuery('#scripture').removeClass('text_loading');
 }
 
@@ -1371,6 +1473,7 @@ function setChapter(json,direction,addTo){
 	}
 	appFeatures(2);
 	stopAutoLoad = 0;
+	viewType = 0;
 	if(searchApp != 1 || FoundTheVerse){
 		jQuery('.navigation').show();
 	}
@@ -1399,13 +1502,15 @@ function setBook(json,direction,addTo){
 		jQuery('#scripture').html(output);  // <---- this is the div id we update
 	}
 	appFeatures(2);
+	stopAutoLoad = 1;
+	viewType = 3;
 	jQuery('#scripture').removeClass('text_loading');
 }
 
 // Set Search
 function setSearch(json,direction){
 
-	var output		= '<small>('+json.counter+')</small><br/>';
+	var output		= '<div id="printTagArea"><small>('+json.counter+')</small><br/>';
 	var bookTags	= [];
 	jQuery.each(json.book, function(index, books) {
 		var book_ref 	= books.book_ref.replace(/\s+/g, '');
@@ -1439,6 +1544,7 @@ function setSearch(json,direction){
 		bookTags.push(books.book_nr+'_'+books.chapter_nr);
 		output += '</p>';
 	});
+	output += '</div>';
 	bookTags = uniqueArray(bookTags);
 	jQuery(bookTags).each(function(index, bookTag) {
 		// load verse tags
@@ -1451,6 +1557,7 @@ function setSearch(json,direction){
 	}
 	appFeatures(2);
 	stopAutoLoad = 1;
+	viewType = 2;
 	jQuery('#scripture').removeClass('text_loading');
 }
 
@@ -1583,6 +1690,7 @@ function getDataBo(version, first, versionChange) {
 	jQuery('#scripture').addClass('text_loading');
 	
 	// check if already in local store
+
 	var requestStore = 'books_'+version;
 	// first check if any books have been updated	
 	var reloadBooksStore = jQuery.jStorage.get('booksDate');
@@ -1804,4 +1912,73 @@ function prevChapter(){
 			jQuery('#prev').hide();
 		}
 	}
+}
+
+function htmlspecialchars(string, quote_style, charset, double_encode) {
+  //       discuss at: http://phpjs.org/functions/htmlspecialchars/
+  //      original by: Mirek Slugen
+  //      improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  //      bugfixed by: Nathan
+  //      bugfixed by: Arno
+  //      bugfixed by: Brett Zamir (http://brett-zamir.me)
+  //      bugfixed by: Brett Zamir (http://brett-zamir.me)
+  //       revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  //         input by: Ratheous
+  //         input by: Mailfaker (http://www.weedem.fr/)
+  //         input by: felix
+  // reimplemented by: Brett Zamir (http://brett-zamir.me)
+  //             note: charset argument not supported
+  //        example 1: htmlspecialchars("<a href='test'>Test</a>", 'ENT_QUOTES');
+  //        returns 1: '&lt;a href=&#039;test&#039;&gt;Test&lt;/a&gt;'
+  //        example 2: htmlspecialchars("ab\"c'd", ['ENT_NOQUOTES', 'ENT_QUOTES']);
+  //        returns 2: 'ab"c&#039;d'
+  //        example 3: htmlspecialchars('my "&entity;" is still here', null, null, false);
+  //        returns 3: 'my &quot;&entity;&quot; is still here'
+
+  var optTemp = 0,
+    i = 0,
+    noquotes = false;
+  if (typeof quote_style === 'undefined' || quote_style === null) {
+    quote_style = 2;
+  }
+  string = string.toString();
+  if (double_encode !== false) {
+    // Put this first to avoid double-encoding
+    string = string.replace(/&/g, '&amp;');
+  }
+  string = string.replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  var OPTS = {
+    'ENT_NOQUOTES': 0,
+    'ENT_HTML_QUOTE_SINGLE': 1,
+    'ENT_HTML_QUOTE_DOUBLE': 2,
+    'ENT_COMPAT': 2,
+    'ENT_QUOTES': 3,
+    'ENT_IGNORE': 4
+  };
+  if (quote_style === 0) {
+    noquotes = true;
+  }
+  if (typeof quote_style !== 'number') {
+    // Allow for a single string or an array of string flags
+    quote_style = [].concat(quote_style);
+    for (i = 0; i < quote_style.length; i++) {
+      // Resolve string input to bitwise e.g. 'ENT_IGNORE' becomes 4
+      if (OPTS[quote_style[i]] === 0) {
+        noquotes = true;
+      } else if (OPTS[quote_style[i]]) {
+        optTemp = optTemp | OPTS[quote_style[i]];
+      }
+    }
+    quote_style = optTemp;
+  }
+  if (quote_style & OPTS.ENT_HTML_QUOTE_SINGLE) {
+    string = string.replace(/'/g, '&#039;');
+  }
+  if (!noquotes) {
+    string = string.replace(/"/g, '&quot;');
+  }
+
+  return string;
 }

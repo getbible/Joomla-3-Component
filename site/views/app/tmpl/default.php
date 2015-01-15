@@ -19,10 +19,18 @@ $versions = $this->cpanel;
 <form class="uk-form">
     <fieldset data-uk-margin="">
 		<button class="uk-button submit_search" data-uk-offcanvas="{target:'#search_scripture'}"><i class="uk-icon-search"></i><span class="uk-hidden-small"> <?php echo JText::_($this->params->get('search_button')); ?></span></button>
+        <button onclick="printTag()" class="uk-button" type="button"><i class="uk-icon-print"></i></button>
+        <?php if($this->user->id > 0 && $this->params->get('account')): ?>
+        	<button onclick="setupEmail()" class="uk-button" type="button"><i class="uk-icon-envelope-o"></i></button>
+        <?php endif; ?>
 <?php elseif($this->params->get('search_display') == 2):?>
 <form class="uk-form uk-margin-remove uk-display-block" id="search_form" method="post">
     <fieldset data-uk-margin="">
         <input class="search_field uk-form-width-medium" type="text" name="search" placeholder="<?php echo JText::_($this->params->get('search_phrase')); ?>">
+        <button onclick="printTag()" class="uk-button" type="button"><i class="uk-icon-print"></i></button>
+        <?php if($this->user->id > 0 && $this->params->get('account')): ?>
+        	<button onclick="setupEmail()" class="uk-button" type="button"><i class="uk-icon-envelope-o"></i></button>
+        <?php endif; ?>
         <input type="submit" style="display:none;" >
         <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
         value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
@@ -34,6 +42,10 @@ $versions = $this->cpanel;
     <fieldset data-uk-margin="">
         <input class="search_field uk-form-width-medium" type="text" name="search" placeholder="<?php echo JText::_($this->params->get('search_phrase')); ?>">
         <button class="uk-button submit_search" type="submit"><i class="uk-icon-search"></i><span class="uk-hidden-small"> <?php echo JText::_($this->params->get('search_button')); ?></span></button>
+        <button onclick="printTag()" class="uk-button" type="button"><i class="uk-icon-print"></i></button>
+        <?php if($this->user->id > 0 && $this->params->get('account')): ?>
+        	<button onclick="setupEmail()" class="uk-button" type="button"><i class="uk-icon-envelope-o"></i></button>
+        <?php endif; ?>
         <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
         value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
         <input class="uk-hidden search_type" type="hidden" name="search_type" value="<?php echo $this->params->get('search_type'); ?>">
@@ -48,6 +60,10 @@ $versions = $this->cpanel;
         <?php if($this->params->get('search_options') == 1): ?>
         <button class="uk-button" data-uk-offcanvas="{target:'#search_scripture'}"><i class="uk-icon-cog"></i><span class="uk-hidden-small"> <?php echo JText::_($this->params->get('advanced_button')); ?></span></button>
         <?php endif; ?>
+        <button onclick="printTag()" class="uk-button" type="button"><i class="uk-icon-print"></i></button>
+        <?php if($this->user->id > 0 && $this->params->get('account')): ?>
+        	<button onclick="setupEmail()" class="uk-button" type="button"><i class="uk-icon-envelope-o"></i></button>
+        <?php endif; ?>
         </div>
         <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
         value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
@@ -61,6 +77,10 @@ $versions = $this->cpanel;
         <input type="submit" style="display:none;" >
         <?php if($this->params->get('search_options') == 1): ?>
         <button class="uk-button" data-uk-offcanvas="{target:'#search_scripture'}"><i class="uk-icon-cog"></i><span class="uk-hidden-small"> <?php echo JText::_($this->params->get('advanced_button')); ?></span></button>
+        <?php endif; ?>
+        <button onclick="printTag()" class="uk-button" type="button"><i class="uk-icon-print"></i></button>
+        <?php if($this->user->id > 0 && $this->params->get('account')): ?>
+        	<button onclick="setupEmail()" class="uk-button" type="button"><i class="uk-icon-envelope-o"></i></button>
         <?php endif; ?>
         <input  class="uk-hidden search_crit" type="hidden" name="search_crit"  
         value="<?php echo $this->params->get('search_crit1'); ?>_<?php echo $this->params->get('search_crit2'); ?>_<?php echo $this->params->get('search_crit3'); ?>" >
@@ -329,6 +349,7 @@ $versions = $this->cpanel;
                 <a class="uk-button" href="javascript:void(0)" onClick="nextChapter()"><?php echo JText::_('COM_GETBIBLE_NEXT'); ?> <i class="uk-icon-fast-forward"></i></a>
             </div>
         </div>
+
         <div class="navigation uk-panel uk-visible-small" style="display:none;" data-uk-margin>
         	<div class="uk-button-group">
                 <a class="uk-button button_chapters" type="button"  onClick="showChapters()"><i class="uk-icon-list-ol"></i><span class="uk-hidden-small"> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></span></a>
@@ -398,7 +419,7 @@ $versions = $this->cpanel;
                     </div>
                 </li>
             </ul>
-        <?php else: ?>
+        <?php elseif($this->params->get('account')): ?>
             <ul class="uk-tab" data-uk-tab="{connect:'#user_cPanel_tab'}">
                 <li><a href=""><i class="uk-icon-paint-brush"></i> <?php echo JText::_('COM_GETBIBLE_COLORS'); ?></a></li>
                 <li><a href=""><i class="uk-icon-tags"></i> <?php echo JText::_('COM_GETBIBLE_TAGS'); ?></a></li>
@@ -427,9 +448,45 @@ $versions = $this->cpanel;
                     </div>
                 </li>
                 <li>
-					<div id="user_active_tags"></div>
+                	<div class="uk-grid">
+                        <div class="uk-width-medium-2-5">
+                            <ul class="uk-tab uk-tab-left" data-uk-tab="{connect:'#tagBody'}" id="tagMenus">
+                                <li class="uk-active"><a href=""><?php echo JText::_('All Active') ?></a></li>
+                                <li><a href=""><?php echo JText::_('All Inactive') ?></a></li>
+                                <li><a href=""><?php echo JText::_('Inactive Defaults') ?></a></li>
+                            </ul>
+                        </div>
+                        <div class="uk-width-medium-3-5">
+                            <ul id="tagBody" class="uk-switcher">
+                                <li id="usedTags"><?php echo JText::_('No Active tags') ?></li>
+                                <li id="unusedTags"><?php echo JText::_('No Inactive tags') ?></li>
+                                <li id="defaultTags"><?php echo JText::_('No Inactive Defaults tags') ?></li>
+                            </ul> 
+                    	</div>
+                	</div>   
                 </li>
         	</ul>
+         <?php else: ?>
+            <div class="uk-hidden-small" data-uk-margin>
+				<?php foreach($this->highlights as $mark => $details): ?>
+                    <a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-large uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
+                        <?php echo JText::_($details['name']); ?>&nbsp;&nbsp;&nbsp;
+                        <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>; font-size: <?php echo $this->params->get('font_medium'); ?>px;">
+                            &nbsp;<i class="uk-icon-pencil"></i>&nbsp;<?php echo JText::_('COM_GETBIBLE_TEXT'); ?>&nbsp;&nbsp;
+                        </span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+            <div class="uk-visible-small" data-uk-margin>
+                <?php foreach($this->highlights as $mark => $details): ?>
+                    <a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-small uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
+                        <?php echo JText::_($details['name']); ?>&nbsp;&nbsp;&nbsp;
+                        <span style="color:<?php echo $details['text']; ?>; background:<?php echo $details['background'];?>;">
+                            &nbsp;<i class="uk-icon-pencil"></i>&nbsp;<?php echo JText::_('COM_GETBIBLE_TEXT'); ?>&nbsp;&nbsp;
+                        </span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
     </div>
 </div>
@@ -441,7 +498,7 @@ $versions = $this->cpanel;
         <form class="uk-form">
             <div class="uk-form-row">
                 <h2>Send Email</h2>
-                <input class="uk-margin-small-top" id="email_address" type="text" placeholder="email address">
+                <input class="uk-margin-small-top" id="email_address" type="text" placeholder="email address" value="<?php echo $this->user->email; ?>">
                 <input class="uk-button uk-modal-close" type="submit" onclick="sendEmail(); return false;" value="send">
             </div>
         </form>
