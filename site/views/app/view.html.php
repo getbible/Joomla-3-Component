@@ -19,7 +19,7 @@ class GetbibleViewApp extends JViewLegacy
 	protected $params;
 	protected $cpanel;
 	protected $AppDefaults;
-	protected $bookmarks;
+	protected $highlights;
 	protected $signupUrl;
 	protected $user;
 	/**
@@ -85,13 +85,77 @@ class GetbibleViewApp extends JViewLegacy
 			$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'uikit.min.css');
 		}
 		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'components'.DS.'sticky.min.css');
+		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'components'.DS.'notify.min.css');
 		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'offline.css');
+		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'tagit.css');
+		
+		if($this->params->get('highlight_padding')){
+			$padding = 'padding: 0 3px 0 3px;';
+		} else {
+			$padding = '';
+		}
+		// verses style
+		$versStyles = '	#scripture .verse { cursor: pointer; }
+	#scripture .verse_nr { cursor: pointer; }
+	/* verse sizes */ 
+	#scripture .verse_small { font-size: '.$this->params->get('font_small').'px; line-height: 1.5;} 
+	#scripture .verse_medium { font-size: '.$this->params->get('font_medium').'px; line-height: 1.5;}
+	#scripture .verse_large { font-size: '.$this->params->get('font_large').'px; line-height: 1.5;}
+	/* verse nr sizes */ 
+	#scripture .nr_small { font-size: '. ($this->params->get('font_small') - 3).'px; line-height: 1.5;} 
+	#scripture .nr_medium { font-size: '. ($this->params->get('font_medium') - 4).'px; line-height: 1.5;}
+	#scripture .nr_large { font-size: '. ($this->params->get('font_large') - 5).'px; line-height: 1.5;}
+	/* chapter nr sizes */ 
+	#scripture .chapter_nr { font-size: 200%; }';
+		$this->document->addStyleDeclaration( $versStyles );
+		// search highlight style
+		$searchStyles = '	.highlight { color: '.$this->params->get('highlight_textcolor').'; border-bottom: 1px '.$this->params->get('highlight_linetype').' '.$this->params->get('highlight_linecolor').'; background-color: '.$this->params->get('highlight_background').'; '. $padding .' }';
+		$this->document->addStyleDeclaration( $searchStyles );
+		// hover styles
+		$hoverStyle = '	.hoverStyle { color: '.$this->params->get('hover_textcolor').'; border-bottom: 1px '.$this->params->get('hover_linetype').' '.$this->params->get('hover_linecolor').'; background-color: '.$this->params->get('hover_background').'; }';
+		$this->document->addStyleDeclaration( $hoverStyle );
+		// highlight styles
+		$marks = range('a','z');
+		foreach($marks as $mark){
+			$this->highlights[$mark] =  array(
+											'name' => $this->params->get('mark_'.$mark.'_name'), 
+											'text' => $this->params->get('mark_'.$mark.'_textcolor'), 
+											'background' => $this->params->get('mark_'.$mark.'_background')
+											);
+			$markStyle = '	.highlight_'.$mark.' { color: '.$this->params->get('mark_'.$mark.'_textcolor').'; border-bottom: 1px '.$this->params->get('mark_'.$mark.'_linetype').' '.$this->params->get('mark_'.$mark.'_linecolor').'; background-color: '.$this->params->get('mark_'.$mark.'_background').'; }';
+			$printHighliters .= '	.highlight_'.$mark.' { color: '.$this->params->get('mark_'.$mark.'_textcolor').' !important; border-bottom: 1px '.$this->params->get('mark_'.$mark.'_linetype').' '.$this->params->get('mark_'.$mark.'_linecolor').' !important; background-color: '.$this->params->get('mark_'.$mark.'_background').' !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+	';
+			$this->document->addStyleDeclaration( $markStyle );
+		}
+		$printStyle = '	@media print {
+		body * {
+			visibility: hidden;
+		}
+		#printTagArea, #printTagArea * {
+			visibility: visible;
+		}
+		.tags {
+			display: none !important;
+		}
+		.uk-text-muted {
+			font-color: #999999 !important;
+		}
+		#printTagArea {
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+	'.$printHighliters.'
+	}';
+		$this->document->addStyleDeclaration( $printStyle );
 		
 		// The JS
 		// Load jQuery check
 		if (!HeaderCheck::js_loaded('jquery')) {
 			JHtml::_('jquery.ui');
 		}
+		// load highlight javascript plugin
+		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jquery-ui-custom.js');
 		// set defaults
 		if($this->params->get('account') && $this->user->id > 0){
 			$setApp .=	'var openNow			= "'.base64_encode($this->user->id).'";';
@@ -115,59 +179,50 @@ class GetbibleViewApp extends JViewLegacy
 		} else {
 			$setApp .=  'var defaultRequest		= 0;';
 		}
-		$setApp .= 	'var autoLoadChapter 	= '.$this->params->get('auto_loading_chapter').';';
-		$setApp .= 	'var appMode 			= '.$this->params->get('app_mode').';';
-		$setApp .= 	'var jsonUrl 			= '.$jsonUrl.';';
-		$setApp .= 	'var booksDate 			= "'.$this->booksDate.'";';
-		$setApp .= 	'var highlightOption 	= '. $this->params->get('highlight_option').';';// set the search styles
-		$setApp .= 	'var verselineMode 		= '. $this->params->get('line_mode').';';
-		if($this->params->get('highlight_padding')){
-			$padding = 'padding: 0 3px 0 3px;';
+		if(strlen($this->params->get('placeholder_text')) > 0){
+			$placeholder_text = json_encode($this->params->get('placeholder_text'));
 		} else {
-			$padding = '';
+			$placeholder_text = 'null';
 		}
-		// verses style
-		$versStyles = '	#scripture .verse { cursor: pointer; }
-						#scripture .verse_nr { cursor: pointer; }
-						/* verse sizes */ 
-						#scripture .verse_small { font-size: '.$this->params->get('font_small').'px; line-height: 1.5;} 
-						#scripture .verse_medium { font-size: '.$this->params->get('font_medium').'px; line-height: 1.5;}
-						#scripture .verse_large { font-size: '.$this->params->get('font_large').'px; line-height: 1.5;}
-						/* verse nr sizes */ 
-						#scripture .nr_small { font-size: '. ($this->params->get('font_small') - 3).'px; line-height: 1.5;} 
-						#scripture .nr_medium { font-size: '. ($this->params->get('font_medium') - 4).'px; line-height: 1.5;}
-						#scripture .nr_large { font-size: '. ($this->params->get('font_large') - 5).'px; line-height: 1.5;}
-						/* chapter nr sizes */ 
-						#scripture .chapter_nr { font-size: 200%; }';
-		$this->document->addStyleDeclaration( $versStyles );
-		// search highlight style
-		$searchStyles = '.highlight { color: '.$this->params->get('highlight_textcolor').'; border-bottom: 1px '.$this->params->get('highlight_linetype').' '.$this->params->get('highlight_linecolor').'; background-color: '.$this->params->get('highlight_background').'; '. $padding .' }';
-		$this->document->addStyleDeclaration( $searchStyles );
-		// hover styles
-		$hoverStyle = '.hoverStyle { color: '.$this->params->get('hover_textcolor').'; border-bottom: 1px '.$this->params->get('hover_linetype').' '.$this->params->get('hover_linecolor').'; background-color: '.$this->params->get('hover_background').'; }';
-		$this->document->addStyleDeclaration( $hoverStyle );
-		// bookmark styles
-		$marks = range('a','m');
-		foreach($marks as $mark){
-			$this->bookmarks[$mark] =  array(
-											'name' => $this->params->get('mark_'.$mark.'_name'), 
-											'text' => $this->params->get('mark_'.$mark.'_textcolor'), 
-											'background' => $this->params->get('mark_'.$mark.'_background')
-											);
-			$markStyle = '.bookmark_'.$mark.' { 
-								color: '.$this->params->get('mark_'.$mark.'_textcolor').'; 
-								border-bottom: 1px '.$this->params->get('mark_'.$mark.'_linetype').' '.$this->params->get('mark_'.$mark.'_linecolor').'; 
-								background-color: '.$this->params->get('mark_'.$mark.'_background').'; 
-								}';
-			$this->document->addStyleDeclaration( $markStyle );
+		if(strlen($this->params->get('tags_defaults')) > 0){
+			$tags_string = $this->params->get('tags_defaults');
+			if (strpos($tags_string,',') !== false) {
+					$tags_array = explode(',', $tags_string);
+					$tags_defaults = '[';
+					$tags_counter = 0;
+					foreach($tags_array as $tag){
+						if($tags_counter == 0){
+							$tags_defaults .= json_encode($tag);
+						} else {
+							$tags_defaults .= ', '.json_encode($tag);
+						}
+						$tags_counter++;
+					}
+					$tags_defaults .= ']';
+			} else {
+				$tags_defaults = json_encode($this->params->get('tags_defaults'));
+			}
+		} else {
+			$tags_defaults = 'false';
 		}
-		// load base64 javascript plugin
-		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'base64.js');
-		// load highlight javascript plugin
-		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'highlight.js');
+				
+		$setApp .=	'var placeholder_text			= '.$placeholder_text.';';
+		$setApp .=	'var tags_defaults				= '.$tags_defaults.';';
+		$setApp .=	'var allow_spaces 				= '.$this->params->get('allow_spaces', 'true').';';
+		$setApp .=	'var autocomplete_show 			= '.$this->params->get('autocomplete_show', 'true').';';
+		$setApp .=	'var case_sensitive				= '.$this->params->get('case_sensitive', 'true').';';
+		$setApp .=	'var autocomplete_min_length 	= '.$this->params->get('autocomplete_min_length', 1).';';
+		$setApp .=	'var autocomplete_delay 		= '.$this->params->get('autocomplete_delay', 0).';';
+		// load a tag
+		$setApp .=	'var tagQuery					= false;';
 		
-		$this->document->addScriptDeclaration($setApp);  
-		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'app.js');
+		$setApp .=	'var right_click 				= '.$this->params->get('right_click', 0).';';
+		$setApp .= 	'var autoLoadChapter 			= '.$this->params->get('auto_loading_chapter').';';
+		$setApp .= 	'var appMode 					= '.$this->params->get('app_mode').';';
+		$setApp .= 	'var jsonUrl 					= '.$jsonUrl.';';
+		$setApp .= 	'var booksDate 					= "'.$this->booksDate.'";';
+		$setApp .= 	'var highlightOption 			= '. $this->params->get('highlight_option').';';// set the search styles
+		$setApp .= 	'var verselineMode 				= '. $this->params->get('line_mode').';';
 		
 		// Load Uikit check
 		if (!HeaderCheck::js_loaded('uikit.min')) {
@@ -176,7 +231,14 @@ class GetbibleViewApp extends JViewLegacy
 		if (!HeaderCheck::js_loaded('sticky.min')) {
 			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'components'.DS.'sticky.min.js');
 		}
-		
+		if (!HeaderCheck::js_loaded('notify.min')) {
+			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'components'.DS.'notify.min.js');
+		}
+		// load base64 javascript plugin
+		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'base64.js');
+		// load highlight javascript plugin
+		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'highlight.js');
+						
 		// Load Json check
 		if (!HeaderCheck::js_loaded('jquery.json')) {
 			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jquery.json.min.js');
@@ -185,10 +247,17 @@ class GetbibleViewApp extends JViewLegacy
 		if (!HeaderCheck::js_loaded('jstorage')) {
 			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jstorage.min.js');
 		}
+		// Load Tag It check
+		if (!HeaderCheck::js_loaded('tag-it')) {
+			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'tag-it.js');
+		}
 		// Load Offline check
 		if (!HeaderCheck::js_loaded('offline')) {
 			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'offline.min.js');
 		}
+		
+		$this->document->addScriptDeclaration($setApp);  
+		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'app.js');
 		// debug offline status
 		// $this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'offline-simulate-ui.min.js');
 						
@@ -204,6 +273,7 @@ class GetbibleViewApp extends JViewLegacy
 							}, 3000);
 						});';
 		$this->document->addScriptDeclaration($offline);
+		
 	}
 	
 	/**

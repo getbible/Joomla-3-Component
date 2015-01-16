@@ -329,9 +329,10 @@ class GetbibleModelGet extends JModelList
 				$chapter 			= $this->getVerses($get,$version);
 				if($chapter){
 					// load book name
-					$bookName			= $this->getBook($get['book_nr'],$version);
+					$bookName		= $this->getBook($get['book_nr'],$version);
+					$book_ref		= $this->getBookRef($get['book_nr'],$version);
 					// load verses
-					$returns['book'][] 	= array('book_name'=>$bookName, 'book_nr'=>$get['book_nr'], 'chapter_nr'=>$get['chapter_nr'], 'chapter'=>$chapter);
+					$returns['book'][] 	= array('book_ref'=>$book_ref, 'book_name'=>$bookName, 'book_nr'=>$get['book_nr'], 'chapter_nr'=>$get['chapter_nr'], 'chapter'=>$chapter);
 					$found = true;
 				}
 			}
@@ -496,6 +497,7 @@ class GetbibleModelGet extends JModelList
 								$verses[] 	= explode('-',$ver);
 							} else {
 								$verses[] 	= array($ver);
+
 							}
 						}
 					} else {
@@ -885,6 +887,7 @@ class GetbibleModelGet extends JModelList
 		$query->where($db->quoteName('a.published') . ' = 1');
 		if($tryAgain){
 			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($tryAgain));
+
 		} else {
 			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($version));
 		}

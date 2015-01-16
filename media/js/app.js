@@ -23,19 +23,24 @@ var defaultBook 		= 0;
 var defaultBookNr 		= 0;
 var defaultChapter 		= 0;
 var setQuery 			= 0;
+var viewType			= 0;
 
-// set bookmark array
-var alpha 			= "abcdefghijklm";
-var bookmarksArray 	= alpha.split("");
+// set highlight array
+var alpha 			= "abcdefghijklmnopqrstuvwxyz";
+var highlightsArray = alpha.split("");
+
+// set tag name
+var TagVerseName 	= null;
 
 // get the data from the API
 jQuery(function() {
 	// load defaults
-	getDefaults(defaultRequest, defaultKey);
+	getDefaults(defaultRequest, defaultKey, tagQuery);
 	appFeatures(1);
 	setTextSize();
-	// check if bookmarks are in sync
-	checkBookmarkSync();
+	setCpanelTags();
+	// check if highlights are in sync
+	checkHighLightSync();
 		
 });
 // Load this after page is fully loaded
@@ -189,11 +194,12 @@ function setSearchBook(newBook,lastBook){
 	}
 }
 // load the chapter where the search verse is found 
-function loadFoundChapter(call, setGlobal){
+function loadChapter(call, setGlobal){
 	if(autoLoadChapter === 1){
 		loadTimer1();
 	}
 	//  Call to get scripture
+	jQuery('#tagheader').hide();
 	jQuery('#t_loader').show();
 	var result = setGlobal.split('__');
 	BIBLE_BOOK 			= result[0];
@@ -230,12 +236,14 @@ jQuery(document).ready(function() {
 		}, function() {
 			jQuery(this).removeClass('hoverStyle');
 		}
-	);	
+	);
+	// set tag vars
+	var defaultTags = [];	
 });
 
 jQuery(document).on('click', ".verse", function(e){
 	e.preventDefault();
-	setBookmark(this);
+	setHighLight(this);
 });
 			
 // script to set all app apge features
@@ -249,22 +257,24 @@ function appFeatures(when){
 		}
 	);
 	
-	var bookMarks = jQuery.jStorage.get('bookmarks');
+	var highLights = jQuery.jStorage.get('highlights');
 	
-	if(bookMarks){
-		jQuery.jStorage.deleteKey('bookmarks');
-		jQuery.each( bookMarks, function( val, mark ) {
+	if(highLights){
+		jQuery.jStorage.deleteKey('highlights');
+		jQuery.each( highLights, function( val, mark ) {
 			if(jQuery("#" + val).length != 0) {
-			  jQuery("#" + val).addClass('bookmark_'+mark);
+			  jQuery("#" + val).addClass('highlight_'+mark);
 			}
 		});
-		//save bookmarks
-		jQuery.jStorage.set('bookmarks',bookMarks);
+		//save highlights
+		jQuery.jStorage.set('highlights',highLights);
 	} 
 	// ensure that text gets resized
 	setTextSize();
 	// load notes
 	setNotes();
+	// load tags
+	getTags();
 	
 }
 
@@ -274,10 +284,12 @@ function makeNote(id){
 	var editNote = jQuery('#edit__'+id).text();
 	if(editNote.length != 0){
 		jQuery('#active_note').val(editNote);
+	} else {
+		jQuery('#active_note').val('');
 	}
 	jQuery('.note_verse').html(bookName+' verse '+idPieces[2]);
 	jQuery('#note_verse').val(id);
-	jQuery.UIkit.modal("#note_maker").show();
+	setTagDiv(id);
 }
 function submitNote(){
 	setNote_db().done(function(notes) {
@@ -297,12 +309,12 @@ function loadNotes(notes){
 		if(jQuery("#"+vers).length != 0) {
 			if(note.length != 0){
 				if(verselineMode == 2){
-					html = '&#160;<span class="verse_nr uk-text-muted ltr" onclick="makeNote(\''+vers+ '\');return false;" data-uk-tooltip="{pos:\'right\'}" title="Edit Note">[&#160;<span  id="edit__'+vers+ '" >'+note+'</span>&#160;]</span>';
+					html = '&#160;<span class="verse_nr uk-text-muted ltr" onclick="makeNote(\''+vers+ '\');return false;" data-uk-tooltip="{pos:\'right\'}" title="Edit Note & Tags">[&#160;<span  id="edit__'+vers+ '" >'+note+'</span>&#160;]</span>';
 				} else {
-					html = '<br /><span class="verse_nr uk-text-muted ltr" onclick="makeNote(\''+vers+ '\');return false;" data-uk-tooltip="{pos:\'right\'}" title="Edit Note">[&#160;<span  id="edit__'+vers+ '" >'+note+'</span>&#160;]</span>';
+					html = '<br /><span class="verse_nr uk-text-muted ltr" onclick="makeNote(\''+vers+ '\');return false;" data-uk-tooltip="{pos:\'right\'}" title="Edit Note & Tags">[&#160;<span  id="edit__'+vers+ '" >'+note+'</span>&#160;]</span>';
 				}
 				jQuery('#note__'+vers).html(html);
-				jQuery('#nr__'+vers).attr('title', 'Edit Note');
+				jQuery('#nr__'+vers).attr('title', 'Edit Note & Tags');
 			} else {
 				jQuery('#note__'+vers).html('');
 			}
@@ -343,7 +355,7 @@ function setNotes(){
 	return false;
 }
 function getNotes(){
-	// set bookmark	on server
+	// set highlight	on server
 	if(user_id > 0 && allowAccount > 0){
 		var request	= '&jsonKey='+jsonKey+'&tu='+openNow;
 		var getUrl 	= "index.php?option=com_getbible&task=bible.getnotes&format=json";
@@ -357,115 +369,456 @@ function getNotes(){
 	}
 	return false;
 }
-
-function mergeAllBookmarks(){
-	setBookmarks_server(3).done(function(isMerged) {
-		if(isMerged){
-			loadServerBookmarks(true);
-		}
-	})
-}
-function saveBrowserBookmarks(act){
-	setBookmarks_server(act);
-}
-function loadServerBookmarks(removeLocal){
-	getBookmarks().done(function(server) {
-		if(removeLocal){
-			var bookMarks = jQuery.jStorage.get('bookmarks');
-			if(bookMarks){
-				jQuery.each(bookMarks, function(id, color) {
-					// remove the class
-					jQuery('#'+id).removeClass('bookmark_'+color);
+function setTagDiv(id){
+	// set tags
+	if(user_id > 0 && allowAccount > 0){
+		var localVerseTags = jQuery.jStorage.get('taged__'+id, null);
+		if(localVerseTags){
+			var html = '<ul id="tags__'+id+'">';
+				jQuery.each(localVerseTags, function(tag, name) {
+					html += '<li>'+name+'</li>';
 				});
-				jQuery.jStorage.deleteKey('bookmarks');
+			html += '</ul>';
+		} else {
+			var html = '<ul id="tags__'+id+'"></ul>';
+		}					
+		jQuery('#tagDiv').html(html);
+		jQuery('#tags__'+id).tagit({
+			// Options
+			availableTags: defaultTags,
+			autocomplete: {delay: autocomplete_delay, minLength: autocomplete_min_length},
+			showAutocompleteOnFocus: autocomplete_show,
+			allowSpaces: allow_spaces,
+			placeholderText: placeholder_text,
+			caseSensitive: case_sensitive,
+			
+			afterTagAdded: function(evt, ui) {
+				if (!ui.duringInitialization) {
+					var taged = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
+					// set the taged verse
+					setTaged(taged,1,id);
+					// if new tag add to tag list
+					if(!isInArray(taged,defaultTags)){
+						defaultTags.push(taged);
+						jQuery.jStorage.set('tags',defaultTags);
+					}
+					tagVerse(taged,1,id);
+					setTimeout(function() { setCpanelTags(); }, 1000);
+				}
+			},
+			afterTagRemoved: function(evt, ui) {
+				var untaged = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
+				// unset the taged verse
+				setTaged(untaged,0,id);
+				tagVerse(untaged,0,id);
+				setTimeout(function() { setCpanelTags(); }, 1000);
+			},
+			onTagClicked: function(event, ui) {
+				// do something special
+				var tagName = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
+				// get tag verse list
+				getTagVerse(tagName);								
 			}
+		});
+		jQuery.UIkit.modal("#note_maker").show();
+	} else {
+		jQuery.UIkit.modal("#note_maker").show();
+	}
+}
+function tagVerse(tag,action,vers){
+	
+	if(action == 1){
+		var title = '';
+		if (jQuery('#tags_'+vers).length > 0){
+			title = jQuery('#tags_'+vers).attr('title')+', '+tag;
+		} else {
+			title = tag;
 		}
-		if(server){
-			serverBookMarks = JSON.parse(Base64.decode(server));
-			jQuery.each( serverBookMarks, function( id, color ) {
-				if(jQuery("#" + id).length != 0) {
-				  jQuery("#" + id).addClass('bookmark_'+color);
+		if(verselineMode == 2){
+			html = '<span id="tags_'+vers+'" class="tags verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
+		} else {
+			html = '<span id="tags_'+vers+'" class="tags verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
+		}
+		jQuery('#tags_'+vers).remove();
+		jQuery('#nr__'+vers).append(html);
+	} else {
+		var title = '';
+		if (jQuery('#tags_'+vers).length > 0){
+			title = jQuery('#tags_'+vers).attr('title');
+			if (title.indexOf(', ') >= 0){
+				var array = title.split(', ');
+				// remove the tag
+				array = jQuery.grep(array, function(value) {
+				  return value != tag;
+				});
+				title = array.join(", ");
+			} else if (title.indexOf(tag) >= 0){
+				title = title.replace(tag,'');
+			}
+			if (title){
+				if(verselineMode == 2){
+					html = '<span id="tags_'+vers+'" class="tags verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
+				} else {
+					html = '<span id="tags_'+vers+'" class="tags verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
+				}
+				jQuery('#tags_'+vers).remove();
+				jQuery('#nr__'+vers).append(html);
+			} else {
+				jQuery('#tags_'+vers).remove();
+			}
+		} 
+	}
+}
+function setTaged(tag,action,verse){
+	// set tags
+	if(user_id > 0 && allowAccount > 0){
+		if(action == 1){
+			// add the tag
+			setTaged_db(tag,action,verse).done(function(set) {
+				if(set){
+					var localVerseTags = jQuery.jStorage.get('taged__'+verse, null);
+					if(localVerseTags){
+						if(!isInArray(tag, localVerseTags)){
+							localVerseTags.push(tag);
+							jQuery.jStorage.set('taged__'+verse,localVerseTags);
+						}
+					} else {
+						localVerseTags = [];
+						localVerseTags.push(tag);
+						jQuery.jStorage.set('taged__'+verse,localVerseTags);
+					}
+				}
+			});	
+		} else if(action == 0){
+			// remove the tag
+			setTaged_db(tag,action,verse).done(function(set) {
+				if(set){
+					var localVerseTags = jQuery.jStorage.get('taged__'+verse, null);
+					if(localVerseTags){
+						if(isInArray(tag, localVerseTags)){
+							// remove from local array
+							localVerseTags = jQuery.grep(localVerseTags, function(value) {
+								return value != tag;
+							});
+							jQuery.jStorage.set('taged__'+verse,localVerseTags);
+						}
+					}
 				}
 			});
-			//save bookmarks
-			jQuery.jStorage.set('bookmarks',serverBookMarks);
 		}
-	})	
+	}
+	return false;
 }
-function clearAllBookmarks(){
-	clearServerBookmarks().done(function(isCleared) {
-		if(isCleared){
-			var bookMarks = jQuery.jStorage.get('bookmarks');
-			if(bookMarks){
-				jQuery.each(bookMarks, function(id, color) {
-					// remove the class
-					jQuery('#'+id).removeClass('bookmark_'+color);
+function setTaged_db(tag,action,verse){
+	// set note	on server
+	if(user_id > 0 && allowAccount > 0){
+		var request = '&jsonKey='+jsonKey+'&tu='+openNow+'&action='+action+'&tag='+tag+'&verse='+verse;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.settaged&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+function getTaged(verse){
+	// set Taged in browser memory
+	if(user_id > 0 && allowAccount > 0){
+		getTaged_db(verse).done(function(dbVerseTags) {
+			if(dbVerseTags){
+				jQuery.each(dbVerseTags, function( vers, tags) {
+					var localVerseTag = jQuery.jStorage.get('taged__'+verse+'_'+vers, null);
+					if(localVerseTag){
+						jQuery.each(tags, function(id,tag) {
+							if(!isInArray(tag, localVerseTag)){
+								localVerseTag.push(tag);
+							}
+						});
+					} else {
+						localVerseTag = [];
+						jQuery.each(tags, function(id,tag) {
+							if(!isInArray(tag, localVerseTag)){
+								localVerseTag.push(tag);
+							}
+						});
+					}
+					var title = localVerseTag.join(", ");
+					tagVerse(title,1,verse+'_'+vers);
+					jQuery.jStorage.set('taged__'+verse+'_'+vers,localVerseTag);
+				}); 
+			}
+		});
+	}
+	return false;
+}
+function setCpanelTags(){
+	if(user_id > 0 && allowAccount > 0){
+		getStatusTags_db().done(function(tags) {
+			if(tags){
+				var usedTags = '';
+				var unusedTags = '';
+				var defaultTags = '';
+				jQuery.each(tags, function( status, tagStatus) {
+					jQuery.each(tagStatus, function( alpha, tagName) {
+						if('used' == status && tagName) {
+							var id = tagName.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
+							usedTags += ' <button id="cp_used_'+id+'" class="uk-button uk-button-primary uk-margin-small-bottom" rel="'+htmlspecialchars(tagName)+'" onclick="getTagVerseButton(\'cp_used_'+id+'\')" type="button">'+htmlspecialchars(tagName)+'</button> ';
+						} else if('unused' == status && tagName) {
+							var id = tagName.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
+							unusedTags += ' <button id="cp_unused_'+id+'" class="uk-button uk-button-danger uk-margin-small-bottom" rel="'+htmlspecialchars(tagName)+'" onclick="removeTag(\'cp_unused_'+id+'\')" type="button"><i class="uk-icon-remove"></i> '+tagName+'</button> ';
+						} else if('default' == status && tagName) {
+							defaultTags += ' <button class="uk-button uk-margin-small-bottom" type="button" disabled>'+htmlspecialchars(tagName)+'</button> ';
+						}
+					});
 				});
-				jQuery.jStorage.deleteKey('bookmarks');
-			}
-		}
-	})
-}
-function clearServerBookmarks(){
-	if(user_id > 0 && allowAccount > 0){
-		var getUrl 	= "index.php?option=com_getbible&task=bible.clearbookmarks&format=json";
-		var request = '&jsonKey='+jsonKey+'&tu='+openNow;
-		return jQuery.ajax({
-			 type: 'GET',
-			 url: getUrl,
-			 dataType: 'jsonp',
-			 data: request,
-			 jsonp: 'callback'
-		});
-	}
-	return false;
-}
-
-function getBookmarks(){
-	// get bookmarks		
-	if(user_id > 0 && allowAccount > 0){
-		var getUrl 	= "index.php?option=com_getbible&task=bible.getbookmarks&format=json";
-		var request	= '&jsonKey='+jsonKey+'&tu='+openNow;
-		return jQuery.ajax({
-			 type: 'GET',
-			 url: getUrl,
-			 dataType: 'jsonp',
-			 data: request,
-			 jsonp: 'callback'
-		});
-	}
-	return false;
-}
-
-function checkBookmarkSync(){
-	if(user_id > 0 && allowAccount > 0){
-		getBookmarks().done(function(server) {
-			if(!server){
-				server = {not : 'found'};
-			} else {
-				server = JSON.parse(Base64.decode(server));
-			}
-			var local = jQuery.jStorage.get('bookmarks');
-			if(!local){
-				local 	= {not : 'found'};
-			}
-			if(!sameObject(local,server)){
-				jQuery('.slectionSync').hide();
-				jQuery.UIkit.modal("#bookmark_checker").show();
-				if(local.not){
-					// server has bookmarks but not browser
-					jQuery('.server_has').show();
-				}else if(server.not){
-					// Browser has bookmarks but not server
-					jQuery('.browser_has').show();
+				if(usedTags.length > 0){
+					jQuery('#usedTags').html('<p data-uk-margin>'+usedTags+'</p>');
 				} else {
-					// both has bookmarks
-					jQuery('.both_has').show();
+					jQuery('#usedTags').html('No Active tags');
 				}
-			}			
-		});	
+				if(unusedTags.length > 0){
+					jQuery('#unusedTags').html('<p data-uk-margin>'+unusedTags+'</p>');
+				} else {
+					jQuery('#unusedTags').html('No Inactive tags');					
+				}
+				if(defaultTags.length > 0){
+					jQuery('#defaultTags').html('<p data-uk-margin>'+defaultTags+'</p>');
+				} else {
+					jQuery('#defaultTags').html('No Inactive Defaults tags');
+				}
+			}
+		});
 	}
 }
+
+function getStatusTags_db(){
+	// get status of tags from server
+	if(user_id > 0 && allowAccount > 0){
+		var request = '&jsonKey='+jsonKey+'&tu='+openNow;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.getstatustags&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+function getTaged_db(verse){
+	// set note	on server
+	if(user_id > 0 && allowAccount > 0){
+		var request = '&jsonKey='+jsonKey+'&tu='+openNow+'&verse='+verse;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.gettaged&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+function addTag(tag){
+	setTags_db(tag,1).done(function(set) {
+		if(set){
+			defaultTags.push(tag);
+			jQuery.jStorage.set('tags',defaultTags);
+		}
+	});
+}
+function removeTag(id){
+	if(user_id > 0 && allowAccount > 0){
+		var tag = jQuery('#'+id).attr('rel');
+		setTags_db(tag,0).done(function(set) {
+			if(set){
+				defaultTags = jQuery.grep(defaultTags, function(value) {
+					return value != tag;
+				});
+				jQuery.jStorage.set('tags',defaultTags);
+				setCpanelTags();
+			}
+		});
+	}
+}
+function setTags_db(tag,published){
+	// set note	on server
+	if(user_id > 0 && allowAccount > 0){
+		var request = '&jsonKey='+jsonKey+'&tu='+openNow+'&access=1&published='+published+'&note=null&name='+tag;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.settags&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+function getTags(){
+	// set note	in browser memory
+	if(user_id > 0 && allowAccount > 0){
+		var localTags = jQuery.jStorage.get('tags');
+		if(!localTags){
+			getTags_db().done(function(allTags) {
+				if(allTags){
+					if(tags_defaults){
+						var newArray	= jQuery.merge(allTags, tags_defaults);
+						allTags			= uniqueArray(newArray);
+					}
+					
+					jQuery.jStorage.set('tags',allTags);
+					defaultTags = allTags;
+				}
+			});
+		} else {
+			if(tags_defaults){
+				var newArray	= jQuery.merge(localTags, tags_defaults);
+				localTags		= uniqueArray(newArray);
+			}
+			defaultTags = localTags;
+		}
+	}
+	return false;
+}
+function getTags_db(){
+	// set highlight	on server
+	if(user_id > 0 && allowAccount > 0){
+		var request	= '&jsonKey='+jsonKey+'&tu='+openNow;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.gettags&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+function getTagVerse(name){
+	if(user_id > 0 && allowAccount > 0){
+		getTagVerse_db(name).done(function(tagVerseQuery) {
+			if(tagVerseQuery){
+				if(typeof timerInterval_1 !== 'undefined'){
+					clearInterval(timerInterval_1); // stop the interval
+				}
+				TagVerseName = name;
+				// get the verses
+				getData(tagVerseQuery, false, false);
+				// hide stuff not needed for tag view
+				jQuery('.searchbuttons').hide();
+				jQuery('.navigation').hide();
+				jQuery('.button_chapters').hide();
+			 	jQuery('#cPanel').hide();
+				// close the modal if open
+				jQuery.UIkit.modal("#note_maker").hide();
+				return true;
+			}
+		});
+	}
+	return false;
+}
+function getTagVerseButton(id){
+	if(user_id > 0 && allowAccount > 0){
+		var name = jQuery('#'+id).attr('rel');
+		getTagVerse_db(name).done(function(tagVerseQuery) {
+			if(tagVerseQuery){
+				if(typeof timerInterval_1 !== 'undefined'){
+					clearInterval(timerInterval_1); // stop the interval
+				}
+				TagVerseName = name;
+				// get the verses
+				getData(tagVerseQuery, false, false);
+				// hide stuff not needed for tag view
+				jQuery('.searchbuttons').hide();
+				jQuery('.navigation').hide();
+				jQuery('.button_chapters').hide();
+			 	jQuery('#cPanel').hide();
+				// close the modal if open
+				jQuery.UIkit.modal("#user_cPanel").hide();
+				return true;
+			}
+		});
+	}
+	return false;
+}
+function getTagVerse_db(tag){
+	// set highlight	on server
+	if(user_id > 0 && allowAccount > 0){
+		var request	= '&jsonKey='+jsonKey+'&tu='+openNow+'&version='+BIBLE_VERSION+'&tag='+tag;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.gettagverse&format=json";
+		return jQuery.ajax({
+			type: 'GET',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+function printTag(){
+	
+	window.print();
+	return false;
+}
+
+// email function starts here
+function setupEmail(){
+	if(user_id > 0 && allowAccount > 0){
+		jQuery.UIkit.modal("#setup_email").show();
+	}
+}
+function sendEmail(){
+	jQuery.UIkit.modal("#setup_email").hide();
+	if(user_id > 0 && allowAccount > 0){
+		// get html to send in email
+		var html 	= jQuery('#printTagArea').html();
+		html		= encodeURIComponent(html);
+		html		= Base64.encode(html);
+		// get the email address to send the email to
+		var email 	= jQuery('#email_address').val();
+		email		= Base64.encode(email);
+		// and then send the email!!!
+		sendEmail_server(html,email).done(function(response) {
+			jQuery.UIkit.notify({message: response.message, timeout: 5000, status: response.status, pos: 'top-right'});
+		});
+	}
+	return false;
+}
+
+function sendEmail_server(html,email){
+	// set highlight	on server
+	if(user_id > 0 && allowAccount > 0){
+		if(viewType == 1){
+			// a tag type
+			var title = encodeURIComponent(TagVerseName);
+		} else if(viewType == 2){
+			// a search type
+			var title = encodeURIComponent(searchFor);
+		} else {
+			var title = encodeURIComponent('not found');
+		}
+		var request	= '&jsonKey='+jsonKey+'&tu='+openNow+'&version='+BIBLE_VERSION+'&email='+email+'&html='+html+'&title='+title+'&type='+viewType;
+		var getUrl 	= "index.php?option=com_getbible&task=bible.sendemail&format=json";
+		return jQuery.ajax({
+			type: 'POST',
+			url: getUrl,
+			dataType: 'jsonp',
+			data: request,
+			jsonp: 'callback'
+		});
+	}
+	return false;
+}
+
 // check if object is the same
 function sameObject(a,b) {
 	if (!b || !a || b.length != a.length) {
@@ -479,6 +832,7 @@ function sameObject(a,b) {
 		}
 	});
 	jQuery.each(b, function(id, color) {
+
 		if(color !== a[id]){
 			same = false;
 			return false;
@@ -486,64 +840,172 @@ function sameObject(a,b) {
 	});
 	return same;
 }
+// all highlights stuff
+function mergeAllHighlights(){
+	setHighlights_server(3).done(function(isMerged) {
+		if(isMerged){
+			loadServerHighlights(true);
+		}
+	})
+}
+function saveBrowserHighlights(act){
+	setHighlights_server(act);
+}
+function loadServerHighlights(removeLocal){
+	getHighlights().done(function(server) {
+		if(removeLocal){
+			var highLights = jQuery.jStorage.get('highlights');
+			if(highLights){
+				jQuery.each(highLights, function(id, color) {
+					// remove the class
+					jQuery('#'+id).removeClass('highlight_'+color);
+				});
+				jQuery.jStorage.deleteKey('highlights');
+			}
+		}
+		if(server){
+			serverBookMarks = JSON.parse(Base64.decode(server));
+			jQuery.each( serverBookMarks, function( id, color ) {
+				if(jQuery("#" + id).length != 0) {
+				  jQuery("#" + id).addClass('highlight_'+color);
+				}
+			});
+			//save highlights
+			jQuery.jStorage.set('highlights',serverBookMarks);
+		}
+	})	
+}
+function clearAllHighlights(){
+	clearServerHighlights().done(function(isCleared) {
+		if(isCleared){
+			var highLights = jQuery.jStorage.get('highlights');
+			if(highLights){
+				jQuery.each(highLights, function(id, color) {
+					// remove the class
+					jQuery('#'+id).removeClass('highlight_'+color);
+				});
+				jQuery.jStorage.deleteKey('highlights');
+			}
+		}
+	})
+}
+function clearServerHighlights(){
+	if(user_id > 0 && allowAccount > 0){
+		var getUrl 	= "index.php?option=com_getbible&task=bible.clearhighlights&format=json";
+		var request = '&jsonKey='+jsonKey+'&tu='+openNow;
+		return jQuery.ajax({
+			 type: 'GET',
+			 url: getUrl,
+			 dataType: 'jsonp',
+			 data: request,
+			 jsonp: 'callback'
+		});
+	}
+	return false;
+}
 
-// set the bookmark
-function setBookmark(verse) {
-	// get default current bookmark
+function getHighlights(){
+	// get highlights		
+	if(user_id > 0 && allowAccount > 0){
+		var getUrl 	= "index.php?option=com_getbible&task=bible.gethighlights&format=json";
+		var request	= '&jsonKey='+jsonKey+'&tu='+openNow;
+		return jQuery.ajax({
+			 type: 'GET',
+			 url: getUrl,
+			 dataType: 'jsonp',
+			 data: request,
+			 jsonp: 'callback'
+		});
+	}
+	return false;
+}
+
+function checkHighLightSync(){
+	if(user_id > 0 && allowAccount > 0){
+		getHighlights().done(function(server) {
+			if(!server){
+				server = {not : 'found'};
+			} else {
+				server = JSON.parse(Base64.decode(server));
+			}
+			var local = jQuery.jStorage.get('highlights');
+			if(!local){
+				local 	= {not : 'found'};
+			}
+			if(!sameObject(local,server)){
+				jQuery('.slectionSync').hide();
+				jQuery.UIkit.modal("#highlight_checker").show();
+				if(local.not){
+					// server has highlights but not browser
+					jQuery('.server_has').show();
+				}else if(server.not){
+					// Browser has highlights but not server
+					jQuery('.browser_has').show();
+				} else {
+					// both has highlights
+					jQuery('.both_has').show();
+				}
+			}			
+		});	
+	}
+}
+// set the highlight
+function setHighLight(verse) {
+	// get default current highlight
 	var currentMark = jQuery.jStorage.get('currentMark', 'a');
-	// get bookmarks
-	var bookMarksStore = jQuery.jStorage.get('bookmarks');
-	if(!bookMarksStore){
-		bookMarksStore = {};
+	// get highlights
+	var highLightsStore = jQuery.jStorage.get('highlights');
+	if(!highLightsStore){
+		highLightsStore = {};
 	}
 	var id 		= jQuery(verse).attr("id");
 	var add 	= true;
 	var delet 	= false;
 	var deletMark;
-	jQuery(bookmarksArray).each(function(index, mark) {
+	jQuery(highlightsArray).each(function(index, mark) {
 		// remove the class and unset values
 		jQuery('#'+id+' span').removeClass('highlight');
-		if(jQuery('#'+id).hasClass('bookmark_'+mark)){
+		if(jQuery('#'+id).hasClass('highlight_'+mark)){
 			deletMark 	= mark;
 			delet 		= true;
 			return false;
 		}
 	});
 	if(delet){
-		jQuery('#'+id).removeClass('bookmark_'+deletMark);
-		delete bookMarksStore[id];
-		if('bookmark_'+deletMark == 'bookmark_'+currentMark){
+		jQuery('#'+id).removeClass('highlight_'+deletMark);
+		delete highLightsStore[id];
+		if('highlight_'+deletMark == 'highlight_'+currentMark){
 			add = false;
-			setBookmark_server(0,id+'__'+deletMark);
+			setHighLight_server(0,id+'__'+deletMark);
 		}
 	}
 	if(add){
-		setBookmark_server(1,id+'__'+currentMark);
+		setHighLight_server(1,id+'__'+currentMark);
 		// add the class and set the values
-		bookMarksStore[id] = currentMark;
-		jQuery('#'+id).addClass('bookmark_'+currentMark);
+		highLightsStore[id] = currentMark;
+		jQuery('#'+id).addClass('highlight_'+currentMark);
 	}
-	//save bookmarks
-	jQuery.jStorage.set('bookmarks',bookMarksStore);
+	//save highlights
+	jQuery.jStorage.set('highlights',highLightsStore);
 }
 
-function setBookmarks_server(action){
+function setHighlights_server(action){
 	
-	// set bookmark	on server	
+	// set highlight	on server	
 	if(user_id > 0 && allowAccount > 0){
-		var getUrl		= "index.php?option=com_getbible&task=bible.setbookmarks&format=json";
-		var bookMarks 	= jQuery.jStorage.get('bookmarks');
-		if(bookMarks){
-			var checker = JSON.stringify(bookMarks);
-			var request = 'bookmark='+Base64.encode(checker)+'&publish=1';
+		var getUrl		= "index.php?option=com_getbible&task=bible.sethighlights&format=json";
+		var highLights 	= jQuery.jStorage.get('highlights');
+		if(highLights){
+			var checker = JSON.stringify(highLights);
+			var request = 'highlight='+Base64.encode(checker)+'&publish=1';
 		} else {
 			return false;
 		}
 		/************************************
 		* action has the following options	*
-		* 1 = first set of bookmarks		*
-		* 2 = replace all server bookmarks	*
-		* 3 = merge with server bookmarks	*
+		* 1 = first set of highlights		*
+		* 2 = replace all server highlights	*
+		* 3 = merge with server highlights	*
 		************************************/
 		switch(action){
 			case 2:
@@ -564,13 +1026,13 @@ function setBookmarks_server(action){
 	}
 	return false;
 }
-function setBookmark_server(publish,mark){
+function setHighLight_server(publish,mark){
 	
-	// set bookmark	on server	
+	// set highlight	on server	
 	if(user_id > 0 && allowAccount > 0){
-		var getUrl = "index.php?option=com_getbible&task=bible.setBookmark&format=json";
+		var getUrl = "index.php?option=com_getbible&task=bible.sethighlight&format=json";
 		if(mark.length > 0){
-			var request = 'bookmark='+mark+'&publish='+publish+'&jsonKey='+jsonKey+'&tu='+openNow;
+			var request = 'highlight='+mark+'&publish='+publish+'&jsonKey='+jsonKey+'&tu='+openNow;
 		} else {
 			return false;
 		}
@@ -595,9 +1057,9 @@ function getSelectionText() {
     }
     return text;
 }
-// set the bookmark color
+// set the highlight color
 function setCurrentColor(mark){
-	//save current bookmark
+	//save current highlight
 	jQuery.jStorage.set('currentMark',mark);
 }
 // set the text size
@@ -669,6 +1131,7 @@ function loadNextBook(addTo,Found){
 			BIBLE_CHAPTER 		= 1;
 			BIBLE_LAST_CHAPTER 	= 0;
 			getDataBo(BIBLE_VERSION,BIBLE_VERSION+'__'+BIBLE_BOOK_NR+'__'+BIBLE_BOOK);
+
 			getDataCh(BIBLE_VERSION+'__'+BIBLE_BOOK_NR+'__'+BIBLE_BOOK);
 			jQuery('.versions').val(BIBLE_VERSION);
 			jQuery(".books").val(bookNew);
@@ -684,10 +1147,14 @@ function loadNextBook(addTo,Found){
 	}
 }
 
+
 // set the found verse page next chapter load text
 FoundTheVerse = false;
 // Ajax Call to get Data
 function getData(request, addTo, Found) {
+	// always close these when new data is loaded
+	jQuery('#small_cpanel').hide();
+	jQuery('#chapters').hide();
 	// keep the api key out of the store value
 	var requestStore = request;
 	// if memory is too full remove some
@@ -706,7 +1173,9 @@ function getData(request, addTo, Found) {
 		jQuery('#scripture').addClass('text_loading');
 	}	
 	if(Found){
-		FoundTheVerse = Found;
+		FoundTheVerse = true;
+	} else {
+		FoundTheVerse = false;
 	}
 	// Check if "requestStore" exists in the local storage
 	var jsonStore = jQuery.jStorage.get(requestStore);
@@ -740,9 +1209,6 @@ function getData(request, addTo, Found) {
 			 }
 			 jQuery('#b_loader').hide();
 			 jQuery('#t_loader').hide();
-			 if(searchApp != 1 || FoundTheVerse){
-				jQuery('.navigation').show();
-			 }
 		 },
 		 error:function(e){
 				jQuery('#b_loader').hide();
@@ -787,14 +1253,11 @@ function getData(request, addTo, Found) {
 		 }
 		 jQuery('#b_loader').hide();
 		 jQuery('#t_loader').hide();
-		 if(searchApp != 1 || FoundTheVerse){
-			jQuery('.navigation').show();
-		 }
 	}
 }
 
 // Ajax Call to get Defaults
-function getDefaults(request, requestStore) {
+function getDefaults(request, requestStore, tagview) {
 	if (typeof cPanelUrl !== 'undefined') {
 		var getUrl = cPanelUrl+"index.php?option=com_getbible&task=bible.defaults&format=json";     	
 	} else {
@@ -826,32 +1289,35 @@ function getDefaults(request, requestStore) {
 			 defaultBook 		= json.book_ref;
 			 defaultBookNr 		= json.book_nr;
 			 defaultChapter 	= json.chapter;
-			 setQuery 			= "p="+defaultBook+defaultChapter+"&v="+defaultVersion;
-			 if(request && json.search == 1){
-				 searchFor 			= json.searchFor;
-				 searchCrit 		= json.crit;
-				 searchType 		= json.type;
-				 searchApp 			= json.search;
-				 setQuery 			= "s="+searchFor+"&crit="+searchCrit+"&t="+searchType+"&v="+defaultVersion;
+			 if(tagview){
+				 getTagVerse(tagview);
+			 } else {
+				 setQuery 			= "p="+defaultBook+defaultChapter+"&v="+defaultVersion;
+				 if(request && json.search == 1){
+					 searchFor 			= json.searchFor;
+					 searchCrit 		= json.crit;
+					 searchType 		= json.type;
+					 searchApp 			= json.search;
+					 setQuery 			= "s="+searchFor+"&crit="+searchCrit+"&t="+searchType+"&v="+defaultVersion;
+				 }
+				 
+				if(searchApp != 1){
+					getDataBo(defaultVersion,defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
+					getDataCh(defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
+				} else {
+					jQuery('#cPanel').hide();
+					jQuery('.searchbuttons').show();
+				}
+				if(BIBLE_LAST_CHAPTER < 1){
+					jQuery('#prev').hide();
+				}
+				// get the data
+				getData(setQuery);
+				// set the search version
+				jQuery('.search_version').val(BIBLE_VERSION);
+				// set the search book ref
+				jQuery('.search_book').val(BIBLE_BOOK);
 			 }
-			 
-			if(searchApp != 1){
-				getDataBo(defaultVersion,defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
-				getDataCh(defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
-			} else {
-				
-				jQuery('#cPanel').hide();
-				jQuery('.searchbuttons').show();
-			}
-			if(BIBLE_LAST_CHAPTER < 1){
-				jQuery('#prev').hide();
-			}
-			// get the data
-			getData(setQuery);
-			// set the search version
-			jQuery('.search_version').val(BIBLE_VERSION);
-			// set the search book ref
-			jQuery('.search_book').val(BIBLE_BOOK);
 			 
 		 },
 		 error:function(e){
@@ -870,57 +1336,83 @@ function getDefaults(request, requestStore) {
 		 defaultBook 		= jsonStore.book_ref;
 		 defaultBookNr 		= jsonStore.book_nr;
 		 defaultChapter 	= jsonStore.chapter;
-		 setQuery 			= "p="+defaultBook+defaultChapter+"&v="+defaultVersion;
-		 if(request && jsonStore.search == 1){
-			 searchFor 			= jsonStore.searchFor;
-			 searchCrit 		= jsonStore.crit;
-			 searchType 		= jsonStore.type;
-			 searchApp 			= jsonStore.search;
-			 setQuery 			= "s="+searchFor+"&crit="+searchCrit+"&t="+searchType+"&v="+defaultVersion;
-		 }
-		 
-		if(searchApp != 1){
-			getDataBo(defaultVersion,defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
-			getDataCh(defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
-		} else {
-			jQuery('#cPanel').hide();
-			jQuery('.searchbuttons').show();
+		 if(tagview){
+			 getTagVerse(tagview);
+		 } else {
+			 setQuery 			= "p="+defaultBook+defaultChapter+"&v="+defaultVersion;
+			 if(request && jsonStore.search == 1){
+				 searchFor 			= jsonStore.searchFor;
+				 searchCrit 		= jsonStore.crit;
+				 searchType 		= jsonStore.type;
+				 searchApp 			= jsonStore.search;
+				 setQuery 			= "s="+searchFor+"&crit="+searchCrit+"&t="+searchType+"&v="+defaultVersion;
+			 }
+			 
+			if(searchApp != 1){
+				getDataBo(defaultVersion,defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
+				getDataCh(defaultVersion+'__'+defaultBookNr+'__'+defaultBook);
+			} else {
+				jQuery('#cPanel').hide();
+				jQuery('.searchbuttons').show();
+			}
+			if(BIBLE_LAST_CHAPTER < 1){
+				jQuery('#prev').hide();
+			}
+			// get the data
+			getData(setQuery);
+			// set the search version
+			jQuery('.search_version').val(BIBLE_VERSION);
+			// set the search book ref
+			jQuery('.search_book').val(BIBLE_BOOK);
 		}
-		if(BIBLE_LAST_CHAPTER < 1){
-			jQuery('#prev').hide();
-		}
-		// get the data
-		getData(setQuery);
-		// set the search version
-		jQuery('.search_version').val(BIBLE_VERSION);
-		// set the search book ref
-		jQuery('.search_book').val(BIBLE_BOOK);
 	}	
 }
 
 // Set Verses
 function setVerses(json,direction,addTo){
-	var output = '';
-		jQuery.each(json.book, function(index, value) {
-			output += '<p class="uk-text-center uk-text-bold">'+value.book_name+'&#160;'+value.chapter_nr+'</p><p class=\"'+direction+'\">';
-			jQuery.each(value.chapter, function(index, value) {
-				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '</span>&#160;&#160;<span class="verse" id="'+value.book_nr+'_'+value.chapter_nr+'_' +value.verse_nr+ '">';
-
-				output += value.verse;
-				if(verselineMode == 2){
-					output += '</span>&#160;';
+	var output		= '<div id="tagheader" class="uk-button-group"><a class="uk-button" data-uk-modal="" href="#user_cPanel"><i class="uk-icon-cog uk-icon-spin"></i></a><button class="uk-button" type="button" disabled>'+TagVerseName+'&#160;<i class="uk-icon-tag"></i></button><button onclick="printTag()" class="uk-button" type="button"><i class="uk-icon-print"></i></button><button onclick="setupEmail()" class="uk-button" type="button"><i class="uk-icon-envelope-o"></i></button></div><div id="printTagArea">';
+	var bookTags	= [];
+		jQuery.each(json.book, function(index, books) {
+			var book_ref 	= books.book_ref.replace(/\s+/g, '');
+			var setCall 	= 'p='+book_ref+books.chapter_nr+"&v="+BIBLE_VERSION;
+			var setGlobal 	= book_ref+'__'+books.book_nr+'__'+books.chapter_nr+'__'+BIBLE_VERSION;
+			output += '<p class="uk-text-center uk-text-bold"><a href="javascript:void(0)" onclick="loadChapter(\''+setCall+'\',\''+setGlobal+'\')">'+books.book_name+'&#160;'+books.chapter_nr+'</a></p><p class=\"'+direction+'\">';
+			jQuery.each(books.chapter, function(index, value) {
+				if(right_click == 1){ var oncontextmenu = 'oncontextmenu="makeNote(\''+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '\');return false;"'; } else {  var oncontextmenu = ''; }
+				if(allowAccount > 0){
+					output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;</span><span '+oncontextmenu+' class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
+					output += value.verse;
 				} else {
-					output += '</span><br/>';
+					output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;</span><span class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
+					output += value.verse;
+				}
+				
+				if(allowAccount > 0){
+					if(verselineMode == 2){
+						output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '"></span>&#160;';
+					} else {
+						output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '"></span><br/>';
+					}
+				} else {
+					if(verselineMode == 2){
+						output += '</span>&#160;';
+					} else {
+						output += '</span><br/>';
+					}
 				}
 			});
+			bookTags.push(books.book_nr+'_'+books.chapter_nr);
 			output += '</p>';
 		});
-		if(addTo){
-			jQuery('#scripture').append(output);
-		} else {
-			jQuery('#scripture').html(output);  // <---- this is the div id we update
-		}
+		bookTags = uniqueArray(bookTags);
+		jQuery(bookTags).each(function(index, bookTag) {
+			// load verse tags
+			getTaged(bookTag);
+		});
+		output += '</div>';
+		jQuery('#scripture').html(output);  // <---- this is the div id we update
 		appFeatures(2);
+		viewType = 1;
 		jQuery('#scripture').removeClass('text_loading');
 }
 
@@ -929,15 +1421,18 @@ function setChapter(json,direction,addTo){
 	listVers = getVerses();
 	jQuery(".booksMenu").text(json.book_name+' '+json.chapter_nr+' ('+json.version+')');
 	jQuery(".books :selected").text(json.book_name+' '+json.chapter_nr);
+	var bookNr = null;
+	var chapterNr = null;
 	var output = '<p class="'+direction+'">';
 	if(addTo){	output += '<span class="chapter_nr">'+json.chapter_nr+'</span>'; }
 	jQuery.each(json.chapter, function(index, value) {
+		if(right_click == 1){ var oncontextmenu = 'oncontextmenu="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;"'; } else {  var oncontextmenu = ''; }
 		if(allowAccount > 0){
 			if(isInArray(value.verse_nr, listVers) ){
-				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note">' +value.verse_nr+ '&#160;</span><span oncontextmenu="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+'" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;</span><span '+oncontextmenu+' class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 				output += '<span class="highlight">' +value.verse+ '</span>';
 			} else {
-				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note">' +value.verse_nr+ '&#160;</span><span oncontextmenu="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;</span><span '+oncontextmenu+' class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 				output += value.verse;
 			}
 		} else {
@@ -963,7 +1458,13 @@ function setChapter(json,direction,addTo){
 				output += '</span><br/>';
 			}
 		}
+		if(!bookNr && !chapterNr){
+			bookNr = json.book_nr;
+			chapterNr = json.chapter_nr;
+		}
 	});
+	// load verse tags
+	getTaged(bookNr+'_'+chapterNr);
 	output += '</p>';
 	if(addTo){
 		jQuery('#scripture').append(output);
@@ -971,6 +1472,11 @@ function setChapter(json,direction,addTo){
 		jQuery('#scripture').html(output);  // <---- this is the div id we update
 	}
 	appFeatures(2);
+	stopAutoLoad = 0;
+	viewType = 0;
+	if(searchApp != 1 || FoundTheVerse){
+		jQuery('.navigation').show();
+	}
 	jQuery('#scripture').removeClass('text_loading');
 }
 
@@ -996,24 +1502,53 @@ function setBook(json,direction,addTo){
 		jQuery('#scripture').html(output);  // <---- this is the div id we update
 	}
 	appFeatures(2);
+	stopAutoLoad = 1;
+	viewType = 3;
 	jQuery('#scripture').removeClass('text_loading');
 }
 
 // Set Search
 function setSearch(json,direction){
 
-	var output = '<small>('+json.counter+')</small><br/>';
-	jQuery.each(json.book, function(index, value) {
-		var book_ref 	= value.book_ref.replace(/\s+/g, '');
-		var setCall 	= 'p='+book_ref+value.chapter_nr+"&v="+BIBLE_VERSION;
-		var setGlobal 	= book_ref+'__'+value.book_nr+'__'+value.chapter_nr+'__'+BIBLE_VERSION;
-		output += '<p class="uk-text-center uk-text-bold"><a href="javascript:void(0)" onclick="loadFoundChapter(\''+setCall+'\',\''+setGlobal+'\')">'+value.book_name+'&#160;'+value.chapter_nr+'</a></p><p class="'+direction+'">';
-		jQuery.each(value.chapter, function(index, chapter) {
-			output += '&#160;&#160;<span class="verse_nr ltr">' +chapter.verse_nr+ '</span>&#160;&#160;<span class="verse" id="'+value.book_nr+'_'+value.chapter_nr+'_' +chapter.verse_nr+ '">';
-			output += chapter.verse;
-			output += '</span><br/>';
+	var output		= '<div id="printTagArea"><small>('+json.counter+')</small><br/>';
+	var bookTags	= [];
+	jQuery.each(json.book, function(index, books) {
+		var book_ref 	= books.book_ref.replace(/\s+/g, '');
+		var setCall 	= 'p='+book_ref+books.chapter_nr+"&v="+BIBLE_VERSION;
+		var setGlobal 	= book_ref+'__'+books.book_nr+'__'+books.chapter_nr+'__'+BIBLE_VERSION;
+		output += '<p class="uk-text-center uk-text-bold"><a href="javascript:void(0)" onclick="loadChapter(\''+setCall+'\',\''+setGlobal+'\')">'+books.book_name+'&#160;'+books.chapter_nr+'</a></p><p class="'+direction+'">';
+		jQuery.each(books.chapter, function(index, value) {
+			if(right_click == 1){ var oncontextmenu = 'oncontextmenu="makeNote(\''+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '\');return false;"'; } else {  var oncontextmenu = ''; }
+			if(allowAccount > 0){
+				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;</span><span '+oncontextmenu+' class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
+				output += value.verse;
+			} else {
+				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;</span><span class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
+				output += value.verse;
+			}
+			
+			if(allowAccount > 0){
+				if(verselineMode == 2){
+					output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '"></span>&#160;';
+				} else {
+					output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '"></span><br/>';
+				}
+			} else {
+				if(verselineMode == 2){
+					output += '</span>&#160;';
+				} else {
+					output += '</span><br/>';
+				}
+			}
 		});
+		bookTags.push(books.book_nr+'_'+books.chapter_nr);
 		output += '</p>';
+	});
+	output += '</div>';
+	bookTags = uniqueArray(bookTags);
+	jQuery(bookTags).each(function(index, bookTag) {
+		// load verse tags
+		getTaged(bookTag);
 	});
 	jQuery('#scripture').html(output);  // <---- this is the div id we update
 	// add highlighting if auto hightligs is turned on
@@ -1021,6 +1556,8 @@ function setSearch(json,direction){
 		highScripture();							
 	}
 	appFeatures(2);
+	stopAutoLoad = 1;
+	viewType = 2;
 	jQuery('#scripture').removeClass('text_loading');
 }
 
@@ -1064,6 +1601,13 @@ function isInArray(value, array) {
   			return array.indexOf(value) > -1;
 		}
 	} return false;
+}
+function uniqueArray(list) {
+  var result = [];
+  jQuery.each(list, function(i, e) {
+    if (jQuery.inArray(e, result) == -1) result.push(e);
+  });
+  return result;
 }
 // check if number is found in string but not 0
 function isNumeric(number) {
@@ -1146,6 +1690,7 @@ function getDataBo(version, first, versionChange) {
 	jQuery('#scripture').addClass('text_loading');
 	
 	// check if already in local store
+
 	var requestStore = 'books_'+version;
 	// first check if any books have been updated	
 	var reloadBooksStore = jQuery.jStorage.get('booksDate');
@@ -1334,7 +1879,7 @@ function loadTimer1(){
 function nextChapter(){
 	BIBLE_LAST_CHAPTER = BIBLE_CHAPTER;
 	BIBLE_CHAPTER++;
-	if(appMode == 1){
+	if(appMode == 1 && stopAutoLoad == 0){
 		addTo = true;
 		jQuery('#b_loader').show();
 	} else if(appMode == 2){
@@ -1367,4 +1912,73 @@ function prevChapter(){
 			jQuery('#prev').hide();
 		}
 	}
+}
+
+function htmlspecialchars(string, quote_style, charset, double_encode) {
+  //       discuss at: http://phpjs.org/functions/htmlspecialchars/
+  //      original by: Mirek Slugen
+  //      improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  //      bugfixed by: Nathan
+  //      bugfixed by: Arno
+  //      bugfixed by: Brett Zamir (http://brett-zamir.me)
+  //      bugfixed by: Brett Zamir (http://brett-zamir.me)
+  //       revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  //         input by: Ratheous
+  //         input by: Mailfaker (http://www.weedem.fr/)
+  //         input by: felix
+  // reimplemented by: Brett Zamir (http://brett-zamir.me)
+  //             note: charset argument not supported
+  //        example 1: htmlspecialchars("<a href='test'>Test</a>", 'ENT_QUOTES');
+  //        returns 1: '&lt;a href=&#039;test&#039;&gt;Test&lt;/a&gt;'
+  //        example 2: htmlspecialchars("ab\"c'd", ['ENT_NOQUOTES', 'ENT_QUOTES']);
+  //        returns 2: 'ab"c&#039;d'
+  //        example 3: htmlspecialchars('my "&entity;" is still here', null, null, false);
+  //        returns 3: 'my &quot;&entity;&quot; is still here'
+
+  var optTemp = 0,
+    i = 0,
+    noquotes = false;
+  if (typeof quote_style === 'undefined' || quote_style === null) {
+    quote_style = 2;
+  }
+  string = string.toString();
+  if (double_encode !== false) {
+    // Put this first to avoid double-encoding
+    string = string.replace(/&/g, '&amp;');
+  }
+  string = string.replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  var OPTS = {
+    'ENT_NOQUOTES': 0,
+    'ENT_HTML_QUOTE_SINGLE': 1,
+    'ENT_HTML_QUOTE_DOUBLE': 2,
+    'ENT_COMPAT': 2,
+    'ENT_QUOTES': 3,
+    'ENT_IGNORE': 4
+  };
+  if (quote_style === 0) {
+    noquotes = true;
+  }
+  if (typeof quote_style !== 'number') {
+    // Allow for a single string or an array of string flags
+    quote_style = [].concat(quote_style);
+    for (i = 0; i < quote_style.length; i++) {
+      // Resolve string input to bitwise e.g. 'ENT_IGNORE' becomes 4
+      if (OPTS[quote_style[i]] === 0) {
+        noquotes = true;
+      } else if (OPTS[quote_style[i]]) {
+        optTemp = optTemp | OPTS[quote_style[i]];
+      }
+    }
+    quote_style = optTemp;
+  }
+  if (quote_style & OPTS.ENT_HTML_QUOTE_SINGLE) {
+    string = string.replace(/'/g, '&#039;');
+  }
+  if (!noquotes) {
+    string = string.replace(/"/g, '&quot;');
+  }
+
+  return string;
 }
