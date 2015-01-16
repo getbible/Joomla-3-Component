@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.6  January 06, 2015
+* 	@version 	1.0.7  January 16, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -350,6 +350,12 @@ $versions = $this->cpanel;
             </div>
         </div>
 
+
+
+
+
+
+
         <div class="navigation uk-panel uk-visible-small" style="display:none;" data-uk-margin>
         	<div class="uk-button-group">
                 <a class="uk-button button_chapters" type="button"  onClick="showChapters()"><i class="uk-icon-list-ol"></i><span class="uk-hidden-small"> <?php echo JText::_('COM_GETBIBLE_SELECT_CHAPTER'); ?></span></a>
@@ -380,6 +386,7 @@ $versions = $this->cpanel;
             <ul class="uk-tab" data-uk-tab="{connect:'#user_cPanel_tab'}">
                 <li><a href=""><i class="uk-icon-paint-brush"></i> <?php echo JText::_('COM_GETBIBLE_COLORS'); ?></a></li>
                 <li><a href=""><i class="uk-icon-cog uk-icon-spin"></i> <?php echo JText::_('COM_GETBIBLE_ACCOUNT'); ?></a></li>
+                <li><a href=""><i class="uk-icon-book"></i> <?php echo JText::_('COM_GETBIBLE_GLOBAL'); ?></a></li>
             </ul>
             <ul id="user_cPanel_tab" class="uk-switcher uk-margin">
                 <li>
@@ -393,6 +400,7 @@ $versions = $this->cpanel;
                             </a>
                         <?php endforeach; ?>
                     </div>
+
                     <div class="uk-visible-small" data-uk-margin>
                         <?php foreach($this->highlights as $mark => $details): ?>
                             <a class="uk-modal-close uk-button uk-width-1-1 uk-button-primary uk-button-small uk-margin-small-bottom" href="javascript:void(0)" onClick="setCurrentColor('<?php echo $mark; ?>')">
@@ -406,23 +414,27 @@ $versions = $this->cpanel;
                 </li>
                 <li>
                     <div class="uk-panel uk-panel-box uk-text-center">
-						<?php if($this->user->id > 0): ?>
-                           <h1>Hi, <?php echo $this->user->name; ?></h1>
-                           <p>We will add more features here soon...</p>
-                        <?php else: ?>
-                            <h1><?php echo JText::_($this->params->get('account_header')); ?></h1>
-                            <?php echo JText::_($this->params->get('account_highlight_text')); ?>
-                            <a class="uk-button uk-width-1-1 uk-button-large uk-button-primary" href="<?php echo $this->signupUrl; ?>" >
-                                <?php echo JText::_($this->params->get('account_button')); ?>
-                            </a>
-                        <?php endif; ?>
+						<h1><?php echo JText::_($this->params->get('account_header')); ?></h1>
+						<?php echo JText::_($this->params->get('account_highlight_text')); ?>
+                        <a class="uk-button uk-width-1-1 uk-margin-small-bottom uk-button-large uk-button-primary" href="<?php echo $this->signupUrl; ?>" >
+                            <?php echo JText::_($this->params->get('account_button')); ?>
+                        </a>
+                        <a class="uk-button uk-width-1-1 uk-button-large" href="<?php echo $this->loginUrl; ?>" >
+                            <?php echo JText::_('Login'); ?>
+                        </a>
                     </div>
+                </li>
+                <li>
+                    <?php /*?><button id="toggleHighlights" rel="hide" class="uk-button uk-width-1-1 uk-margin-small-bottom uk-button-primary" onclick="toggle('highlights')" toggle="<?php echo JText::_('COM_GETBIBLE_SHOW_HIGHLIGHTS') ?>" ><?php echo JText::_('COM_GETBIBLE_HIDE_HIGHLIGHTS') ?></button><?php */?>
+                    <button class="uk-button uk-width-1-1 uk-margin-small-bottom uk-button-primary" data-uk-modal="{target:'#clear_highlights'}" ><?php echo JText::_('COM_GETBIBLE_REMOVE_ALL_HIGHLIGHTS') ?></button>
+                    <button class="uk-button uk-width-1-1 uk-margin-small-bottom uk-button-primary" data-uk-modal="{target:'#clear_browser'}" ><?php echo JText::_('COM_GETBIBLE_CLEAR_BROWSER_MEMORY') ?></button>
                 </li>
             </ul>
         <?php elseif($this->params->get('account')): ?>
             <ul class="uk-tab" data-uk-tab="{connect:'#user_cPanel_tab'}">
                 <li><a href=""><i class="uk-icon-paint-brush"></i> <?php echo JText::_('COM_GETBIBLE_COLORS'); ?></a></li>
                 <li><a href=""><i class="uk-icon-tags"></i> <?php echo JText::_('COM_GETBIBLE_TAGS'); ?></a></li>
+                <li><a href=""><i class="uk-icon-book"></i> <?php echo JText::_('COM_GETBIBLE_GLOBAL'); ?></a></li>
             </ul>
       		<ul id="user_cPanel_tab" class="uk-switcher uk-margin">
                 <li>
@@ -451,9 +463,9 @@ $versions = $this->cpanel;
                 	<div class="uk-grid">
                         <div class="uk-width-medium-2-5">
                             <ul class="uk-tab uk-tab-left" data-uk-tab="{connect:'#tagBody'}" id="tagMenus">
-                                <li class="uk-active"><a href=""><?php echo JText::_('All Active') ?></a></li>
-                                <li><a href=""><?php echo JText::_('All Inactive') ?></a></li>
-                                <li><a href=""><?php echo JText::_('Inactive Defaults') ?></a></li>
+                                <li class="uk-active"><a href=""><?php echo JText::_('COM_GETBIBLE_TAGS_ALL_ACTIVE') ?></a></li>
+                                <li><a href=""><?php echo JText::_('COM_GETBIBLE_TAGS_ALL_INACTIVE') ?></a></li>
+                                <li><a href=""><?php echo JText::_('COM_GETBIBLE_TAGS_INACTIVE_DEFAULTS') ?></a></li>
                             </ul>
                         </div>
                         <div class="uk-width-medium-3-5">
@@ -464,6 +476,13 @@ $versions = $this->cpanel;
                             </ul> 
                     	</div>
                 	</div>   
+                </li>
+                <li>
+                    <button id="toggleTags" rel="hide" class="uk-button uk-width-1-1 uk-margin-small-bottom uk-button-primary" onclick="toggle('tags')" toggle="<?php echo JText::_('COM_GETBIBLE_SHOW_TAGS') ?>" ><?php echo JText::_('COM_GETBIBLE_HIDE_TAGS') ?></button>
+                    <button id="toggleNotes" rel="hide" class="uk-button uk-width-1-1 uk-margin-small-bottom uk-button-primary" onclick="toggle('notes')" toggle="<?php echo JText::_('COM_GETBIBLE_SHOW_NOTES') ?>" ><?php echo JText::_('COM_GETBIBLE_HIDE_NOTES') ?></button>
+                    <?php /*?><button id="toggleHighlights" rel="hide" class="uk-button uk-width-1-1 uk-margin-small-bottom uk-button-primary" onclick="toggle('highlights')" toggle="<?php echo JText::_('COM_GETBIBLE_SHOW_HIGHLIGHTS') ?>" ><?php echo JText::_('COM_GETBIBLE_HIDE_HIGHLIGHTS') ?></button><?php */?>
+                    <button class="uk-button uk-width-1-1 uk-margin-small-bottom uk-button-primary" data-uk-modal="{target:'#clear_highlights'}" ><?php echo JText::_('COM_GETBIBLE_REMOVE_ALL_HIGHLIGHTS') ?></button>
+                    <button class="uk-button uk-width-1-1 uk-margin-small-bottom uk-button-primary" data-uk-modal="{target:'#clear_browser'}" ><?php echo JText::_('COM_GETBIBLE_CLEAR_BROWSER_MEMORY') ?></button>
                 </li>
         	</ul>
          <?php else: ?>
@@ -491,7 +510,41 @@ $versions = $this->cpanel;
     </div>
 </div>
 
+<div id="clear_browser" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <h2><?php echo JText::_('COM_GETBIBLE_CLEAR_BROWSER_WARNING_MESSAGE'); ?></h2>
+        <div class="uk-button-group">
+        	<button class="uk-button uk-button-success uk-modal-close" onclick="clearBrowser()" ><?php echo JText::_('COM_GETBIBLE_YES'); ?></button> 
+        	<button class="uk-button uk-modal-close" ><?php echo JText::_('COM_GETBIBLE_CANCEL'); ?></button>
+        </div>
+    </div>
+</div>
+
+<div id="clear_highlights" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <h2><?php echo JText::_('COM_GETBIBLE_CLEAR_HIGHLIGHTS_WARNING_MESSAGE'); ?></h2>
+        <div class="uk-button-group">
+        	<button class="uk-button uk-button-success uk-modal-close" onclick="clearAllHighlights()" ><?php echo JText::_('COM_GETBIBLE_YES'); ?></button> 
+        	<button class="uk-button uk-modal-close" ><?php echo JText::_('COM_GETBIBLE_CANCEL'); ?></button> 
+        </div>
+    </div>
+</div>
+
 <?php if($this->user->id > 0 && $this->params->get('account')): ?>
+
+<div id="delete_tag" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <h2><?php echo JText::_('COM_GETBIBLE_DELETE_TAG_WARNING_MESSAGE'); ?></h2>
+        <div class="uk-button-group">
+        	<button id="confirmDelete" rel="" class="uk-button uk-button-success uk-modal-close" onclick="removeTag_confirmed()" ><?php echo JText::_('COM_GETBIBLE_YES'); ?></button> 
+        	<button class="uk-button uk-modal-close" data-uk-modal="{target:'#user_cPanel'}"><?php echo JText::_('COM_GETBIBLE_CANCEL'); ?></button>
+        </div>
+    </div>
+</div>
+
 <div id="setup_email" class="uk-modal">
     <div class="uk-modal-dialog">
         <a class="uk-modal-close uk-close"></a>
@@ -567,6 +620,7 @@ $versions = $this->cpanel;
         <?php if($this->user->id > 0): ?>
         <div class="uk-grid">
         	<div class="uk-grid-width-1-1 uk-width-medium-1-2">
+                <button id="toggleNote" class="uk-button uk-width-1-1 uk-button-mini" onclick="toggle('notes')" ><?php echo JText::_('COM_GETBIBLE_HIDE_NOTES') ?></button>
                 <form class="uk-form" id="post_note">
                     <div class="uk-form-row">
                         <h2><span class="note_verse"></span></h2>
@@ -579,6 +633,7 @@ $versions = $this->cpanel;
                 </form>
             </div>
        		<div class="uk-grid-width-1-1 uk-width-medium-1-2">
+               	<button id="toggleTag" class="uk-button uk-width-1-1 uk-button-mini" onclick="toggle('tags')" ><?php echo JText::_('COM_GETBIBLE_HIDE_TAGS') ?></button>
                 <div class="uk-panel">
                     <h2><?php echo JText::_('COM_GETBIBLE_TAGS'); ?></h2>
 					<div id="tagDiv"></div>
@@ -590,8 +645,11 @@ $versions = $this->cpanel;
             <div class="uk-panel uk-panel-box uk-text-center">
                 <h1><?php echo JText::_($this->params->get('account_header')); ?></h1>
                 <?php echo JText::_($this->params->get('account_note_text')); ?>
-                <a class="uk-button uk-width-1-1 uk-button-large uk-button-primary" href="<?php echo $this->signupUrl; ?>" >
+                <a class="uk-button uk-width-1-1 uk-margin-small-bottom uk-button-large uk-button-primary" href="<?php echo $this->signupUrl; ?>" >
                     <?php echo JText::_($this->params->get('account_button')); ?>
+                </a>
+                <a class="uk-button uk-width-1-1 uk-button-large" href="<?php echo $this->loginUrl; ?>" >
+                    <?php echo JText::_('Login'); ?>
                 </a>
             </div>
         <?php endif; ?>

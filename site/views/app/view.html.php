@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.6  January 06, 2015
+* 	@version 	1.0.7  January 16, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -21,6 +21,7 @@ class GetbibleViewApp extends JViewLegacy
 	protected $AppDefaults;
 	protected $highlights;
 	protected $signupUrl;
+	protected $loginUrl;
 	protected $user;
 	/**
 	 * Display the view
@@ -36,6 +37,7 @@ class GetbibleViewApp extends JViewLegacy
 		// Get app Params
 		$this->params 		= JFactory::getApplication()->getParams();
 		$this->signupUrl 	= $this->getRouteUrl('index.php?Itemid='.$this->params->get('account_menu'));
+		$this->loginUrl 	= $this->getRouteUrl('index.php?Itemid='.$this->params->get('login_menu'));
 		// set the user details
 		$this->user = JFactory::getUser();
 		
@@ -144,6 +146,10 @@ class GetbibleViewApp extends JViewLegacy
 			position: absolute;
 			left: 0;
 			top: 0;
+		}
+		.no-print, .no-print *
+		{
+			display: none !important;
 		}
 	'.$printHighliters.'
 	}';

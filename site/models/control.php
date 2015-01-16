@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* 	@version 	1.0.6  January 06, 2015
+* 	@version 	1.0.7  January 16, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -855,7 +855,6 @@ class GetbibleModelControl extends JModelList
 						'/data-uk-tooltip="(.*?)"/is',
 						'/data-cached-title="(.*?)"/is',
 						'/title="(.*?)"/is',
-						'/title="(.*?)"/is',
 						'/id="(.*?)"/is');
 		// do a normal strip of unwanted tags
 		$string = strip_tags($string, '<p><span><br>');
@@ -895,8 +894,8 @@ class GetbibleModelControl extends JModelList
 		$inline[] = 'style="font-size: '.($this->app_params->get('font_medium') - 4).'px; line-height: 1.5;"';
 		$css[] = 'class="verse_nr ltr nr_large"';
 		$inline[] = 'style="font-size: '.($this->app_params->get('font_large') - 5).'px; line-height: 1.5;"';
-		$css[] = 'class="verse_nr uk-text-muted ltr"';
-		$inline[] = 'style="color:#92969a; direction: ltr; text-align: left; unicode-bidi: bidi-override;"';
+		$css[] = 'class="verse_nr uk-text-muted ltr';
+		$inline[] = 'style="color:#92969a; direction: ltr; text-align: left; unicode-bidi: bidi-override;" class="';
 		$css[] = 'class="rtl"';
 		$inline[] = 'style="direction: rtl; text-align: right; unicode-bidi: bidi-override;"';
 		$css[] = 'class="ltr"';
@@ -905,6 +904,8 @@ class GetbibleModelControl extends JModelList
 		$inline[] = 'style="font-size: '.($this->app_params->get('font_large') - 5).'px; line-height: 1.5; font-weight: bold;"';
 		$css[] = 'class="highlight"';
 		$inline[] = 'style="color: #52a9ca; font-weight: bold;"';
+		$css[] = 'class="notes uk-hidden no-print"';
+		$inline[] = 'style="display: none !important;"';
 	
 		// Remove these css and all its classes and replace with styles
 		return str_replace($css, $inline, $string);

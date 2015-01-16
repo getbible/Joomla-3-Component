@@ -1,6 +1,6 @@
 /**
 * 
-* 	@version 	1.0.6  January 06, 2015
+* 	@version 	1.0.7  January 16, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
@@ -24,6 +24,8 @@ var defaultBookNr 		= 0;
 var defaultChapter 		= 0;
 var setQuery 			= 0;
 var viewType			= 0;
+var viewTags			= 0;
+var viewNotes			= 0;
 
 // set highlight array
 var alpha 			= "abcdefghijklmnopqrstuvwxyz";
@@ -374,16 +376,16 @@ function setTagDiv(id){
 	if(user_id > 0 && allowAccount > 0){
 		var localVerseTags = jQuery.jStorage.get('taged__'+id, null);
 		if(localVerseTags){
-			var html = '<ul id="tags__'+id+'">';
+			var html = '<ul id="tag__'+id+'">';
 				jQuery.each(localVerseTags, function(tag, name) {
 					html += '<li>'+name+'</li>';
 				});
 			html += '</ul>';
 		} else {
-			var html = '<ul id="tags__'+id+'"></ul>';
+			var html = '<ul id="tag__'+id+'"></ul>';
 		}					
 		jQuery('#tagDiv').html(html);
-		jQuery('#tags__'+id).tagit({
+		jQuery('#tag__'+id).tagit({
 			// Options
 			availableTags: defaultTags,
 			autocomplete: {delay: autocomplete_delay, minLength: autocomplete_min_length},
@@ -394,7 +396,7 @@ function setTagDiv(id){
 			
 			afterTagAdded: function(evt, ui) {
 				if (!ui.duringInitialization) {
-					var taged = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
+					var taged = jQuery('#tag__'+id).tagit('tagLabel', ui.tag);
 					// set the taged verse
 					setTaged(taged,1,id);
 					// if new tag add to tag list
@@ -407,7 +409,7 @@ function setTagDiv(id){
 				}
 			},
 			afterTagRemoved: function(evt, ui) {
-				var untaged = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
+				var untaged = jQuery('#tag__'+id).tagit('tagLabel', ui.tag);
 				// unset the taged verse
 				setTaged(untaged,0,id);
 				tagVerse(untaged,0,id);
@@ -415,7 +417,7 @@ function setTagDiv(id){
 			},
 			onTagClicked: function(event, ui) {
 				// do something special
-				var tagName = jQuery('#tags__'+id).tagit('tagLabel', ui.tag);
+				var tagName = jQuery('#tag__'+id).tagit('tagLabel', ui.tag);
 				// get tag verse list
 				getTagVerse(tagName);								
 			}
@@ -429,22 +431,22 @@ function tagVerse(tag,action,vers){
 	
 	if(action == 1){
 		var title = '';
-		if (jQuery('#tags_'+vers).length > 0){
-			title = jQuery('#tags_'+vers).attr('title')+', '+tag;
+		if (jQuery('#tag_'+vers).length > 0){
+			title = jQuery('#tag_'+vers).attr('title')+', '+tag;
 		} else {
 			title = tag;
 		}
 		if(verselineMode == 2){
-			html = '<span id="tags_'+vers+'" class="tags verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
+			html = '<span id="tag_'+vers+'" class="tag verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
 		} else {
-			html = '<span id="tags_'+vers+'" class="tags verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
+			html = '<span id="tag_'+vers+'" class="tag verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
 		}
-		jQuery('#tags_'+vers).remove();
-		jQuery('#nr__'+vers).append(html);
+		jQuery('#tag_'+vers).remove();
+		jQuery('#nr__'+vers+' > .tags').append(html);
 	} else {
 		var title = '';
-		if (jQuery('#tags_'+vers).length > 0){
-			title = jQuery('#tags_'+vers).attr('title');
+		if (jQuery('#tag_'+vers).length > 0){
+			title = jQuery('#tag_'+vers).attr('title');
 			if (title.indexOf(', ') >= 0){
 				var array = title.split(', ');
 				// remove the tag
@@ -457,14 +459,14 @@ function tagVerse(tag,action,vers){
 			}
 			if (title){
 				if(verselineMode == 2){
-					html = '<span id="tags_'+vers+'" class="tags verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
+					html = '<span id="tag_'+vers+'" class="tag verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
 				} else {
-					html = '<span id="tags_'+vers+'" class="tags verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
+					html = '<span id="tag_'+vers+'" class="tag verse_nr uk-text-muted" title="'+title+'" ><i class="uk-icon-tag"></i>&nbsp;</span>';
 				}
-				jQuery('#tags_'+vers).remove();
-				jQuery('#nr__'+vers).append(html);
+				jQuery('#tag_'+vers).remove();
+				jQuery('#nr__'+vers+' > .tags').append(html);
 			} else {
-				jQuery('#tags_'+vers).remove();
+				jQuery('#tag_'+vers).remove();
 			}
 		} 
 	}
@@ -635,6 +637,14 @@ function addTag(tag){
 function removeTag(id){
 	if(user_id > 0 && allowAccount > 0){
 		var tag = jQuery('#'+id).attr('rel');
+		jQuery('#confirmDelete').attr('rel', tag);
+		jQuery.UIkit.modal("#delete_tag").show();
+	}
+}
+function removeTag_confirmed(){
+	if(user_id > 0 && allowAccount > 0){
+		jQuery.UIkit.modal("#user_cPanel").show();
+		var tag = jQuery('#confirmDelete').attr('rel');
 		setTags_db(tag,0).done(function(set) {
 			if(set){
 				defaultTags = jQuery.grep(defaultTags, function(value) {
@@ -1372,48 +1382,49 @@ function getDefaults(request, requestStore, tagview) {
 function setVerses(json,direction,addTo){
 	var output		= '<div id="tagheader" class="uk-button-group"><a class="uk-button" data-uk-modal="" href="#user_cPanel"><i class="uk-icon-cog uk-icon-spin"></i></a><button class="uk-button" type="button" disabled>'+TagVerseName+'&#160;<i class="uk-icon-tag"></i></button><button onclick="printTag()" class="uk-button" type="button"><i class="uk-icon-print"></i></button><button onclick="setupEmail()" class="uk-button" type="button"><i class="uk-icon-envelope-o"></i></button></div><div id="printTagArea">';
 	var bookTags	= [];
-		jQuery.each(json.book, function(index, books) {
-			var book_ref 	= books.book_ref.replace(/\s+/g, '');
-			var setCall 	= 'p='+book_ref+books.chapter_nr+"&v="+BIBLE_VERSION;
-			var setGlobal 	= book_ref+'__'+books.book_nr+'__'+books.chapter_nr+'__'+BIBLE_VERSION;
-			output += '<p class="uk-text-center uk-text-bold"><a href="javascript:void(0)" onclick="loadChapter(\''+setCall+'\',\''+setGlobal+'\')">'+books.book_name+'&#160;'+books.chapter_nr+'</a></p><p class=\"'+direction+'\">';
-			jQuery.each(books.chapter, function(index, value) {
-				if(right_click == 1){ var oncontextmenu = 'oncontextmenu="makeNote(\''+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '\');return false;"'; } else {  var oncontextmenu = ''; }
-				if(allowAccount > 0){
-					output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;</span><span '+oncontextmenu+' class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
-					output += value.verse;
+	var viewing		= setViewing();
+	jQuery.each(json.book, function(index, books) {
+		var book_ref 	= books.book_ref.replace(/\s+/g, '');
+		var setCall 	= 'p='+book_ref+books.chapter_nr+"&v="+BIBLE_VERSION;
+		var setGlobal 	= book_ref+'__'+books.book_nr+'__'+books.chapter_nr+'__'+BIBLE_VERSION;
+		output += '<p class="uk-text-center uk-text-bold"><a href="javascript:void(0)" onclick="loadChapter(\''+setCall+'\',\''+setGlobal+'\')">'+books.book_name+'&#160;'+books.chapter_nr+'</a></p><p class=\"'+direction+'\">';
+		jQuery.each(books.chapter, function(index, value) {
+			if(right_click == 1){ var oncontextmenu = 'oncontextmenu="makeNote(\''+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '\');return false;"'; } else {  var oncontextmenu = ''; }
+			if(allowAccount > 0){
+				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;<span '+viewing.tag+'></span></span><span '+oncontextmenu+' class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
+				output += value.verse;
+			} else {
+				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;<span '+viewing.tag+'></span></span><span class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
+				output += value.verse;
+			}
+			
+			if(allowAccount > 0){
+				if(verselineMode == 2){
+					output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '" '+viewing.note+'></span>&#160;';
 				} else {
-					output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;</span><span class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
-					output += value.verse;
+					output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '" '+viewing.note+'></span><br/>';
 				}
-				
-				if(allowAccount > 0){
-					if(verselineMode == 2){
-						output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '"></span>&#160;';
-					} else {
-						output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '"></span><br/>';
-					}
+			} else {
+				if(verselineMode == 2){
+					output += '</span>&#160;';
 				} else {
-					if(verselineMode == 2){
-						output += '</span>&#160;';
-					} else {
-						output += '</span><br/>';
-					}
+					output += '</span><br/>';
 				}
-			});
-			bookTags.push(books.book_nr+'_'+books.chapter_nr);
-			output += '</p>';
+			}
 		});
-		bookTags = uniqueArray(bookTags);
-		jQuery(bookTags).each(function(index, bookTag) {
-			// load verse tags
-			getTaged(bookTag);
-		});
-		output += '</div>';
-		jQuery('#scripture').html(output);  // <---- this is the div id we update
-		appFeatures(2);
-		viewType = 1;
-		jQuery('#scripture').removeClass('text_loading');
+		bookTags.push(books.book_nr+'_'+books.chapter_nr);
+		output += '</p>';
+	});
+	bookTags = uniqueArray(bookTags);
+	jQuery(bookTags).each(function(index, bookTag) {
+		// load verse tags
+		getTaged(bookTag);
+	});
+	output += '</div>';
+	jQuery('#scripture').html(output);  // <---- this is the div id we update
+	appFeatures(2);
+	viewType = 1;
+	jQuery('#scripture').removeClass('text_loading');
 }
 
 // Set Chapter on App page
@@ -1421,35 +1432,37 @@ function setChapter(json,direction,addTo){
 	listVers = getVerses();
 	jQuery(".booksMenu").text(json.book_name+' '+json.chapter_nr+' ('+json.version+')');
 	jQuery(".books :selected").text(json.book_name+' '+json.chapter_nr);
-	var bookNr = null;
-	var chapterNr = null;
+	var bookNr		= null;
+	var chapterNr	= null;
+	var viewing		= setViewing();
 	var output = '<p class="'+direction+'">';
 	if(addTo){	output += '<span class="chapter_nr">'+json.chapter_nr+'</span>'; }
+	
 	jQuery.each(json.chapter, function(index, value) {
 		if(right_click == 1){ var oncontextmenu = 'oncontextmenu="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;"'; } else {  var oncontextmenu = ''; }
 		if(allowAccount > 0){
 			if(isInArray(value.verse_nr, listVers) ){
-				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+'" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;</span><span '+oncontextmenu+' class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+'" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;<span '+viewing.tag+'></span></span><span '+oncontextmenu+' class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 				output += '<span class="highlight">' +value.verse+ '</span>';
 			} else {
-				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;</span><span '+oncontextmenu+' class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;<span '+viewing.tag+'></span></span><span '+oncontextmenu+' class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 				output += value.verse;
 			}
 		} else {
 			if(isInArray(value.verse_nr, listVers) ){
-				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;</span><span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;<span '+viewing.tag+'></span></span><span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 				output += '<span class="highlight">' +value.verse+ '</span>';
 			} else {
-				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;</span><span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;<span '+viewing.tag+'></span></span><span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 				output += value.verse;
 			}
 		}
 		
 		if(allowAccount > 0){
 			if(verselineMode == 2){
-				output += '</span><span id="note__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '"></span>&#160;';
+				output += '</span><span id="note__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" '+viewing.note+'></span>&#160;';
 			} else {
-				output += '</span><span id="note__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '"></span><br/>';
+				output += '</span><span id="note__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '" '+viewing.note+'></span><br/>';
 			}
 		} else {
 			if(verselineMode == 2){
@@ -1512,6 +1525,7 @@ function setSearch(json,direction){
 
 	var output		= '<div id="printTagArea"><small>('+json.counter+')</small><br/>';
 	var bookTags	= [];
+	var viewing		= setViewing();
 	jQuery.each(json.book, function(index, books) {
 		var book_ref 	= books.book_ref.replace(/\s+/g, '');
 		var setCall 	= 'p='+book_ref+books.chapter_nr+"&v="+BIBLE_VERSION;
@@ -1520,18 +1534,18 @@ function setSearch(json,direction){
 		jQuery.each(books.chapter, function(index, value) {
 			if(right_click == 1){ var oncontextmenu = 'oncontextmenu="makeNote(\''+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '\');return false;"'; } else {  var oncontextmenu = ''; }
 			if(allowAccount > 0){
-				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;</span><span '+oncontextmenu+' class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '" onclick="makeNote(\''+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;<span '+viewing.tag+'></span></span><span '+oncontextmenu+' class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
 				output += value.verse;
 			} else {
-				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;</span><span class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
+				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;<span '+viewing.tag+'></span></span><span class="verse" id="'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '">';
 				output += value.verse;
 			}
 			
 			if(allowAccount > 0){
 				if(verselineMode == 2){
-					output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '"></span>&#160;';
+					output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '" '+viewing.note+'></span>&#160;';
 				} else {
-					output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '"></span><br/>';
+					output += '</span><span id="note__'+books.book_nr+'_'+books.chapter_nr+'_' +value.verse_nr+ '" '+viewing.note+'></span><br/>';
 				}
 			} else {
 				if(verselineMode == 2){
@@ -1690,7 +1704,6 @@ function getDataBo(version, first, versionChange) {
 	jQuery('#scripture').addClass('text_loading');
 	
 	// check if already in local store
-
 	var requestStore = 'books_'+version;
 	// first check if any books have been updated	
 	var reloadBooksStore = jQuery.jStorage.get('booksDate');
@@ -1812,6 +1825,135 @@ function getDataBo(version, first, versionChange) {
 		}
 		jQuery('.f_loader').hide();
 		jQuery('.books').show();
+	}
+}
+// clear all browser memory
+function clearBrowser(){
+	jQuery.jStorage.flush();
+}
+function setViewing(){
+	checkViewing();
+	var noteAction = 'class="notes"';
+	if(viewNotes == 1){
+		// hide notes
+		noteAction = 'class="notes uk-hidden no-print"';
+		var status = jQuery("#toggleNotes").attr('rel');
+		if(status == 'hide'){
+			// change text to show
+			var hideText = jQuery("#toggleNotes").text();
+			var showText = jQuery("#toggleNotes").attr('toggle');
+			jQuery("#toggleNotes").text(showText);
+			jQuery("#toggleNote").text(showText);
+			jQuery("#toggleNotes").attr('toggle', hideText);
+			jQuery("#toggleNotes").attr('rel', 'show');
+		}
+	}
+	var tagAction = 'class="tags"';
+	if(viewTags == 1){
+		// hide tags
+		tagAction = 'class="tags uk-hidden"';
+		var status = jQuery("#toggleTags").attr('rel');
+		if(status == 'hide'){
+			// change text to show
+			var hideText = jQuery("#toggleTags").text();
+			var showText = jQuery("#toggleTags").attr('toggle');
+			jQuery("#toggleTags").text(showText);
+			jQuery("#toggleTag").text(showText);
+			jQuery("#toggleTags").attr('toggle', hideText);
+			jQuery("#toggleTags").attr('rel', 'show');
+		}
+	}
+	// set action
+	var action = {note:noteAction, tag:tagAction};
+	return action;
+}
+function checkViewing(){
+	var viewNotesStored = jQuery.jStorage.get('viewNotes');
+	if(viewNotesStored){
+		viewNotes = viewNotesStored;
+	}
+	var viewTagsStored = jQuery.jStorage.get('viewTags');
+	if(viewTagsStored){
+		viewTags = viewTagsStored;
+	}
+}
+// toggel highlights notes & tags
+function toggle(type){
+	if('tags' == type){
+		var status = jQuery("#toggleTags").attr('rel');
+		if(status == 'hide'){
+			// change text to show
+			var hideText = jQuery("#toggleTags").text();
+			var showText = jQuery("#toggleTags").attr('toggle');
+			jQuery("#toggleTags").text(showText);
+			jQuery("#toggleTag").text(showText);
+			jQuery("#toggleTags").attr('toggle', hideText);
+			jQuery("#toggleTags").attr('rel', 'show');
+			// do action
+			jQuery('.tags').addClass('uk-hidden');
+			viewTags = 1;
+		} else if(status == 'show'){
+			// change text to hide
+			var showText = jQuery("#toggleTags").text();
+			var hideText = jQuery("#toggleTags").attr('toggle');
+			jQuery("#toggleTags").text(hideText);
+			jQuery("#toggleTag").text(hideText);
+			jQuery("#toggleTags").attr('toggle', showText);
+			jQuery("#toggleTags").attr('rel', 'hide');
+			// do action
+			jQuery('.tags').removeClass('uk-hidden');
+			viewTags = 0;
+		}
+		jQuery.jStorage.set('viewTags',viewTags)		
+	} else if('notes' == type){
+		var status = jQuery("#toggleNotes").attr('rel');
+		if(status == 'hide'){
+			// change text to show
+			var hideText = jQuery("#toggleNotes").text();
+			var showText = jQuery("#toggleNotes").attr('toggle');
+			jQuery("#toggleNotes").text(showText);
+			jQuery("#toggleNote").text(showText);
+			jQuery("#toggleNotes").attr('toggle', hideText);
+			jQuery("#toggleNotes").attr('rel', 'show');
+			// do action
+			jQuery('.notes').addClass('uk-hidden');
+			jQuery('.notes').addClass('no-print');
+			viewNotes = 1;
+		} else if(status == 'show'){
+			// change text to hide
+			var showText = jQuery("#toggleNotes").text();
+			var hideText = jQuery("#toggleNotes").attr('toggle');
+			jQuery("#toggleNotes").text(hideText);
+			jQuery("#toggleNote").text(hideText);
+			jQuery("#toggleNotes").attr('toggle', showText);
+			jQuery("#toggleNotes").attr('rel', 'hide');
+			// do action
+			jQuery('.notes').removeClass('uk-hidden');
+			jQuery('.notes').removeClass('no-print');
+			viewNotes = 0;
+		}
+		jQuery.jStorage.set('viewNotes',viewNotes)
+	} else if('highlights' == type){
+		var status = jQuery("#toggleHighlights").attr('rel');
+		if(status == 'hide'){
+			// chang text to show
+			var hideText = jQuery("#toggleHighlights").text();
+			var showText = jQuery("#toggleHighlights").attr('toggle');
+			jQuery("#toggleHighlights").text(showText);
+			jQuery("#toggleHighlights").attr('toggle', hideText);
+			jQuery("#toggleHighlights").attr('rel', 'show');
+			// do action
+			
+		} else if(status == 'show'){
+			// chang text to show
+			var showText = jQuery("#toggleHighlights").text();
+			var hideText = jQuery("#toggleHighlights").attr('toggle');
+			jQuery("#toggleHighlights").text(hideText);
+			jQuery("#toggleHighlights").attr('toggle', showText);
+			jQuery("#toggleHighlights").attr('rel', 'hide');
+			// do action
+						
+		}
 	}
 }
 // scroll to top function
