@@ -1117,7 +1117,7 @@ function loadNextBook(addTo,Found){
 		if(bookNowArray[1] == 66){
 			--BIBLE_LAST_CHAPTER;
 			--BIBLE_CHAPTER;
-			jQuery('#scripture').removeClass('text_loading');
+			jQuery("#scripture").removeClass("uk-invisible");
 		} else {
 			BIBLE_BOOK_NR 		= ++bookNowArray[1];
 			jQuery(".books option").each(function(){
@@ -1132,7 +1132,7 @@ function loadNextBook(addTo,Found){
 		if(bookNew){
 			// add loading class
 			if(!addTo){
-				jQuery('#scripture').addClass('text_loading');
+				jQuery('#scripture').addClass('uk-invisible');
 			}
 			jQuery('#t_loader').show();
 			var bookNewArray 	= bookNew.split('__');
@@ -1180,7 +1180,7 @@ function getData(request, addTo, Found) {
 	}
 	// add loading class
 	if(!addTo){
-		jQuery('#scripture').addClass('text_loading');
+		jQuery('#scripture').addClass('uk-invisible');
 	}	
 	if(Found){
 		FoundTheVerse = true;
@@ -1227,11 +1227,11 @@ function getData(request, addTo, Found) {
 					jQuery('.navigation').show();
 				} else {
 					jQuery('#scripture').html('<h2>Not Found! Please try again!</h2> '); // <---- this is the div id we update
-					jQuery('#scripture').removeClass('text_loading');
+					jQuery("#scripture").removeClass("uk-invisible");
 				}
 				if(!addTo && appMode == 1){
 					jQuery('#scripture').html('<h2>No scripture was returned, please try again!</h2>'); // <---- this is the div id we update
-					jQuery('#scripture').removeClass('text_loading');
+					jQuery("#scripture").removeClass("uk-invisible");
 				} else {
 					// check if result else load next book
 					loadNextBook(addTo,Found);
@@ -1243,7 +1243,7 @@ function getData(request, addTo, Found) {
 			FoundTheVerse = Found;
 		}
 		if(!addTo){
-			jQuery('#scripture').addClass('text_loading');
+			jQuery('#scripture').addClass('uk-invisible');
 		}
 		// set text direction
 		 if (jsonStore.direction == 'RTL'){
@@ -1302,7 +1302,7 @@ function getDefaults(request, requestStore, tagview) {
 			 if(tagview){
 				 getTagVerse(tagview);
 			 } else {
-				 setQuery 			= "p="+defaultBook+defaultChapter+"&v="+defaultVersion;
+				 setQuery = "p="+defaultBook+defaultChapter+"&v="+defaultVersion;
 				 if(request && json.search == 1){
 					 searchFor 			= json.searchFor;
 					 searchCrit 		= json.crit;
@@ -1424,7 +1424,7 @@ function setVerses(json,direction,addTo){
 	jQuery('#scripture').html(output);  // <---- this is the div id we update
 	appFeatures(2);
 	viewType = 1;
-	jQuery('#scripture').removeClass('text_loading');
+	jQuery("#scripture").removeClass("uk-invisible");
 }
 
 // Set Chapter on App page
@@ -1490,7 +1490,7 @@ function setChapter(json,direction,addTo){
 	if(searchApp != 1 || FoundTheVerse){
 		jQuery('.navigation').show();
 	}
-	jQuery('#scripture').removeClass('text_loading');
+	jQuery("#scripture").removeClass("uk-invisible");
 }
 
 // Set Book
@@ -1517,7 +1517,7 @@ function setBook(json,direction,addTo){
 	appFeatures(2);
 	stopAutoLoad = 1;
 	viewType = 3;
-	jQuery('#scripture').removeClass('text_loading');
+	jQuery("#scripture").removeClass("uk-invisible");
 }
 
 // Set Search
@@ -1572,7 +1572,7 @@ function setSearch(json,direction){
 	appFeatures(2);
 	stopAutoLoad = 1;
 	viewType = 2;
-	jQuery('#scripture').removeClass('text_loading');
+	jQuery("#scripture").removeClass("uk-invisible");
 }
 
 // get verses from string
@@ -1647,7 +1647,7 @@ function getDataCh(call) {
 	} else {
 		var getUrl = "index.php?option=com_getbible&task=bible.chapter&format=json";
 	}
-	jQuery('#scripture').addClass('text_loading');
+	jQuery('#scripture').addClass('uk-invisible');
 	var result = call.split('__');
 	var Get = 'v='+result[0]+'&nr='+result[1];
 	// check if already in local store
@@ -1701,7 +1701,7 @@ function getDataBo(version, first, versionChange) {
 	} else {
 		var getUrl = "index.php?option=com_getbible&task=bible.books&format=json";
 	}
-	jQuery('#scripture').addClass('text_loading');
+	jQuery('#scripture').addClass('uk-invisible');
 	
 	// check if already in local store
 	var requestStore = 'books_'+version;
@@ -1735,6 +1735,7 @@ function getDataBo(version, first, versionChange) {
 		 data: Get,
 		 jsonp: 'callback',
 		 success:function(json){
+			 jQuery('.books').find('option').remove().end();
 			 // and save the result
 			jQuery.jStorage.set(requestStore,json);
 			var op = new Option('- Select Book -', '');
@@ -1784,6 +1785,7 @@ function getDataBo(version, first, versionChange) {
 			 },
 		});
 	} else {
+		jQuery('.books').find('option').remove().end();
 		var op = new Option('- Select Book -', '');
 		// jquerify the DOM object 'o' so we can use the html method
 		jQuery(op).html('- Select Book -');

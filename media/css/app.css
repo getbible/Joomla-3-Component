@@ -19,17 +19,3 @@
     text-align: left;
     unicode-bidi: bidi-override;
 }
-
-.text_loading{
-	color: #DBDBDB;
-}
-
-.text_loading a{
-	color: #DBDBDB;
-}
-
-.text_loading .highlight { 
-	color: #DBDBDB; 
-	border-bottom: none; 
-	background-color: inherit;
-}

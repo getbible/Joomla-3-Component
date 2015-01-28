@@ -329,7 +329,7 @@ $versions = $this->cpanel;
     </form>
 </div>
 <?php endif; ?>
-<div id="t_loader" style="text-align:center;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div>
+<div id="t_loader" class="uk-progress uk-progress-striped uk-active" ><div class="uk-progress-bar" style="width: 100%;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div></div>
 
 <div id="getbible" style="display:none;">   
 	<div id="chapters" style="display:none;"></div> 
@@ -377,7 +377,7 @@ $versions = $this->cpanel;
         </div>
     <?php endif; ?>
 </div>
-<div id="b_loader" style="display:none; text-align:center;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div>
+<div id="b_loader" style="display:none; class="uk-progress uk-progress-striped uk-active" ><div class="uk-progress-bar" style="width: 100%;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div></div>
 
 <div id="user_cPanel" class="uk-modal">
     <div class="uk-modal-dialog">
@@ -623,6 +623,7 @@ $versions = $this->cpanel;
                 <button id="toggleNote" class="uk-button uk-width-1-1 uk-button-mini" onclick="toggle('notes')" ><?php echo JText::_('COM_GETBIBLE_HIDE_NOTES') ?></button>
                 <form class="uk-form" id="post_note">
                     <div class="uk-form-row">
+
                         <h2><span class="note_verse"></span></h2>
                         <textarea id="active_note" name="note" cols="100%" rows="4" placeholder="add note here!" autocomplete="off"></textarea>
                         <input class="uk-button uk-modal-close" type="submit" onclick="submitNote(); return false;" value="submit">
