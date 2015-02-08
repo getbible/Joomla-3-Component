@@ -51,12 +51,16 @@ class GetbibleModelGet extends JModelList
 			if ($request) {
 				$answer = $this->getPassage($request,$version);
 				return $answer;
-			} elseif ($search){
+			} elseif($search){
 				$type 	= $this->searchType();
 				$answer = $this->getSearch($search, $type, $version);
 				return $answer;
-			} else {
-				return NULL;
+			} elseif($version){
+				$fullVersionReturn = $this->app_params->get('fullVersionReturn', 0);
+				if($fullVersionReturn){
+					$answer	= $this->getVersion($version);
+					return $answer;
+				}
 			}
 		} return NULL;
 		
@@ -405,6 +409,52 @@ class GetbibleModelGet extends JModelList
 		
 		return $db->loadResult();
 				
+	}
+	
+	protected function getVersion($version)
+	{
+		if (!$version){
+			return NULL;
+		} else {
+			// Get a db connection.
+			$db = JFactory::getDbo();		
+			// Create a new query object.
+			$query = $db->getQuery(true);
+			// Order it by the ordering field.
+			$query->select($db->quoteName(array('book','book_nr')));
+			$query->from($db->quoteName('#__getbible_books'));
+			$query->where($db->quoteName('version') . ' = '. $db->quote($version));
+			$query->where($db->quoteName('access') . ' = 1');
+			$query->where($db->quoteName('published') . ' = 1');
+			$query->order($db->quoteName('book_nr') . ' ASC');
+			//echo nl2br(str_replace('#__','api_',$query)); die;
+			// Reset the query using our newly populated query object.
+			$db->setQuery($query);
+			$db->execute();
+			if($db->getNumRows()){
+				// Load the results
+				$results =  $db->loadObjectList();
+				// load direction
+				$direction = $this->getDirection($version);
+				if(is_array($results)){
+					$json = '{"type":"version", "version_ref":"'.$version.'", "direction":"'.$direction.'", "version":{';
+					$counter = 0;
+					foreach($results as $result){
+						$book = substr($result->book, 1, -1);
+						// load book name
+						$bookName	= $this->getBook($result->book_nr,$version);
+						if($counter){
+							$json .= ', ';	
+						}
+						// load book
+						$json .= '"'.(int)$result->book_nr.'":{"version":"'.$version.'","book_name":"'.$bookName.'","book_nr":'.(int)$result->book_nr.', "direction":"'.$direction.'", '.$book.'}';
+						$counter++;
+					}
+					return $json.'}}';
+				}
+			} 
+		}
+		return NULL;
 	}
 	
 	protected function getV()

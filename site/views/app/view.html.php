@@ -118,6 +118,7 @@ class GetbibleViewApp extends JViewLegacy
 		$this->document->addStyleDeclaration( $hoverStyle );
 		// highlight styles
 		$marks = range('a','z');
+		$printHighliters = '';
 		foreach($marks as $mark){
 			$this->highlights[$mark] =  array(
 											'name' => $this->params->get('mark_'.$mark.'_name'), 
@@ -269,7 +270,7 @@ class GetbibleViewApp extends JViewLegacy
 						
 		// to check in app is online
 		$offline	= '	jQuery(document).ready(function(){ 
-							Offline.options = {checks: { image: {url: "/media/com_getbible/images/vdm.png"}, active: "image"}};
+							Offline.options = {checks: { image: {url: "'.JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'images'.DS.'vdm.png"}, active: "image"}};
 							window.setInterval(function() {
 								
 								if (Offline.state === "up"){

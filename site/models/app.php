@@ -99,6 +99,7 @@ class GetbibleModelApp extends JModelList
 		$date[] = $db->loadObject();
 		// get highest date;
 		$topDate = 0;
+		$result = 'kjv_0';
 		foreach($date as $value){
 			$checkDate = strtotime($value->date);
 			if($checkDate > $topDate){
@@ -130,8 +131,7 @@ class GetbibleModelApp extends JModelList
 			$appDefaults['request'] .= '&search_version='.$appDefaults['version'];
 		}
 		// set key
-		$appDefaults['defaultKey'] 	= md5(	$appDefaults['getUrl'].
-											$appDefaults['version'].
+		$appDefaults['defaultKey'] 	= md5(  $appDefaults['version'].
 											$appDefaults['request'].
 											$this->app_params->get('defaultStartVersion').
 											$this->app_params->get('defaultStartBook').

@@ -1532,6 +1532,19 @@
 				value="0">COM_GETBIBLE_CONFIG_OFF</option>
 		</field>
 		
+		<field
+			name="fullVersionReturn"
+			type="radio"
+			class="btn-group btn-group-yesno"
+			default="0"
+			label="COM_GETBIBLE_CONFIG_FULL_VERSION_RETURN_LABEL"
+			description="COM_GETBIBLE_CONFIG_FULL_VERSION_RETURN_DESC">
+			<option
+				value="1">COM_GETBIBLE_CONFIG_ON</option>
+			<option
+				value="0">COM_GETBIBLE_CONFIG_OFF</option>
+		</field>
+		
 		<field name="jsonQueryOptions"
 			type="list"
 			default="0"

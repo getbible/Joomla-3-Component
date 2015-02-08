@@ -15,9 +15,14 @@ if ($this->item){
 	JFactory::getDocument()->setMimeEncoding( 'application/json' );
 	JResponse::setHeader('Content-Disposition','attachment;filename="gebible.json"');
 	JResponse::setHeader("Access-Control-Allow-Origin", "*");
-	echo $_GET['getbible'] . '(' . $this->item . ');';
+	if(array_key_exists('getbible',$_GET)){
+		echo $_GET['getbible'] . '(' . $this->item . ');';
+	} elseif(array_key_exists('callback',$_GET)){
+		echo $_GET['callback'] . '(' . $this->item . ');';
+	} else {
+		echo '(' . $this->item . ');';
+	}
 	JFactory::getApplication()->close(); // or jexit();
-	
 } else {
 	echo('NULL');
 	JFactory::getApplication()->close();

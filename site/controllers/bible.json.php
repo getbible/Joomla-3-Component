@@ -57,11 +57,19 @@ class GetbibleControllerBible extends JControllerLegacy
 					} else {
 						$result = false;
 					}
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'chapter':
@@ -69,12 +77,19 @@ class GetbibleControllerBible extends JControllerLegacy
 				{				 
 					$result = $this->getModel('control')->getChapters(	$jinput->get('nr', NULL, 'INT'),
 																		$jinput->get('v', NULL, 'ALNUM') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'defaults':
@@ -87,11 +102,19 @@ class GetbibleControllerBible extends JControllerLegacy
 																			$jinput->get('appKey', NULL, 'ALNUM'),
 																			$jinput->get('search_crit', NULL, 'CMD'), 
 																			$jinput->get('search_type', NULL, 'ALNUM') );
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'sethighlight':
@@ -101,12 +124,19 @@ class GetbibleControllerBible extends JControllerLegacy
 																		$jinput->get('publish', 0, 'INT'),
 																		$jinput->get('jsonKey', 0, 'ALNUM'),
 																		$jinput->get('tu', 0, 'BASE64') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'sethighlights':
@@ -117,12 +147,19 @@ class GetbibleControllerBible extends JControllerLegacy
 																		$jinput->get('publish', 0, 'INT'),
 																		$jinput->get('jsonKey', 0, 'ALNUM'),
 																		$jinput->get('tu', 0, 'BASE64') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'gethighlights':
@@ -130,12 +167,19 @@ class GetbibleControllerBible extends JControllerLegacy
 				{				 
 					$result = $this->getModel('control')->getHighlights(	$jinput->get('jsonKey', 0, 'ALNUM'),
 																		$jinput->get('tu', 0, 'BASE64') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'clearhighlights':
@@ -143,12 +187,19 @@ class GetbibleControllerBible extends JControllerLegacy
 				{				 
 					$result = $this->getModel('control')->clearHighlights(	$jinput->get('jsonKey', 0, 'ALNUM'),
 																			$jinput->get('tu', 0, 'BASE64') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'setnote':
@@ -158,12 +209,19 @@ class GetbibleControllerBible extends JControllerLegacy
 																	$jinput->get('jsonKey', 0, 'ALNUM'),
 																	$jinput->get('verse', 0, 'STRING'),
 																	$jinput->get('tu', 0, 'BASE64') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'getnotes':
@@ -171,12 +229,19 @@ class GetbibleControllerBible extends JControllerLegacy
 				{				 
 					$result = $this->getModel('control')->getNotes(	$jinput->get('jsonKey', 0, 'ALNUM'),
 																	$jinput->get('tu', 0, 'BASE64') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'settaged':
@@ -187,12 +252,19 @@ class GetbibleControllerBible extends JControllerLegacy
 																	$jinput->get('jsonKey', 0, 'ALNUM'),
 																	$jinput->get('verse', 0, 'STRING'),
 																	$jinput->get('tu', 0, 'BASE64') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'gettaged':
@@ -201,12 +273,19 @@ class GetbibleControllerBible extends JControllerLegacy
 					$result = $this->getModel('control')->getTaged(	$jinput->get('jsonKey', 0, 'ALNUM'),
 																	$jinput->get('verse', 0, 'STRING'),
 																	$jinput->get('tu', 0, 'BASE64') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'settags':
@@ -218,12 +297,19 @@ class GetbibleControllerBible extends JControllerLegacy
 																	$jinput->get('published', 0, 'INT'),
 																	$jinput->get('jsonKey', 0, 'ALNUM'),
 																	$jinput->get('tu', 0, 'BASE64') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'gettags':
@@ -231,12 +317,19 @@ class GetbibleControllerBible extends JControllerLegacy
 				{				 
 					$result = $this->getModel('control')->getTags(	$jinput->get('jsonKey', 0, 'ALNUM'),
 																	$jinput->get('tu', 0, 'BASE64') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'gettagverse':
@@ -246,12 +339,19 @@ class GetbibleControllerBible extends JControllerLegacy
 																		$jinput->get('version', NULL, 'ALNUM'),
 																		$jinput->get('tag', 0, 'STRING'),
 																		$jinput->get('tu', 0, 'BASE64') );
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'getstatustags':
@@ -259,12 +359,19 @@ class GetbibleControllerBible extends JControllerLegacy
 				{				 
 					$result = $this->getModel('control')->getStatusTags($jinput->get('jsonKey', 0, 'ALNUM'),
 																		$jinput->get('tu', 0, 'BASE64'));
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 			case 'sendemail':
@@ -277,12 +384,19 @@ class GetbibleControllerBible extends JControllerLegacy
 																	$jinput->get('html', 0, 'BASE64'),
 																	$jinput->get('title', 0, 'STRING'),
 																	$jinput->get('type', 0, 'INT'));
-					
-					echo $_GET['callback']."(".json_encode($result).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback'] . "(".json_encode($result).");";
+					} else {
+						echo "(".json_encode($result).");";
+					}
 				}
 					catch(Exception $e)
 				{
-					echo $_GET['callback']."(".json_encode($e).");";
+					if(array_key_exists('callback',$_GET)){
+						echo $_GET['callback']."(".json_encode($e).");";
+					} else {
+						echo "(".json_encode($e).");";
+					}
 				}
 			break;
 		}

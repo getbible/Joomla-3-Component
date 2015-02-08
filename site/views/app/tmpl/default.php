@@ -624,6 +624,7 @@ $versions = $this->cpanel;
                 <form class="uk-form" id="post_note">
                     <div class="uk-form-row">
 
+
                         <h2><span class="note_verse"></span></h2>
                         <textarea id="active_note" name="note" cols="100%" rows="4" placeholder="add note here!" autocomplete="off"></textarea>
                         <input class="uk-button uk-modal-close" type="submit" onclick="submitNote(); return false;" value="submit">
@@ -764,7 +765,7 @@ $versions = $this->cpanel;
 		<?php if ($this->params->get('vdm_link') == 1): ?>
 			<a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
 		<?php endif; ?>
-			<span class="uk-hidden-small" data-uk-tooltip="{pos:'left'}" title="The words of eternal life!" ><img src="/media/com_getbible/images/icon.png" /></span>
+			<span class="uk-hidden-small" data-uk-tooltip="{pos:'left'}" title="The words of eternal life!" ><img src="<?php echo JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'images'.DS.'icon.png'; ?>" /></span>
 		<?php if ($this->params->get('vdm_link') == 1): ?>
 			</a>
 		<?php endif; ?>
@@ -773,7 +774,7 @@ $versions = $this->cpanel;
 		<?php if ($this->params->get('vdm_link') == 1): ?>
 			<a href="<?php echo $this->params->get('vdm_url');  ?>" target="_blank">
 		<?php endif; ?>
-			<span><img src="/media/com_getbible/images/icon.png" /></span>
+			<span><img src="<?php echo JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'images'.DS.'icon.png'; ?>" /></span>
 		<?php if ($this->params->get('vdm_link') == 1): ?>
 			</a>
 		<?php endif; ?>
