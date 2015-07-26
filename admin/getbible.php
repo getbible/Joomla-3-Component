@@ -21,8 +21,8 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_getbible')){
 };
 
 // require helper files
-JLoader::register('GetHelper', dirname(__FILE__) . DS . 'helpers' . DS . 'get.php');
-JLoader::register('ContentHelper', dirname(__FILE__) . DS.'helpers'.DS.'content.php');
+JLoader::register('GetHelper', dirname(__FILE__) . '/helpers/get.php');
+JLoader::register('ContentHelper', dirname(__FILE__) . '/helpers/content.php');
 
 // No access check.
 $controller	= JControllerAdmin::getInstance('Getbible');

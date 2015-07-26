@@ -37,7 +37,7 @@ abstract class GetHelper
 		} else {
 			// Parse the XML
 			$local 			= @simplexml_load_file(JPATH_ADMINISTRATOR."/components/com_getbible/getbible.xml");
-			$feed 			= @file_get_contents('http://getbible.net/updates/joomla_three.xml');
+			$feed 			= @file_get_contents('https://getbible.net/updates/joomla_three.xml');
 			$updates 		= @simplexml_load_string($feed);
 			// load local version
 			self::$localVersion 	= (string)$local->version;

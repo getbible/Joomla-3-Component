@@ -100,7 +100,7 @@ class GetbibleViewSetbook extends JViewLegacy
 	protected function _prepareDocument()
 	{
 		/*// Add Theme to Page
-		require_once( JPATH_COMPONENT.DS.'helpers'.DS.'theme.php' );
+		require_once( JPATH_COMPONENT.'/helpers/theme.php' );
 		// The CSS for Theme
 		if ($vdmTheme == 1){
 			$this->document->addStyleSheet(JURI::base() . '../media/com_getbible/css/theme.css');

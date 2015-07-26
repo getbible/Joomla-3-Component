@@ -42,7 +42,7 @@ class GetbibleModelCpanel extends JModelList
 	protected function saveCpanel($Cpanel)
 	{
 		// set path
-		$path = JPATH_SITE.DS.'media'.DS.'com_getbible'.DS.'json'.DS.'cpanel.json';
+		$path = JPATH_SITE.'/media/com_getbible/json/cpanel.json';
 		$fp = fopen($path, 'w');
 		// check point
 		if(fwrite($fp, json_encode($Cpanel)) && $Cpanel){

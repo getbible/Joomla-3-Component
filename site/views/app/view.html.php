@@ -77,19 +77,19 @@ class GetbibleViewApp extends JViewLegacy
 		}
 		
 		// Get app settings
-		//require_once( JPATH_COMPONENT.DS.'helpers'.DS.'jquery_app.php' );
-		//require_once( JPATH_COMPONENT.DS.'helpers'.DS.'css_app.php' );
+		//require_once( JPATH_COMPONENT.'/helpers/jquery_app.php' );
+		//require_once( JPATH_COMPONENT.'/helpers/css_app.php' );
 		
-		require_once( JPATH_COMPONENT.DS.'helpers'.DS.'script_checker.php' );
+		require_once( JPATH_COMPONENT.'/helpers/script_checker.php' );
 		// The css
-		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'app.css');
+		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/app.css');
 		if (!HeaderCheck::css_loaded('uikit.min')) {
-			$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'uikit.min.css');
+			$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/uikit.min.css');
 		}
-		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'components'.DS.'sticky.min.css');
-		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'components'.DS.'notify.min.css');
-		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'offline.css');
-		$this->document->addStyleSheet(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'css'.DS.'tagit.css');
+		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/components/sticky.min.css');
+		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/components/notify.min.css');
+		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/offline.css');
+		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/tagit.css');
 		
 		if($this->params->get('highlight_padding')){
 			$padding = 'padding: 0 3px 0 3px;';
@@ -162,7 +162,7 @@ class GetbibleViewApp extends JViewLegacy
 			JHtml::_('jquery.ui');
 		}
 		// load highlight javascript plugin
-		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jquery-ui-custom.js');
+		$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/jquery-ui-custom.js');
 		// set defaults
 		if($this->params->get('account') && $this->user->id > 0){
 			$setApp .=	'var openNow			= "'.base64_encode($this->user->id).'";';
@@ -233,44 +233,44 @@ class GetbibleViewApp extends JViewLegacy
 		
 		// Load Uikit check
 		if (!HeaderCheck::js_loaded('uikit.min')) {
-			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'uikit.min.js');
+			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/uikit.min.js');
 		}
 		if (!HeaderCheck::js_loaded('sticky.min')) {
-			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'components'.DS.'sticky.min.js');
+			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/components/sticky.min.js');
 		}
 		if (!HeaderCheck::js_loaded('notify.min')) {
-			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'components'.DS.'notify.min.js');
+			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/components/notify.min.js');
 		}
 		// load base64 javascript plugin
-		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'base64.js');
+		$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/base64.js');
 		// load highlight javascript plugin
-		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'highlight.js');
+		$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/highlight.js');
 						
 		// Load Json check
 		if (!HeaderCheck::js_loaded('jquery.json')) {
-			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jquery.json.min.js');
+			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/jquery.json.min.js');
 		}
 		// Load Jstorage check
 		if (!HeaderCheck::js_loaded('jstorage')) {
-			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'jstorage.min.js');
+			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/jstorage.min.js');
 		}
 		// Load Tag It check
 		if (!HeaderCheck::js_loaded('tag-it')) {
-			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'tag-it.js');
+			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/tag-it.js');
 		}
 		// Load Offline check
 		if (!HeaderCheck::js_loaded('offline')) {
-			$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'offline.min.js');
+			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/offline.min.js');
 		}
 		
 		$this->document->addScriptDeclaration($setApp);  
-		$this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'app.js');
+		$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/app.js');
 		// debug offline status
-		// $this->document->addScript(JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'js'.DS.'offline-simulate-ui.min.js');
+		// $this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/offline-simulate-ui.min.js');
 						
 		// to check in app is online
 		$offline	= '	jQuery(document).ready(function(){ 
-							Offline.options = {checks: { image: {url: "'.JURI::base( true ) .DS.'media'.DS.'com_getbible'.DS.'images'.DS.'vdm.png"}, active: "image"}};
+							Offline.options = {checks: { image: {url: "'.JURI::base( true ) .'/media/com_getbible/images/vdm.png"}, active: "image"}};
 							window.setInterval(function() {
 								
 								if (Offline.state === "up"){

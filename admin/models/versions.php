@@ -119,8 +119,7 @@ class GetbibleModelVersions extends JModelList
 		}
 
 		// Implement View Level Access
-		if (!$user->authorise('core.admin'))
-		{
+		if(!$user->authorise('core.admin')){
 			$groups = implode(',', $user->getAuthorisedViewLevels());
 			$query->where('a.access IN (' . $groups . ')');
 		}

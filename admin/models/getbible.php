@@ -42,7 +42,7 @@ class GetbibleModelGetbible extends JModelList
                     <div class="span3">
                         <div>
 							<h2 class="nav-header">'.JText::_('COM_GETBIBLE_EXTENSION_DETAILS').'</h2>
-                            <a target="_blank" style="float: right;"href="https://www.vdm.io/joomla" title="Vast Development Method"><img src="/administrator/components/com_getbible/assets/images/vdm.jpg" height="300"/></a>
+                            <a target="_blank" style="float: right;"href="https://www.vdm.io/joomla" title="Vast Development Method"><img src="components/com_getbible/assets/images/vdm.jpg" height="300"/></a>
 							<ul class="list-group">
   								<li class="list-group-item"><img src="../media/com_getbible/images/icon.png" height="21"/> &#8482;</li>
   								<li class="list-group-item">Copyright &#169; <a href="http://vdm.io" target="_blank">Vast Development Method</a>.<br />All rights reserved.</li>
@@ -203,7 +203,7 @@ jQuery.ajax({
         $div_version .= '</div>';
 		
 		$div_activity = '<div class="span12"><h2>View Activity</h2><div class="well well-small">';
-		if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_getbible'.DS.'helpers'.DS.'activityCron.php')) {
+		if (file_exists(JPATH_ADMINISTRATOR.'/components/com_getbible/helpers/activityCron.php')) {
 			// plugin was installed bit not active
 			$div_activity .= '<p>You need to <a href="'.JURI::base().'index.php?option=com_plugins&view=plugins&filter_search=System - getBible Activity Cron" >activate</a> the <b>System - getBible Activity Cron</b> to view the API activiy.</p>';
 		} else {
@@ -301,7 +301,7 @@ jQuery.ajax({
 	protected function getAvailableVersions()
 	{
 		// Base this model on the backend version.
-		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_getbible'.DS.'models'.DS.'import.php';
+		require_once JPATH_ADMINISTRATOR.'/components/com_getbible/models/import.php';
 		$versions_model 		= new GetbibleModelImport;
 		$availableVersions 		= $versions_model->availableVersions;
 		$availableVersionsList 	= $versions_model->availableVersionsList;

@@ -270,7 +270,7 @@ class GetbibleModelVersion extends JModelAdmin
 	protected function _cpanel()
 	{
 		// Base this model on the backend version.
-		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_getbible'.DS.'models'.DS.'cpanel.php';
+		require_once JPATH_ADMINISTRATOR.'/components/com_getbible/models/cpanel.php';
 		$cpanel_model = new GetbibleModelCpanel;
 		return $cpanel_model->setCpanel();
 	}

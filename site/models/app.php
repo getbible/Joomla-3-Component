@@ -30,7 +30,7 @@ class GetbibleModelApp extends JModelList
 	{	
 		if ($this->app_params->get('jsonQueryOptions') == 1){
 			
-			$path 		= JPATH_SITE.DS.'media'.DS.'com_getbible'.DS.'json'.DS.'cpanel.json';
+			$path 		= JPATH_SITE.'/media/com_getbible/json/cpanel.json';
 			$cpanel 	= @file_get_contents($path);
 			
 			if($cpanel === FALSE){
@@ -52,7 +52,7 @@ class GetbibleModelApp extends JModelList
 			
 		} else {
 			
-			$path 		= 'http://getbible.net/media/com_getbible/json/cpanel.json';
+			$path 		= 'https://getbible.net/media/com_getbible/json/cpanel.json';
 			$cpanel 	= @file_get_contents($path);
 			
 			if($cpanel === FALSE){

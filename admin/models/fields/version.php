@@ -34,7 +34,7 @@ class JFormFieldVersion extends JFormFieldList
 		
 		if ($params->get('jsonQueryOptions') == 1){
 			
-			$path 		= JPATH_ROOT.DS.'media'.DS.'com_getbible'.DS.'json'.DS.'cpanel.json';
+			$path 		= JPATH_ROOT.'/media/com_getbible/json/cpanel.json';
 			$cpanel 	= @file_get_contents($path);
 			
 			if($cpanel === FALSE || $cpanel === NULL || $cpanel == ''){
@@ -68,7 +68,7 @@ class JFormFieldVersion extends JFormFieldList
 			
 		} else {
 			
-			$path 		= 'http://getbible.net/media/com_getbible/json/cpanel.json';
+			$path 		= 'https://getbible.net/media/com_getbible/json/cpanel.json';
 			$cpanel 	= @file_get_contents($path);
 			
 			if($cpanel === FALSE || $cpanel === NULL || $cpanel == ''){

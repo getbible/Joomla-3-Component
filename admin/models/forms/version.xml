@@ -96,8 +96,5 @@
 		<field name="checked_out" type="hidden" filter="unset" />
 
 		<field name="checked_out_time" type="hidden" filter="unset" />
-
-		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
-			description="JFIELD_ACCESS_DESC" size="1" />
 	</fieldset>
 </form>

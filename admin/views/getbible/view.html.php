@@ -59,7 +59,7 @@ class GetbibleViewGetbible extends JViewLegacy
 		// Get the toolbar object instance
 		$bar = JToolBar::getInstance('toolbar');
 		
-		JHtml::stylesheet('com_getbible'.DS.'admin.stylesheet.css', array(), true, false, false);
+		JHtml::stylesheet('com_getbible/admin.stylesheet.css', array(), true, false, false);
 		
 		JToolBarHelper::title(JText::_('COM_GETBIBLE'), 'book getbible');
 		// JToolBarHelper::custom('setupCpanel', 'cog', '', JText::_('COM_GETBIBLE_SETUP_CPANEL'), false);

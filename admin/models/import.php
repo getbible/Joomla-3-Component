@@ -124,7 +124,7 @@ class GetbibleModelImport extends JModelLegacy
 					$filename	= 'https://getbible.net/scriptureinstall/'.$versionFileName.'.txt';
 				} else {
 					// get localInstallFolder set in params
-					$filename = JPATH_ROOT.DS.rtrim(ltrim($this->app_params->get('localInstallFolder'),'/'),'/').DS.$versionFileName.'.txt';
+					$filename = JPATH_ROOT.'/'.rtrim(ltrim($this->app_params->get('localInstallFolder'),'/'),'/').'/'.$versionFileName.'.txt';
 				}
 				
 				// load the file
@@ -508,11 +508,11 @@ class GetbibleModelImport extends JModelLegacy
 		// get localInstallFolder set in params
 		$path = rtrim(ltrim($this->app_params->get('localInstallFolder'),'/'),'/');
 		// creat folder
-		JFolder::create(JPATH_ROOT.DS.$path.DS.'xml');
+		JFolder::create(JPATH_ROOT.'/'.$path.'/xml');
 		// set the file name
-		$filepath = JPATH_ROOT.DS.$path.DS.'xml'.DS.'version.xml.php'; 
+		$filepath = JPATH_ROOT.'/'.$path.'/xml/version.xml.php'; 
 		// set folder path 
-		$folderpath = JPATH_ROOT.DS.$path;
+		$folderpath = JPATH_ROOT.'/'.$path;
 
 		$fh = fopen($filepath, "w");
 		if (!is_resource($fh)) {
@@ -528,7 +528,7 @@ class GetbibleModelImport extends JModelLegacy
 		fclose($fh);
 		
 		// return local file path
-		return JURI::root().$path.DS.'xml'.DS.'version.xml.php'.DS.'versions.xml';
+		return JURI::root().$path.'/xml/version.xml.php/versions.xml';
 	}
 	
 	protected function setPHPforXML($path)
@@ -564,7 +564,7 @@ print(\$xml->asXML());
 			$this->local 	= true;
 		} else {
 			// check the available versions on getBible
-			$xml	= 'http://www.getbible.net/scriptureinstall/xml/version.xml.php/versions.xml';
+			$xml	= 'https://www.getbible.net/scriptureinstall/xml/version.xml.php/versions.xml';
 		}
 		if(@fopen($xml, 'r')){
 			if (($response_xml_data = file_get_contents($xml))===false){
@@ -726,7 +726,7 @@ print(\$xml->asXML());
 	protected function _cpanel()
 	{
 		// Base this model on the backend version.
-		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_getbible'.DS.'models'.DS.'cpanel.php';
+		require_once JPATH_ADMINISTRATOR.'/components/com_getbible/models/cpanel.php';
 		$cpanel_model = new GetbibleModelCpanel;
 		return $cpanel_model->setCpanel();
 	}
