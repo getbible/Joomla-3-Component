@@ -76,14 +76,9 @@ class GetbibleViewApp extends JViewLegacy
 			
 		}
 		
-		// Get app settings
-		//require_once( JPATH_COMPONENT.'/helpers/jquery_app.php' );
-		//require_once( JPATH_COMPONENT.'/helpers/css_app.php' );
-		
-		require_once( JPATH_COMPONENT.'/helpers/script_checker.php' );
 		// The css
 		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/app.css');
-		if (!HeaderCheck::css_loaded('uikit.min')) {
+		if (!$this->css_loaded('uikit.min')) {
 			$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/uikit.min.css');
 		}
 		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/components/sticky.min.css');
@@ -158,7 +153,7 @@ class GetbibleViewApp extends JViewLegacy
 		
 		// The JS
 		// Load jQuery check
-		if (!HeaderCheck::js_loaded('jquery')) {
+		if (!$this->js_loaded('jquery')) {
 			JHtml::_('jquery.ui');
 		}
 		// load highlight javascript plugin
@@ -232,13 +227,13 @@ class GetbibleViewApp extends JViewLegacy
 		$setApp .= 	'var verselineMode 				= '. $this->params->get('line_mode').';';
 		
 		// Load Uikit check
-		if (!HeaderCheck::js_loaded('uikit.min')) {
+		if (!$this->js_loaded('uikit.min')) {
 			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/uikit.min.js');
 		}
-		if (!HeaderCheck::js_loaded('sticky.min')) {
+		if (!$this->js_loaded('sticky.min')) {
 			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/components/sticky.min.js');
 		}
-		if (!HeaderCheck::js_loaded('notify.min')) {
+		if (!$this->js_loaded('notify.min')) {
 			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/components/notify.min.js');
 		}
 		// load base64 javascript plugin
@@ -247,19 +242,19 @@ class GetbibleViewApp extends JViewLegacy
 		$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/highlight.js');
 						
 		// Load Json check
-		if (!HeaderCheck::js_loaded('jquery.json')) {
+		if (!$this->js_loaded('jquery.json')) {
 			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/jquery.json.min.js');
 		}
 		// Load Jstorage check
-		if (!HeaderCheck::js_loaded('jstorage')) {
+		if (!$this->js_loaded('jstorage')) {
 			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/jstorage.min.js');
 		}
 		// Load Tag It check
-		if (!HeaderCheck::js_loaded('tag-it')) {
+		if (!$this->js_loaded('tag-it')) {
 			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/tag-it.js');
 		}
 		// Load Offline check
-		if (!HeaderCheck::js_loaded('offline')) {
+		if (!$this->js_loaded('offline')) {
 			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/offline.min.js');
 		}
 		
@@ -297,5 +292,47 @@ class GetbibleViewApp extends JViewLegacy
 		$path   = $uri->toString(array('path', 'query', 'fragment'));
 	
 		return $path;
+	}
+	
+	protected function js_loaded($script_name)
+	{
+		// UIkit check point
+		if($script_name == 'uikit'){
+			$getTemplateName  	= JFactory::getApplication()->getTemplate('template')->template;
+			
+			if (strpos($getTemplateName,'yoo') !== false) {
+				return true;
+			}
+		}
+		
+		$head_data 	= $this->document->getHeadData();
+		foreach (array_keys($head_data['scripts']) as $script) {
+			if (stristr($script, $script_name)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
+	protected function css_loaded($script_name)
+	{
+		// UIkit check point
+		if($script_name == 'uikit'){
+			$getTemplateName  	= JFactory::getApplication()->getTemplate('template')->template;
+			
+			if (strpos($getTemplateName,'yoo') !== false) {
+				return true;
+			}
+		}
+		
+		$head_data 	= $this->document->getHeadData();
+		
+		foreach (array_keys($head_data['styleSheets']) as $script) {
+			if (stristr($script, $script_name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
