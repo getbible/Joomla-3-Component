@@ -1,6 +1,6 @@
 <?php
 /**
-* 
+*
 * 	@version 	1.0.7  January 16, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
@@ -23,49 +23,49 @@ class GetbibleModelImport extends JModelLegacy
 	protected 	$app_params;
 	protected	$local 		= false;
 	protected	$curlError	= false;
-	
+
 	public 		$availableVersions;
 	public 		$availableVersionsList;
 	public 		$installedVersions;
-	
-	public function __construct() 
-	{		
+
+	public function __construct()
+	{
 		parent::__construct();
-		
+
 		// get params
 		$this->app_params = JComponentHelper::getParams('com_getbible');
-		
+
 		// get user data
 		$this->user = JFactory::getUser();
 		// get todays date
 		$this->dateSql = JFactory::getDate()->toSql();
-		
+
 		// load available verstions
 		$this->getVersionAvailable();
 		// get installed versions
 		$this->getInstalledVersions();
-		
+
 	}
-	
-	protected function populateState() 
-	{		
+
+	protected function populateState()
+	{
 		parent::populateState();
-		
-		
+
+
 		// Get the input data
 		$jinput = JFactory::getApplication()->input;
-		
+
 		$source = $jinput->post->get('translation', NULL, 'STRING');
 		$translation = (string) preg_replace('/[^A-Z0-9_\)\(-]/i', '', $source);
-		
+
 		// Set to state
 		$this->setState('translation', $translation);
 	}
-	
+
 	public function getVersions()
 	{
 		// reload version list for app
-				
+
 		$available = $this->availableVersionsList;
 		$alreadyin = $this->installedVersions;
 		if($available){
@@ -98,12 +98,12 @@ class GetbibleModelImport extends JModelLegacy
 			}
 		}
 	}
-	
+
 	public function rutime($ru, $rus, $index) {
 		return ($ru["ru_$index.tv_sec"]*1000 + intval($ru["ru_$index.tv_usec"]/1000))
 		 -  ($rus["ru_$index.tv_sec"]*1000 + intval($rus["ru_$index.tv_usec"]/1000));
 	}
-	
+
 	public function getImport()
 	{
 		if ($this->getState('translation')){
@@ -118,7 +118,7 @@ class GetbibleModelImport extends JModelLegacy
 
 				// get instilation opstion set in params
 				$installOptions = $this->app_params->get('installOptions');
-				
+
 				if($installOptions){
 					// get the file
 					$filename	= 'https://getbible.net/scriptureinstall/'.$versionFileName.'.txt';
@@ -126,14 +126,14 @@ class GetbibleModelImport extends JModelLegacy
 					// get localInstallFolder set in params
 					$filename = JPATH_ROOT.'/'.rtrim(ltrim($this->app_params->get('localInstallFolder'),'/'),'/').'/'.$versionFileName.'.txt';
 				}
-				
+
 				// load the file
 				$file = new SplFileObject($filename);
 				// start up database
 				$db = JFactory::getDbo();
 				// load all books
 				$books = $this->setBooks($version);
-				
+
 				$i = 1;
 				// build query to save
 				if (is_object($file)) {
@@ -161,7 +161,7 @@ class GetbibleModelImport extends JModelLegacy
 								$book_nr 	= $book['nr'];
 								$book_name 	= $book['name'];
 								$found 		= true;
-								break;					
+								break;
 							}
 						}
 						if(!$found){
@@ -175,7 +175,7 @@ class GetbibleModelImport extends JModelLegacy
 											$book_nr 	= $book['nr'];
 											$book_name 	= $book['name'];
 											$found 		= true;
-											break;					
+											break;
 										}
 									}
 								}
@@ -192,7 +192,7 @@ class GetbibleModelImport extends JModelLegacy
 											$verse[0] 	= $book['nr'];
 											$book_nr 	= $book['nr'];
 											$found 		= true;
-											break;					
+											break;
 										}
 									}
 								}
@@ -201,21 +201,21 @@ class GetbibleModelImport extends JModelLegacy
 						// set data
 						if($verse[3]){
 							$Bible[$verse[0]][$verse[1]][$verse[2]] = $verse[3];
-									
+
 							// Create a new query object for this verse
 							$query = $db->getQuery(true);
 							// Insert columns
 							$columns = array( 'version', 'book_nr', 'chapter_nr', 'verse_nr', 'verse', 'access', 'published', 'created_by', 'created_on');
 							// Insert values.
-							$values	= array( 
-											$db->quote($version), 
-											$db->quote($book_nr), 
-											$db->quote($verse[1]), 
-											$db->quote($verse[2]), 
-											$db->quote($verse[3]), 
+							$values	= array(
+											$db->quote($version),
+											$db->quote($book_nr),
+											$db->quote($verse[1]),
+											$db->quote($verse[2]),
+											$db->quote($verse[3]),
 											1,
 											1,
-											$this->user->id, 
+											$this->user->id,
 											$db->quote($this->dateSql)
 											);
 							// Prepare the insert query.
@@ -223,25 +223,25 @@ class GetbibleModelImport extends JModelLegacy
 								->insert($db->quoteName('#__getbible_verses'))
 								->columns($db->quoteName($columns))
 								->values(implode(',', $values));
-							 
+
 							// Set the query using our newly populated query object and execute it.
 							$db->setQuery($query);
 							$db->query();
-						}					
+						}
 					}
 				}
 				// clear from memory
 				unset($file);
 				// save complete books & chapters
 				foreach ($books as $book){
-					
+
 					$this->saveChapter($version, $book["nr"], $Bible[$book["nr"]]);
 					$this->saveBooks($version, $book["nr"], $Bible[$book["nr"]]);
-					
+
 				}
 				// clear from memory
 				unset($books);
-				
+
 				// Set version details
 				if(is_array($this->book_counter)){
 					if(in_array(1,$this->book_counter) && in_array(66,$this->book_counter)){
@@ -258,19 +258,19 @@ class GetbibleModelImport extends JModelLegacy
 					$book_counter 	= 'error';
 					$testament	 	= 'error';
 				}
-				
+
 				// Create a new query object for this version
 				$query = $db->getQuery(true);
 				// Insert columns
 				$columns = array( 'name', 'bidi', 'language', 'books_nr', 'testament', 'version', 'link', 'installed', 'access', 'published', 'created_by', 'created_on');
 				// Insert values.
-				$values = array( 
+				$values = array(
 								$db->quote($versionName),
 								$db->quote($bidi),
 								$db->quote($versionLang),
 								$db->quote($book_counter),
-								$db->quote($testament),								
-								$db->quote($version), 
+								$db->quote($testament),
+								$db->quote($version),
 								$db->quote($filename),
 								1,
 								1,
@@ -283,11 +283,11 @@ class GetbibleModelImport extends JModelLegacy
 					->insert($db->quoteName('#__getbible_versions'))
 					->columns($db->quoteName($columns))
 					->values(implode(',', $values));
-				 
+
 				// Set the query using our newly populated query object and execute it.
 				$db->setQuery($query);
 				$db->query();
-				
+
 				JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_GETBIBLE_MESSAGE_BIBLE_INSTALLED_SUCCESSFULLY', $versionName));
 				// reset the local version list.
 				$this->_cpanel();
@@ -303,12 +303,12 @@ class GetbibleModelImport extends JModelLegacy
 			return false;
 		}
 	}
-	
+
 	protected function checkTranslation($version)
 	{
 		// get instilation opstion set in params
 		$installOptions = $this->app_params->get('installOptions');
-		
+
 		$available = $this->availableVersionsList;
 		$alreadyin = $this->installedVersions;
 		if ($available){
@@ -331,7 +331,7 @@ class GetbibleModelImport extends JModelLegacy
 			}
 		}
 	}
-	
+
 	protected function checkFileName($versionFileName)
 	{
 		$available = $this->availableVersions;
@@ -361,7 +361,7 @@ class GetbibleModelImport extends JModelLegacy
 			}
 		}
 	}
-	
+
 	protected function saveChapter($version, $book_nr, $chapters)
 	{
 		if ( $chapters ){
@@ -381,7 +381,7 @@ class GetbibleModelImport extends JModelLegacy
 				foreach($chapter as $verse)
 				{
 					$text[$ver] = array( 'verse_nr' => $ver,'verse' => $verse);
-					$ver++; 
+					$ver++;
 				}
 				$setup = array('chapter'=>$text);
 				$scripture = json_encode($setup);
@@ -405,7 +405,7 @@ class GetbibleModelImport extends JModelLegacy
 							.$db->quoteName('created_by').', '
 							.$db->quoteName('created_on').
 						')';
-			
+
 			// Prepare the insert query.
 			$query = "INSERT INTO ".$db->quoteName('#__getbible_chapters')." ";
 
@@ -417,10 +417,10 @@ class GetbibleModelImport extends JModelLegacy
 			$db->setQuery($query);
 			$db->query();
 		}
-		
+
 		return true;
 	}
-	
+
 	protected function saveBooks($version, $book_nr, $book)
 	{
 		if (is_array($book) && count($book)){
@@ -442,7 +442,7 @@ class GetbibleModelImport extends JModelLegacy
 				foreach($chapter as $verse)
 				{
 					$text[$ver] = array( 'verse_nr' => $ver,'verse' => $verse);
-					$ver++; 
+					$ver++;
 				}
 				$setupChapter[$chapter_nr] = array('chapter_nr'=>$chapter_nr,'chapter'=>$text);
 				$chapter_nr++;
@@ -455,10 +455,10 @@ class GetbibleModelImport extends JModelLegacy
 			$query = $db->getQuery(true);
 			// Insert columns.
 			$columns = array('version', 'book_nr', 'book', 'access', 'published', 'created_by', 'created_on');
-			 
+
 			// Insert values.
 			$values = array($db->quote($version), $db->quote($book_nr), $db->quote($saveBook), 1, 1, $this->user->id, $db->quote($this->dateSql));
-			 
+
 
 			// Prepare the insert query.
 			$query
@@ -470,15 +470,15 @@ class GetbibleModelImport extends JModelLegacy
 			$db->setQuery($query);
 			$db->query();
 		}
-		
+
 		return true;
 	}
-	
+
 	protected function getInstalledVersions()
 	{
 		// Get a db connection.
 		$db = JFactory::getDbo();
-		 
+
 
 		// Create a new query object.
 		$query = $db->getQuery(true);
@@ -486,13 +486,13 @@ class GetbibleModelImport extends JModelLegacy
 		$query->select($db->quoteName('version'));
 		$query->from($db->quoteName('#__getbible_versions'));
 		$query->order('version ASC');
-		 
+
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
-		 
+
 		// Load the results
 		$results = $db->loadColumn();
-		
+
 		if ($results){
 			$this->installedVersions = $results;
 			return true;
@@ -501,7 +501,7 @@ class GetbibleModelImport extends JModelLegacy
 
 
 	}
-	
+
 	protected function setLocalXML()
 	{
 		jimport( 'joomla.filesystem.folder' );
@@ -510,8 +510,8 @@ class GetbibleModelImport extends JModelLegacy
 		// creat folder
 		JFolder::create(JPATH_ROOT.'/'.$path.'/xml');
 		// set the file name
-		$filepath = JPATH_ROOT.'/'.$path.'/xml/version.xml.php'; 
-		// set folder path 
+		$filepath = JPATH_ROOT.'/'.$path.'/xml/version.xml.php';
+		// set folder path
 		$folderpath = JPATH_ROOT.'/'.$path;
 
 		$fh = fopen($filepath, "w");
@@ -520,17 +520,17 @@ class GetbibleModelImport extends JModelLegacy
 		}
 		$data = $this->setPHPforXML($folderpath);
 		if(!fwrite($fh, $data)){
-			// close file.	
+			// close file.
 			fclose($fh);
 			return false;
 		}
-		// close file.	
+		// close file.
 		fclose($fh);
-		
+
 		// return local file path
 		return JURI::root().$path.'/xml/version.xml.php/versions.xml';
 	}
-	
+
 	protected function setPHPforXML($path)
 	{
 		return "<?php
@@ -553,18 +553,18 @@ header('Expires: -1');
 print(\$xml->asXML());
 ?>";
 	}
-	
+
 	protected function getVersionAvailable()
 	{
 		// get instilation opstion set in params
 		$installOptions = $this->app_params->get('installOptions');
-		
+
 		if(!$installOptions){
 			$xml			= $this->setLocalXML();
 			$this->local 	= true;
 		} else {
 			// check the available versions on getBible
-			$xml	= 'https://www.getbible.net/scriptureinstall/xml/version.xml.php/versions.xml';
+			$xml	= 'https://getbible.net/scriptureinstall/xml/version.xml.php/versions.xml';
 		}
 		if(@fopen($xml, 'r')){
 			if (($response_xml_data = file_get_contents($xml))===false){
@@ -580,7 +580,7 @@ print(\$xml->asXML());
 					return false;
 			   } else {
 					foreach ($data->name as $version){
-						
+
 						$versionfix = str_replace("___", "'", $version);
 						list($versionLang,$versionName,$versionCode) = explode('__', $versionfix);
 						$versionName = str_replace("_", " ", $versionName);
@@ -588,7 +588,7 @@ print(\$xml->asXML());
 						$versions[$versionCode]['versionName'] = $versionName;
 						$versions[$versionCode]['versionLang'] = $versionLang;
 						$versions[$versionCode]['versionCode'] = $versionCode;
-						$version_list[] = $versionCode;				
+						$version_list[] = $versionCode;
 					}
 					$this->availableVersions 		= $versions;
 					$this->availableVersionsList 	= $version_list;
@@ -614,7 +614,7 @@ print(\$xml->asXML());
 				return false;
 			} else {
 				foreach ($data->name as $version){
-					
+
 					$versionfix = str_replace("___", "'", $version);
 					list($versionLang,$versionName,$versionCode) = explode('__', $versionfix);
 					$versionName = str_replace("_", " ", $versionName);
@@ -622,7 +622,7 @@ print(\$xml->asXML());
 					$versions[$versionCode]['versionName'] = $versionName;
 					$versions[$versionCode]['versionLang'] = $versionLang;
 					$versions[$versionCode]['versionCode'] = $versionCode;
-					$version_list[] = $versionCode;				
+					$version_list[] = $versionCode;
 				}
 				$this->availableVersions 		= $versions;
 				$this->availableVersionsList 	= $version_list;
@@ -632,15 +632,15 @@ print(\$xml->asXML());
 			$this->availableVersions 		= false;
 			$this->availableVersionsList 	= false;
 			return false;
-		}			
+		}
 
 	}
-	
+
 	protected function setBooks($version = NULL, $retry = false, $default = 'kjv')
 	{
 		// Get a db connection.
 		$db = JFactory::getDbo();
-		
+
 		if ($version){
 			// Create a new query object.
 			$query = $db->getQuery(true);
@@ -651,13 +651,13 @@ print(\$xml->asXML());
 			$query->where($db->quoteName('access') . ' = 1');
 			$query->where($db->quoteName('published') . ' = 1');
 			$query->order('book_nr ASC');
-			 
+
 			// Reset the query using our newly populated query object.
 			$db->setQuery($query);
-			 
+
 			// Load the results
 			$results = $db->loadAssocList();
-			
+
 			if($results){
 				foreach ($results as $book){
 					$books[$book['book_nr']]['nr'] 			= $book['book_nr'];
@@ -665,11 +665,11 @@ print(\$xml->asXML());
 					// if retry do't change name
 					$books[$book['book_nr']]['name'] 	= $book['book_name'];
 				}
-				
+
 			}
 		}
 		if(!isset($books)){
-			 
+
 			// Create a new query object.
 			$query = $db->getQuery(true);
 			// Order it by the ordering field.
@@ -679,10 +679,10 @@ print(\$xml->asXML());
 			$query->where($db->quoteName('access') . ' = 1');
 			$query->where($db->quoteName('published') . ' = 1');
 			$query->order('book_nr ASC');
-			 
+
 			// Reset the query using our newly populated query object.
 			$db->setQuery($query);
-			 
+
 			// Load the results
 			$results = $db->loadAssocList();
 			foreach ($results as $book){
@@ -692,7 +692,7 @@ print(\$xml->asXML());
 			}
 		}
 		if($retry){
-			 
+
 			// Create a new query object.
 			$query = $db->getQuery(true);
 			// Order it by the ordering field.
@@ -702,27 +702,27 @@ print(\$xml->asXML());
 			$query->where($db->quoteName('access') . ' = 1');
 			$query->where($db->quoteName('published') . ' = 1');
 			$query->order('book_nr ASC');
-			 
+
 			// Reset the query using our newly populated query object.
 			$db->setQuery($query);
-			 
+
 			// Load the results
 			$results = $db->loadAssocList();
 			foreach ($results as $book){
 				if(!$books[$book['book_nr']]['nr']){
 					$books[$book['book_nr']]['nr']		= $book['book_nr'];
 				}
-				
+
 				$books[$book['book_nr']]['book_names'] 	= (array)json_decode($book['book_names']);
-				
+
 				if(!$books[$book['book_nr']]['name']){
 					$books[$book['book_nr']]['name'] 	= $book['book_name'];
 				}
 			}
 		}
-		return $books;		
-	}	
-	
+		return $books;
+	}
+
 	protected function _cpanel()
 	{
 		// Base this model on the backend version.
@@ -730,7 +730,7 @@ print(\$xml->asXML());
 		$cpanel_model = new GetbibleModelCpanel;
 		return $cpanel_model->setCpanel();
 	}
-	
+
 	protected function setLocal()
 	{
 		$this->getInstalledVersions();
@@ -752,41 +752,41 @@ print(\$xml->asXML());
 			$params->set('defaultStartVersion', $versions[0]);
 			$params->set('defaultStartBook', $defaultStartBook);
 			$params->set('jsonQueryOptions', 1);
-			
+
 			// Get a new database query instance
 			$db = JFactory::getDBO();
 			$query = $db->getQuery(true);
-			
+
 			// Build the query
 			$query->update('#__extensions AS a');
 			$query->set('a.params = ' . $db->quote((string)$params));
 			$query->where('a.element = "com_getbible"');
-			
+
 			// Execute the query
 			// echo nl2br(str_replace('#__','api_',$query)); die;
 			$db->setQuery($query);
 			$db->query();
-			
+
 			return true;
 		}
 		return false;
 	}
-	
+
 	protected function getLocalBookNR($defaultStartBook,$version,$retry = false)
 	{
 		// Get a db connection.
 		$db = JFactory::getDbo();
-		
+
 		// Create a new query object.
 		$query = $db->getQuery(true);
-		
+
 		$query->select('a.book_nr');
-		$query->from('#__getbible_setbooks AS a');		
+		$query->from('#__getbible_setbooks AS a');
 		$query->where($db->quoteName('a.access') . ' = 1');
 		$query->where($db->quoteName('a.published') . ' = 1');
 		$query->where($db->quoteName('a.version') . ' = ' . $db->quote($version));
 		$query->where($db->quoteName('a.book_name') . ' = ' . $db->quote($defaultStartBook));
-			 
+
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
 		$db->execute();
@@ -802,22 +802,22 @@ print(\$xml->asXML());
 			return $this->getLocalBookNR($defaultStartBook,'kjv',true);
 		}
 	}
-	
+
 	protected function checkVersionBookNR($book_nr, $defaultVersion)
 	{
 		// Get a db connection.
 		$db = JFactory::getDbo();
-		
+
 		// Create a new query object.
 		$query = $db->getQuery(true);
-		
+
 		$query->select('a.book_nr');
-		$query->from('#__getbible_books AS a');		
+		$query->from('#__getbible_books AS a');
 		$query->where($db->quoteName('a.access') . ' = 1');
 		$query->where($db->quoteName('a.published') . ' = 1');
 		$query->where($db->quoteName('a.version') . ' = ' . $db->quote($defaultVersion));
 		$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
-			 
+
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
 		$db->execute();
@@ -826,16 +826,16 @@ print(\$xml->asXML());
 			// Load the results
 			return $book_nr;
 		} else {
-			// Run the default 
+			// Run the default
 			// Create a new query object.
 			$query = $db->getQuery(true);
-			
+
 			$query->select('a.book_nr');
-			$query->from('#__getbible_books AS a');		
+			$query->from('#__getbible_books AS a');
 			$query->where($db->quoteName('a.access') . ' = 1');
 			$query->where($db->quoteName('a.published') . ' = 1');
 			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($defaultVersion));
-			
+
 			// Reset the query using our newly populated query object.
 			$db->setQuery($query);
 			// Load the results
@@ -847,21 +847,21 @@ print(\$xml->asXML());
 				return 43;
 			} elseif(in_array(19,$results)) {
 				return 19;
-			} 
+			}
 			return false;
 		}
 	}
-	
+
 	protected function getLocalDefaultBook($defaultStartBook,$defaultVersion,$book_nr,$tryAgain = false)
 	{
 		// Get a db connection.
 		$db = JFactory::getDbo();
-		
+
 		// Create a new query object.
 		$query = $db->getQuery(true);
-		
+
 		$query->select('a.book_name');
-		$query->from('#__getbible_setbooks AS a');		
+		$query->from('#__getbible_setbooks AS a');
 		$query->where($db->quoteName('a.access') . ' = 1');
 		$query->where($db->quoteName('a.published') . ' = 1');
 		if($tryAgain){
@@ -871,7 +871,7 @@ print(\$xml->asXML());
 			$query->where($db->quoteName('a.version') . ' = ' . $db->quote($defaultVersion));
 			$query->where($db->quoteName('a.book_nr') . ' = ' . $book_nr);
 		}
-			 
+
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
 		$db->execute();
