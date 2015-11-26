@@ -377,7 +377,7 @@ $versions = $this->cpanel;
         </div>
     <?php endif; ?>
 </div>
-<div id="b_loader" style="display:none; class="uk-progress uk-progress-striped uk-active" ><div class="uk-progress-bar" style="width: 100%;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div></div>
+<div id="b_loader" style="display:none;" class="uk-progress uk-progress-striped uk-active" ><div class="uk-progress-bar" style="width: 100%;"><?php echo JText::_('COM_GETBIBLE_LOADING'); ?></div></div>
 
 <div id="user_cPanel" class="uk-modal">
     <div class="uk-modal-dialog">

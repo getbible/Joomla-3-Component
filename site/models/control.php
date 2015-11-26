@@ -1056,26 +1056,27 @@ class GetbibleModelControl extends JModelList
 					// get the defaults from request
 					if($passage == $defaultPassage){
 						$loadDefaults 			= new stdClass();
-						$loadDefaults->Book 	= $this->app_params->get('defaultStartBook');
-						$loadDefaults->Chapter 	= $this->app_params->get('defaultStartChapter');
+						$loadDefaults->Book		= $this->app_params->get('defaultStartBook');
+						$loadDefaults->Chapter		= $this->app_params->get('defaultStartChapter');
+						$loadDefaults->Vers		= 1;
 					} else {
 						$loadDefaults			= $this->getLoadDefaults($passage);
 					}
 					// load defaults
-					$defaults 					= $this->bookDefaults($loadDefaults->Book,$defaultVersion);
+					$defaults 				= $this->bookDefaults($loadDefaults->Book,$defaultVersion);
 					
 					if(is_object($defaults)){
 						// set defaults to loading request
-						$defaults->chapter 		= $loadDefaults->Chapter;
-						$defaults->vers 		= $loadDefaults->Vers;
+						$defaults->chapter 	= $loadDefaults->Chapter;
+						$defaults->vers 	= $loadDefaults->Vers;
 						$defaults->lastchapter	= $defaults->chapter - 1;
-						$defaults->load 		= 1;
+						$defaults->load 	= 1;
 						return $defaults;
 					}
 				}
 				
 				// Load the results
-				$result 			= new stdClass();
+				$result 		= new stdClass();
 				$result->search 	= 1;
 				$result->searchFor 	= $check_search;
 				$result->version 	= $defaultVersion;
@@ -1092,7 +1093,7 @@ class GetbibleModelControl extends JModelList
 			} else {
 				$defaultVersion 		= $this->app_params->get('defaultStartVersion');
 				$defaultStartBook 		= $this->app_params->get('defaultStartBook');
-				$defaults 				= $this->bookDefaults($defaultStartBook,$defaultVersion);
+				$defaults 			= $this->bookDefaults($defaultStartBook,$defaultVersion);
 						
 				return $defaults;
 			}

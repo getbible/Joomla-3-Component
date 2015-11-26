@@ -537,7 +537,7 @@ class GetbibleModelImport extends JModelLegacy
 
 foreach (glob(\"".$path."/*.txt\") as \$filename) {
     \$available[] = str_replace('.txt', '', basename(\$filename));
-    // do something with $filename
+    // do something with \$filename
 }
 
 \$xml = new SimpleXMLElement('<versions/>');

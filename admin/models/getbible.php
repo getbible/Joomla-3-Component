@@ -190,8 +190,8 @@ jQuery.ajax({
         if($versions){
 			$div_version .= '<ul>';
         	foreach($versions as $version){
-				if($version['not']){
-                	$div_version .= '<li>'. $version["versionLang"].' '. $version["versionName"].' ('.$version['versionCode'].') </li>';
+				if(isset($version['not']) && $version['not']){
+					$div_version .= '<li>'. $version["versionLang"].' '. $version["versionName"].' ('.$version['versionCode'].') </li>';
 				} else {
 					$div_version .= '<li><a target="_blank" href="index.php?option=com_getbible&view=versions">'. $version["versionLang"].' '. $version["versionName"].' ('.$version['versionCode'].')</a></li>';
 				}

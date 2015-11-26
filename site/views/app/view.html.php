@@ -284,11 +284,11 @@ class GetbibleViewApp extends JViewLegacy
 	protected function getRouteUrl($route) {
 		
 		// Get the global site router.
-		$config = &JFactory::getConfig();
+		$config = JFactory::getConfig();
 		$router = JRouter::getInstance('site');
 		$router->setMode( $config->get('sef', 1) );
 	
-		$uri    = &$router->build($route);
+		$uri    = $router->build($route);
 		$path   = $uri->toString(array('path', 'query', 'fragment'));
 	
 		return $path;
