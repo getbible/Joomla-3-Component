@@ -400,7 +400,7 @@ function setTagDiv(id){
 					// set the taged verse
 					setTaged(taged,1,id);
 					// if new tag add to tag list
-					if(!isInArray(taged,defaultTags)){
+					if(!in_array(taged,defaultTags)){
 						defaultTags.push(taged);
 						jQuery.jStorage.set('tags',defaultTags);
 					}
@@ -480,7 +480,7 @@ function setTaged(tag,action,verse){
 				if(set){
 					var localVerseTags = jQuery.jStorage.get('taged__'+verse, null);
 					if(localVerseTags){
-						if(!isInArray(tag, localVerseTags)){
+						if(!in_array(tag, localVerseTags)){
 							localVerseTags.push(tag);
 							jQuery.jStorage.set('taged__'+verse,localVerseTags);
 						}
@@ -497,7 +497,7 @@ function setTaged(tag,action,verse){
 				if(set){
 					var localVerseTags = jQuery.jStorage.get('taged__'+verse, null);
 					if(localVerseTags){
-						if(isInArray(tag, localVerseTags)){
+						if(in_array(tag, localVerseTags)){
 							// remove from local array
 							localVerseTags = jQuery.grep(localVerseTags, function(value) {
 								return value != tag;
@@ -535,14 +535,14 @@ function getTaged(verse){
 					var localVerseTag = jQuery.jStorage.get('taged__'+verse+'_'+vers, null);
 					if(localVerseTag){
 						jQuery.each(tags, function(id,tag) {
-							if(!isInArray(tag, localVerseTag)){
+							if(!in_array(tag, localVerseTag)){
 								localVerseTag.push(tag);
 							}
 						});
 					} else {
 						localVerseTag = [];
 						jQuery.each(tags, function(id,tag) {
-							if(!isInArray(tag, localVerseTag)){
+							if(!in_array(tag, localVerseTag)){
 								localVerseTag.push(tag);
 							}
 						});
@@ -1441,7 +1441,7 @@ function setChapter(json,direction,addTo){
 	jQuery.each(json.chapter, function(index, value) {
 		if(right_click == 1){ var oncontextmenu = 'oncontextmenu="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;"'; } else {  var oncontextmenu = ''; }
 		if(allowAccount > 0){
-			if(isInArray(value.verse_nr, listVers) ){
+			if(in_array(value.verse_nr, listVers) ){
 				output += '&#160;&#160;<span class="verse_nr ltr" id="nr__'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+'" onclick="makeNote(\''+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '\');return false;" data-uk-tooltip="{pos:\'left\'}" title="Add Note & Tags">' +value.verse_nr+ '&#160;<span '+viewing.tag+'></span></span><span '+oncontextmenu+' class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 				output += '<span class="highlight">' +value.verse+ '</span>';
 			} else {
@@ -1449,7 +1449,7 @@ function setChapter(json,direction,addTo){
 				output += value.verse;
 			}
 		} else {
-			if(isInArray(value.verse_nr, listVers) ){
+			if(in_array(value.verse_nr, listVers) ){
 				output += '&#160;&#160;<span class="verse_nr ltr">' +value.verse_nr+ '&#160;<span '+viewing.tag+'></span></span><span class="verse" id="'+json.book_nr+'_'+json.chapter_nr+'_' +value.verse_nr+ '">';
 				output += '<span class="highlight">' +value.verse+ '</span>';
 			} else {
@@ -1577,12 +1577,12 @@ function setSearch(json,direction){
 
 // get verses from string
 function getVerses(){
-	if(isNumeric(defaultVers)){
+	if(is_numeric(defaultVers)){
 		var listVers = [];
-		if (isInArray(",", defaultVers)){
+		if (in_array(",", defaultVers)){
 			var result = defaultVers.split(',');
 		} else {
-			if (isInArray("-", defaultVers)){
+			if (in_array("-", defaultVers)){
 				var numbers = defaultVers.split('-');
 				for (var nr = numbers[0]; nr <= numbers[1]; nr++) {
 					listVers.push(nr*1);
@@ -1594,7 +1594,7 @@ function getVerses(){
 		defaultVers = 0;
 		if(typeof result !== 'undefined'){
 			for(var i = 0; i <= result.length; i++){
-				if (isInArray("-", result[i])){
+				if (in_array("-", result[i])){
 					var numbers = result[i].split('-');
 					for (var nr = numbers[0]; nr <= numbers[1]; nr++) {
 						listVers.push(nr*1);
@@ -1609,13 +1609,47 @@ function getVerses(){
 	return false;
 }
 // check if value is in array
-function isInArray(value, array) {
-	if(typeof array !== 'undefined'){
-		if(array !== false){
-  			return array.indexOf(value) > -1;
-		}
-	} return false;
+function in_array(needle, haystack, argStrict) {
+  //  discuss at: http://phpjs.org/functions/in_array/
+  // original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // improved by: vlado houba
+  // improved by: Jonas Sciangula Street (Joni2Back)
+  //    input by: Billy
+  // bugfixed by: Brett Zamir (http://brett-zamir.me)
+  //   example 1: in_array('van', ['Kevin', 'van', 'Zonneveld']);
+  //   returns 1: true
+  //   example 2: in_array('vlado', {0: 'Kevin', vlado: 'van', 1: 'Zonneveld'});
+  //   returns 2: false
+  //   example 3: in_array(1, ['1', '2', '3']);
+  //   example 3: in_array(1, ['1', '2', '3'], false);
+  //   returns 3: true
+  //   returns 3: true
+  //   example 4: in_array(1, ['1', '2', '3'], true);
+  //   returns 4: false
+
+  var key = '',
+    strict = !! argStrict;
+
+  //we prevent the double check (strict && arr[key] === ndl) || (!strict && arr[key] == ndl)
+  //in just one for, in order to improve the performance 
+  //deciding wich type of comparation will do before walk array
+  if (strict) {
+    for (key in haystack) {
+      if (haystack[key] === needle) {
+        return true;
+      }
+    }
+  } else {
+    for (key in haystack) {
+      if (haystack[key] == needle) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
+
 function uniqueArray(list) {
   var result = [];
   jQuery.each(list, function(i, e) {
@@ -1624,17 +1658,34 @@ function uniqueArray(list) {
   return result;
 }
 // check if number is found in string but not 0
-function isNumeric(number) {
-	if(typeof number !== 'undefined'){
-		if(number != 0 && number != null){
-			var matches = number.match(/\d+/g);
-			if (matches != null) {
-				return true;
-			}
-		}
-	}
-	return false;
+function is_numeric(mixed_var) {
+  //  discuss at: http://phpjs.org/functions/is_numeric/
+  // original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // improved by: David
+  // improved by: taith
+  // bugfixed by: Tim de Koning
+  // bugfixed by: WebDevHobo (http://webdevhobo.blogspot.com/)
+  // bugfixed by: Brett Zamir (http://brett-zamir.me)
+  // bugfixed by: Denis Chenu (http://shnoulle.net)
+  //   example 1: is_numeric(186.31);
+  //   returns 1: true
+  //   example 2: is_numeric('Kevin van Zonneveld');
+  //   returns 2: false
+  //   example 3: is_numeric(' +186.31e2');
+  //   returns 3: true
+  //   example 4: is_numeric('');
+  //   returns 4: false
+  //   example 5: is_numeric([]);
+  //   returns 5: false
+  //   example 6: is_numeric('1 ');
+  //   returns 6: false
+
+  var whitespace =
+    " \n\r\t\f\x0b\xa0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000";
+  return (typeof mixed_var === 'number' || (typeof mixed_var === 'string' && whitespace.indexOf(mixed_var.slice(-1)) === -
+    1)) && mixed_var !== '' && !isNaN(mixed_var);
 }
+
 
 	/*******************************************\
 	*			  Control Pannel				*
