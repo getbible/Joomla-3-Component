@@ -37,11 +37,19 @@ class GetbibleModelImport extends JModelLegacy
 
 		// get user data
 		$this->user = JFactory::getUser();
+		
 		// get todays date
 		$this->dateSql = JFactory::getDate()->toSql();
+		
+		// we need a loger execution time
+		if (ini_set('max_execution_time', 300) === false)
+		{
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_GETBIBLE_MESSAGE_INCREASE_EXECUTION_TIME'), 'error'); return false;
+		}
 
 		// load available verstions
 		$this->getVersionAvailable();
+		
 		// get installed versions
 		$this->getInstalledVersions();
 
