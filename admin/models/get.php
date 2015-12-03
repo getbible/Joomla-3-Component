@@ -357,7 +357,7 @@ class GetbibleModelGet extends JModelList
 
 		// Get a db connection.
 		$db = JFactory::getDbo();
-		if ($req['verse_nr'][1]){
+		if (isset($req['verse_nr'][1]) && $req['verse_nr'][1]){
 			$verses = range($req['verse_nr'][0], $req['verse_nr'][1]);
 		} else {
 			$verses[] = $req['verse_nr'][0];
@@ -523,7 +523,7 @@ class GetbibleModelGet extends JModelList
 		$request = array();
 		$i = 0;
 		$iChapter 	= 0;
-		$iVerse 	= 0;
+		$iVers 	= 0;
 		$iBook 		= 0;
 		foreach ($passage as $get){
 			$ch		= NULL;
@@ -631,14 +631,14 @@ class GetbibleModelGet extends JModelList
 						sort($arrayVerse);
 						if ($book_nr && $ch){
 							$request[] = array('type' => 'ncv', 'book_nr' => $book_nr, 'book_name' => $book_name, 'chapter_nr' => $ch, 'verse_nr' => $arrayVerse);
-							$iVerse++;
-							if ($iVerse == 12) {
+							$iVers++;
+							if (12 == $iVers) {
 								break;
 							}
 						} elseif ($ch){
 							$request[] = array('type' => 'ncv', 'book_nr' => $request[$last]["book_nr"], 'book_name' => $request[$last]["book_name"], 'chapter_nr' => $ch, 'verse_nr' => $arrayVers);			
 							$iVers++;
-							if ($iVers == 12) {
+							if (12 == $iVers) {
 								break;
 							}
 						} 
@@ -687,13 +687,13 @@ class GetbibleModelGet extends JModelList
 							if ($book_nr && $ch){
 								$request[] = array('type' => 'ncv', 'book_nr' => $book_nr, 'book_name' => $book_name, 'chapter_nr' => $ch, 'verse_nr' => $arrayVers);
 								$iVers++;
-								if ($iVers == 12) {
+								if (12 == $iVers) {
 									break;
 								}
 							} elseif ($ch){
 								$request[] = array('type' => 'ncv', 'book_nr' => $request[$last]["book_nr"], 'book_name' => $request[$last]["book_name"], 'chapter_nr' => $ch, 'verse_nr' => $arrayVers);			
 								$iVers++;
-								if ($iVers == 12) {
+								if (12 == $iVers) {
 									break;
 								}
 							} 
@@ -702,7 +702,7 @@ class GetbibleModelGet extends JModelList
 				}
 			}
 			// check point
-			if ($iVers == 7 || $iBook == 1 || $iChapter == 1) {
+			if (7 == $iVers || 1 == $iBook || 1 == $iChapter) {
 				break;
 			}
 			$i++;
