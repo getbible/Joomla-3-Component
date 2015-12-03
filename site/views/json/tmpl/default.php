@@ -11,21 +11,30 @@
 
 // no direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
-if ($this->item){
-	JFactory::getDocument()->setMimeEncoding( 'application/json' );
-	JResponse::setHeader('Content-Disposition','attachment;filename="gebible.json"');
-	JResponse::setHeader("Access-Control-Allow-Origin", "*");
-	if(array_key_exists('getbible',$_GET)){
-		echo $_GET['getbible'] . '(' . $this->item . ');';
-	} elseif(array_key_exists('callback',$_GET)){
-		echo $_GET['callback'] . '(' . $this->item . ');';
-	} else {
-		echo '(' . $this->item . ');';
+
+	// get the application
+	$app = JFactory::getApplication();
+	if ($this->item)
+	{
+		// update the document mime
+		JFactory::getDocument()->setMimeEncoding( 'application/json' );
+		// set the headers
+		$app->setHeader('Content-Disposition','attachment;filename="gebible.json"');
+		$app->setHeader("Access-Control-Allow-Origin", "*");
+		// set the call back
+		if(array_key_exists('getbible',$_GET)){
+			echo $_GET['getbible'] . '(' . $this->item . ');';
+		} elseif(array_key_exists('callback',$_GET)){
+			echo $_GET['callback'] . '(' . $this->item . ');';
+		} else {
+			echo '(' . $this->item . ');';
+		}
 	}
-	JFactory::getApplication()->close(); // or jexit();
-} else {
-	echo('NULL');
-	JFactory::getApplication()->close();
-}
+	else
+	{
+		echo('NULL');
+	}
+	// close the application
+	$app->close(); 
 
 ?>

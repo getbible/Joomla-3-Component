@@ -19,10 +19,7 @@ class GetbibleControllerBible extends JControllerLegacy
 	public function __construct($config)
 	{
 		parent::__construct($config);
-		// make sure all json stuff are set
-		JFactory::getDocument()->setMimeEncoding( 'application/json' );
-		JResponse::setHeader('Content-Disposition','attachment;filename="gebible.json"');
-		JResponse::setHeader("Access-Control-Allow-Origin", "*");
+		
 		// load the tasks
 		$this->registerTask('books', 'bible');
 		$this->registerTask('chapter', 'bible');
@@ -44,8 +41,18 @@ class GetbibleControllerBible extends JControllerLegacy
 	
 	public function bible()
 	{
+		// make sure all json stuff are set
+		JFactory::getDocument()->setMimeEncoding( 'application/json' );
+		// get the application
+		$app = JFactory::getApplication();
+		// set the headers
+		$app->setHeader('Content-Disposition','attachment;filename="gebible.json"');
+		$app->setHeader("Access-Control-Allow-Origin", "*");
+		// get the input
 		$jinput 	= JFactory::getApplication()->input;
+		// get the task
 		$task 		= $this->getTask();
+		// do the task
 		switch($task){
 			case 'books':
 				try
@@ -76,7 +83,7 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->getChapters(	$jinput->get('nr', NULL, 'INT'),
-																		$jinput->get('v', NULL, 'ALNUM') );
+												$jinput->get('v', NULL, 'ALNUM') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -96,12 +103,13 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->getAppDefaults(	$jinput->get('search_app', NULL, 'INT'), 
-																			$jinput->get('search', NULL, 'SAFE_HTML'), 
-																			$jinput->get('search_version', NULL, 'ALNUM'),
-																			$jinput->get('key', NULL, 'ALNUM'), 
-																			$jinput->get('appKey', NULL, 'ALNUM'),
-																			$jinput->get('search_crit', NULL, 'CMD'), 
-																			$jinput->get('search_type', NULL, 'ALNUM') );
+												$jinput->get('search', NULL, 'SAFE_HTML'), 
+												$jinput->get('search_version', NULL, 'ALNUM'),
+												$jinput->get('key', NULL, 'ALNUM'), 
+												$jinput->get('appKey', NULL, 'ALNUM'),
+												$jinput->get('search_crit', NULL, 'CMD'), 
+												$jinput->get('search_type', NULL, 'ALNUM') );
+					
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -121,9 +129,9 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->setHighlight(	$jinput->get('highlight', 0, 'STRING'),
-																		$jinput->get('publish', 0, 'INT'),
-																		$jinput->get('jsonKey', 0, 'ALNUM'),
-																		$jinput->get('tu', 0, 'BASE64') );
+												$jinput->get('publish', 0, 'INT'),
+												$jinput->get('jsonKey', 0, 'ALNUM'),
+												$jinput->get('tu', 0, 'BASE64') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -142,11 +150,11 @@ class GetbibleControllerBible extends JControllerLegacy
 			case 'sethighlights':
 				try
 				{				 
-					$result = $this->getModel('control')->setHighlights($jinput->get('highlight', 0, 'BASE64'),
-																		$jinput->get('act', 0, 'INT'),
-																		$jinput->get('publish', 0, 'INT'),
-																		$jinput->get('jsonKey', 0, 'ALNUM'),
-																		$jinput->get('tu', 0, 'BASE64') );
+					$result = $this->getModel('control')->setHighlights(	$jinput->get('highlight', 0, 'BASE64'),
+												$jinput->get('act', 0, 'INT'),
+												$jinput->get('publish', 0, 'INT'),
+												$jinput->get('jsonKey', 0, 'ALNUM'),
+												$jinput->get('tu', 0, 'BASE64') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -166,7 +174,7 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->getHighlights(	$jinput->get('jsonKey', 0, 'ALNUM'),
-																		$jinput->get('tu', 0, 'BASE64') );
+												$jinput->get('tu', 0, 'BASE64') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -186,7 +194,7 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->clearHighlights(	$jinput->get('jsonKey', 0, 'ALNUM'),
-																			$jinput->get('tu', 0, 'BASE64') );
+												$jinput->get('tu', 0, 'BASE64') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -206,9 +214,9 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->setNote(	$jinput->get('note', 0, 'STRING'),
-																	$jinput->get('jsonKey', 0, 'ALNUM'),
-																	$jinput->get('verse', 0, 'STRING'),
-																	$jinput->get('tu', 0, 'BASE64') );
+											$jinput->get('jsonKey', 0, 'ALNUM'),
+											$jinput->get('verse', 0, 'STRING'),
+											$jinput->get('tu', 0, 'BASE64') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -228,7 +236,7 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->getNotes(	$jinput->get('jsonKey', 0, 'ALNUM'),
-																	$jinput->get('tu', 0, 'BASE64') );
+											$jinput->get('tu', 0, 'BASE64') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -248,10 +256,10 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->setTaged(	$jinput->get('action', 0, 'INT'),
-																	$jinput->get('tag', 0, 'STRING'),
-																	$jinput->get('jsonKey', 0, 'ALNUM'),
-																	$jinput->get('verse', 0, 'STRING'),
-																	$jinput->get('tu', 0, 'BASE64') );
+											$jinput->get('tag', 0, 'STRING'),
+											$jinput->get('jsonKey', 0, 'ALNUM'),
+											$jinput->get('verse', 0, 'STRING'),
+											$jinput->get('tu', 0, 'BASE64') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -271,8 +279,8 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->getTaged(	$jinput->get('jsonKey', 0, 'ALNUM'),
-																	$jinput->get('verse', 0, 'STRING'),
-																	$jinput->get('tu', 0, 'BASE64') );
+											$jinput->get('verse', 0, 'STRING'),
+											$jinput->get('tu', 0, 'BASE64') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -292,11 +300,11 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{	 
 					$result = $this->getModel('control')->setTags(	$jinput->get('name', 0, 'STRING'),
-																	$jinput->get('note', 0, 'STRING'),
-																	$jinput->get('access', 0, 'INT'),
-																	$jinput->get('published', 0, 'INT'),
-																	$jinput->get('jsonKey', 0, 'ALNUM'),
-																	$jinput->get('tu', 0, 'BASE64') );
+											$jinput->get('note', 0, 'STRING'),
+											$jinput->get('access', 0, 'INT'),
+											$jinput->get('published', 0, 'INT'),
+											$jinput->get('jsonKey', 0, 'ALNUM'),
+											$jinput->get('tu', 0, 'BASE64') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -316,7 +324,7 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->getTags(	$jinput->get('jsonKey', 0, 'ALNUM'),
-																	$jinput->get('tu', 0, 'BASE64') );
+											$jinput->get('tu', 0, 'BASE64') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -336,9 +344,9 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->getTagverse(	$jinput->get('jsonKey', 0, 'ALNUM'),
-																		$jinput->get('version', NULL, 'ALNUM'),
-																		$jinput->get('tag', 0, 'STRING'),
-																		$jinput->get('tu', 0, 'BASE64') );
+												$jinput->get('version', NULL, 'ALNUM'),
+												$jinput->get('tag', 0, 'STRING'),
+												$jinput->get('tu', 0, 'BASE64') );
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -357,8 +365,8 @@ class GetbibleControllerBible extends JControllerLegacy
 			case 'getstatustags':
 				try
 				{				 
-					$result = $this->getModel('control')->getStatusTags($jinput->get('jsonKey', 0, 'ALNUM'),
-																		$jinput->get('tu', 0, 'BASE64'));
+					$result = $this->getModel('control')->getStatusTags(	$jinput->get('jsonKey', 0, 'ALNUM'),
+												$jinput->get('tu', 0, 'BASE64'));
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -378,12 +386,12 @@ class GetbibleControllerBible extends JControllerLegacy
 				try
 				{				 
 					$result = $this->getModel('control')->sendEmail($jinput->get('jsonKey', 0, 'ALNUM'),
-																	$jinput->get('tu', 0, 'BASE64'),
-																	$jinput->get('version', 0, 'ALNUM'),
-																	$jinput->get('email', 0, 'BASE64'),
-																	$jinput->get('html', 0, 'BASE64'),
-																	$jinput->get('title', 0, 'STRING'),
-																	$jinput->get('type', 0, 'INT'));
+											$jinput->get('tu', 0, 'BASE64'),
+											$jinput->get('version', 0, 'ALNUM'),
+											$jinput->get('email', 0, 'BASE64'),
+											$jinput->get('html', 0, 'BASE64'),
+											$jinput->get('title', 0, 'STRING'),
+											$jinput->get('type', 0, 'INT'));
 					if(array_key_exists('callback',$_GET)){
 						echo $_GET['callback'] . "(".json_encode($result).");";
 					} else {
@@ -400,5 +408,7 @@ class GetbibleControllerBible extends JControllerLegacy
 				}
 			break;
 		}
+		// clost the application
+		$app->close(); 
 	}
 }
