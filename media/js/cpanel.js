@@ -1,6 +1,6 @@
 /**
 * 
-* 	@version 	1.0.7  January 16, 2015
+* 	@version 	1.0.8  December 3, 2015
 * 	@package 	Get Bible API
 * 	@author  	Llewellyn van der Merwe <llewellyn@vdm.io>
 * 	@copyright	Copyright (C) 2013 Vast Development Method <http://www.vdm.io>
