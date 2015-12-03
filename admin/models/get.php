@@ -523,7 +523,7 @@ class GetbibleModelGet extends JModelList
 		$request = array();
 		$i = 0;
 		$iChapter 	= 0;
-		$iVers 	= 0;
+		$iVers		= 0;
 		$iBook 		= 0;
 		foreach ($passage as $get){
 			$ch		= NULL;

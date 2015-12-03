@@ -18,6 +18,16 @@ Is getBible! for you?
 ---------------------
 * If your running a Joomla 3 Website and would like your own Bible on your website with no branding then getBible is for you.
 
+Some help videos
+---------------------
++ [How to install getBible] (https://getbible.net/main-component)
++ [How to access component back-end] (https://youtu.be/T5dyhbsUKgo)
++ [How to change to local API] (https://getbible.net/main-component?tab=2)
++ [How to install local  versions] (https://getbible.net/main-component?tab=3)
++ [More technical advice on requirements] (https://getbible.net/main-component?tab=4)
++ [How to add more/other language book names] (https://getbible.net/main-component?tab=5)
++ [How to use tabs and notes] (https://youtu.be/0EjxVIM0rew)
+
 Learn getBible!
 ---------------------
 * Read [Getting Started with getBible](https://github.com/getbible/joomla-3/wiki) to find out the basics
