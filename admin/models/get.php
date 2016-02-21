@@ -702,7 +702,7 @@ class GetbibleModelGet extends JModelList
 				}
 			}
 			// check point
-			if (7 == $iVers || 1 == $iBook || 1 == $iChapter) {
+			if ((isset($iVers) && $iVers == 7) || (isset($iBook) && $iBook == 1) || (isset($iChapter) && $iChapter == 1)){
 				break;
 			}
 			$i++;

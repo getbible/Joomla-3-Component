@@ -210,31 +210,19 @@ class GetbibleModelImport extends JModelLegacy
 						if($verse[3]){
 							$Bible[$verse[0]][$verse[1]][$verse[2]] = $verse[3];
 
-							// Create a new query object for this verse
-							$query = $db->getQuery(true);
-							// Insert columns
-							$columns = array( 'version', 'book_nr', 'chapter_nr', 'verse_nr', 'verse', 'access', 'published', 'created_by', 'created_on');
-							// Insert values.
-							$values	= array(
-											$db->quote($version),
-											$db->quote($book_nr),
-											$db->quote($verse[1]),
-											$db->quote($verse[2]),
-											$db->quote($verse[3]),
-											1,
-											1,
-											$this->user->id,
-											$db->quote($this->dateSql)
-											);
-							// Prepare the insert query.
-							$query
-								->insert($db->quoteName('#__getbible_verses'))
-								->columns($db->quoteName($columns))
-								->values(implode(',', $values));
-
-							// Set the query using our newly populated query object and execute it.
-							$db->setQuery($query);
-							$db->query();
+							// Create a new query object for this verse.
+							$versObject = new stdClass();
+							$versObject->version = $version;
+							$versObject->book_nr = $book_nr;
+							$versObject->chapter_nr = $verse[1];
+							$versObject->verse_nr = $verse[2];
+							$versObject->verse = $verse[3];
+							$versObject->access = 1;
+							$versObject->published = 1;
+							$versObject->created_by = $this->user->id;
+							$versObject->created_on = $this->dateSql;
+							// Insert the object into the verses table.
+							$result = JFactory::getDbo()->insertObject('#__getbible_verses', $versObject);
 						}
 					}
 				}
@@ -267,34 +255,22 @@ class GetbibleModelImport extends JModelLegacy
 					$testament	 	= 'error';
 				}
 
-				// Create a new query object for this version
-				$query = $db->getQuery(true);
-				// Insert columns
-				$columns = array( 'name', 'bidi', 'language', 'books_nr', 'testament', 'version', 'link', 'installed', 'access', 'published', 'created_by', 'created_on');
-				// Insert values.
-				$values = array(
-								$db->quote($versionName),
-								$db->quote($bidi),
-								$db->quote($versionLang),
-								$db->quote($book_counter),
-								$db->quote($testament),
-								$db->quote($version),
-								$db->quote($filename),
-								1,
-								1,
-								1,
-								$this->user->id,
-								$db->quote($this->dateSql)
-								);
-				// Prepare the insert query.
-				$query
-					->insert($db->quoteName('#__getbible_versions'))
-					->columns($db->quoteName($columns))
-					->values(implode(',', $values));
-
-				// Set the query using our newly populated query object and execute it.
-				$db->setQuery($query);
-				$db->query();
+				// Create a new query object for this Version.
+				$versionObject = new stdClass();
+				$versionObject->name = $versionName;
+				$versionObject->bidi = $bidi;
+				$versionObject->language = $versionLang;
+				$versionObject->books_nr = $book_counter;
+				$versionObject->testament = $testament;
+				$versionObject->version = $version;
+				$versionObject->link = $filename;
+				$versionObject->installed = 1;
+				$versionObject->access = 1;
+				$versionObject->published = 1;
+				$versionObject->created_by = $this->user->id;
+				$versionObject->created_on = $this->dateSql;
+				// Insert the object into the versions table.
+				$result = JFactory::getDbo()->insertObject('#__getbible_versions', $versionObject);
 
 				JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_GETBIBLE_MESSAGE_BIBLE_INSTALLED_SUCCESSFULLY', $versionName));
 				// reset the local version list.
@@ -393,34 +369,30 @@ class GetbibleModelImport extends JModelLegacy
 				}
 				$setup = array('chapter'=>$text);
 				$scripture = json_encode($setup);
-				if($chapter_nr != 1){
-					$values .= ', ';
-				}
 				// Insert values.
-				$values .= '('.$db->quote($version).', '.$db->quote((int)$book_nr).', '.$db->quote((int)$chapter_nr).', '.$db->quote($scripture).', 1, 1, '.$this->user->id.', '.$db->quote($this->dateSql).')';
+				$values[]  = $db->quote($version).', '.(int)$book_nr.', '.(int)$chapter_nr.', '.$db->quote($scripture).', 1, 1, '.$this->user->id.', '.$db->quote($this->dateSql);
 				$chapter_nr++;
 			}
 			// clear from memory
 			unset($chapters);
 			// Insert columns.
-			$columns = '('
-							.$db->quoteName('version').', '
-							.$db->quoteName('book_nr').', '
-							.$db->quoteName('chapter_nr').', '
-							.$db->quoteName('chapter').', '
-							.$db->quoteName('access').', '
-							.$db->quoteName('published').', '
-							.$db->quoteName('created_by').', '
-							.$db->quoteName('created_on').
-						')';
+			$columns = array(
+				'version',
+				'book_nr',
+				'chapter_nr',
+				'chapter',
+				'access',
+				'published',
+				'created_by',
+				'created_on'
+				);
 
 			// Prepare the insert query.
-			$query = "INSERT INTO ".$db->quoteName('#__getbible_chapters')." ";
+			$query->insert($db->quoteName('#__getbible_chapters'));
+			$query->columns($db->quoteName($columns));
 
+			$query->values($values);
 
-			$query .= $columns."  VALUES  ";
-			$query .= $values;
-			// echo nl2br(str_replace('#__','api_',$query)); die;
 			// Set the query using our newly populated query object and execute it.
 			$db->setQuery($query);
 			$db->query();
@@ -465,7 +437,7 @@ class GetbibleModelImport extends JModelLegacy
 			$columns = array('version', 'book_nr', 'book', 'access', 'published', 'created_by', 'created_on');
 
 			// Insert values.
-			$values = array($db->quote($version), $db->quote($book_nr), $db->quote($saveBook), 1, 1, $this->user->id, $db->quote($this->dateSql));
+			$values = array($db->quote($version), (int) $book_nr, $db->quote($saveBook), 1, 1, $this->user->id, $db->quote($this->dateSql));
 
 
 			// Prepare the insert query.
