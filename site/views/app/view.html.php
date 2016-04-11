@@ -77,14 +77,14 @@ class GetbibleViewApp extends JViewLegacy
 		}
 		
 		// The css
-		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/app.css');
+		$this->document->addStyleSheet(JURI::root() .'media/com_getbible/css/app.css');
 		if (!$this->css_loaded('uikit.min')) {
-			$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/uikit.min.css');
+			$this->document->addStyleSheet(JURI::root() .'media/com_getbible/uikit/css/uikit.min.css');
 		}
-		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/components/sticky.min.css');
-		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/components/notify.min.css');
-		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/offline.css');
-		$this->document->addStyleSheet(JURI::base( true ) .'/media/com_getbible/css/tagit.css');
+		$this->document->addStyleSheet(JURI::root() .'media/com_getbible/css/components/sticky.min.css');
+		$this->document->addStyleSheet(JURI::root() .'media/com_getbible/css/components/notify.min.css');
+		$this->document->addStyleSheet(JURI::root() .'media/com_getbible/css/offline.css');
+		$this->document->addStyleSheet(JURI::root() .'media/com_getbible/css/tagit.css');
 		
 		if($this->params->get('highlight_padding')){
 			$padding = 'padding: 0 3px 0 3px;';
@@ -157,7 +157,7 @@ class GetbibleViewApp extends JViewLegacy
 			JHtml::_('jquery.ui');
 		}
 		// load highlight javascript plugin
-		$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/jquery-ui-custom.js');
+		$this->document->addScript(JURI::root() .'media/com_getbible/js/jquery-ui-custom.js');
 		// set defaults
 		if($this->params->get('account') && $this->user->id > 0){
 			$setApp .=	'var openNow			= "'.base64_encode($this->user->id).'";';
@@ -228,44 +228,44 @@ class GetbibleViewApp extends JViewLegacy
 		
 		// Load Uikit check
 		if (!$this->js_loaded('uikit.min')) {
-			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/uikit.min.js');
+			$this->document->addScript(JURI::root() .'media/com_getbible/uikit/js/uikit.min.js');
 		}
 		if (!$this->js_loaded('sticky.min')) {
-			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/components/sticky.min.js');
+			$this->document->addScript(JURI::root() .'media/com_getbible/js/components/sticky.min.js');
 		}
 		if (!$this->js_loaded('notify.min')) {
-			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/components/notify.min.js');
+			$this->document->addScript(JURI::root() .'media/com_getbible/js/components/notify.min.js');
 		}
 		// load base64 javascript plugin
-		$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/base64.js');
+		$this->document->addScript(JURI::root() .'media/com_getbible/js/base64.js');
 		// load highlight javascript plugin
-		$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/highlight.js');
+		$this->document->addScript(JURI::root() .'media/com_getbible/js/highlight.js');
 						
 		// Load Json check
 		if (!$this->js_loaded('jquery.json')) {
-			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/jquery.json.min.js');
+			$this->document->addScript(JURI::root() .'media/com_getbible/js/jquery.json.min.js');
 		}
 		// Load Jstorage check
 		if (!$this->js_loaded('jstorage')) {
-			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/jstorage.min.js');
+			$this->document->addScript(JURI::root() .'media/com_getbible/js/jstorage.min.js');
 		}
 		// Load Tag It check
 		if (!$this->js_loaded('tag-it')) {
-			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/tag-it.js');
+			$this->document->addScript(JURI::root() .'media/com_getbible/js/tag-it.js');
 		}
 		// Load Offline check
 		if (!$this->js_loaded('offline')) {
-			$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/offline.min.js');
+			$this->document->addScript(JURI::root() .'media/com_getbible/js/offline.min.js');
 		}
 		
 		$this->document->addScriptDeclaration($setApp);  
-		$this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/app.js');
+		$this->document->addScript(JURI::root() .'media/com_getbible/js/app.js');
 		// debug offline status
-		// $this->document->addScript(JURI::base( true ) .'/media/com_getbible/js/offline-simulate-ui.min.js');
+		// $this->document->addScript(JURI::root() .'media/com_getbible/js/offline-simulate-ui.min.js');
 						
 		// to check in app is online
 		$offline	= '	jQuery(document).ready(function(){ 
-							Offline.options = {checks: { image: {url: "'.JURI::base( true ) .'/media/com_getbible/images/vdm.png"}, active: "image"}};
+							Offline.options = {checks: { image: {url: "'.JURI::root() .'media/com_getbible/images/vdm.png"}, active: "image"}};
 							window.setInterval(function() {
 								
 								if (Offline.state === "up"){

@@ -18,7 +18,7 @@
 
 	<media destination="com_getbible" folder="media">
 		<folder>js</folder>
-		<folder>fonts</folder>
+		<folder>uikit</folder>
 		<folder>css</folder>
 		<folder>images</folder>
 		<folder>json</folder>
