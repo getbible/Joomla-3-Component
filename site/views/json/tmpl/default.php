@@ -13,7 +13,8 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 	// get the application
-	$app = JFactory::getApplication();
+	$app	= JFactory::getApplication();
+	$jinput = $app->input;
 	if ($this->item)
 	{
 		// update the document mime
@@ -22,10 +23,13 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		$app->setHeader('Content-Disposition','attachment;filename="gebible.json"');
 		$app->setHeader("Access-Control-Allow-Origin", "*");
 		// set the call back
-		if(array_key_exists('getbible',$_GET)){
-			echo $_GET['getbible'] . '(' . $this->item . ');';
-		} elseif(array_key_exists('callback',$_GET)){
-			echo $_GET['callback'] . '(' . $this->item . ');';
+		if($callback = $jinput->get('getbible', null, 'CMD'))
+		{
+			echo $callback . '(' . $this->item . ');';
+		}
+		elseif($callback = $jinput->get('callback', null, 'CMD'))
+		{
+			echo $callback . '(' . $this->item . ');';
 		} else {
 			echo '(' . $this->item . ');';
 		}
