@@ -72,6 +72,7 @@ class GetbibleModelVersion extends JModelAdmin
 
 		return $data;
 	}
+	
 	/**
 	 * Method to get a single record.
 	 *
@@ -84,9 +85,12 @@ class GetbibleModelVersion extends JModelAdmin
 		if ($item = parent::getItem($pk))
 		{
 			// Convert the params field to an array.
-			$registry = new JRegistry;
-			$registry->loadString($item->book_names);
-			$item->book_names = $registry->toArray();
+			if (isset($item->book_names))
+			{
+				$registry = new JRegistry;
+				$registry->loadString($item->book_names);
+				$item->book_names = $registry->toArray();
+			}
 		}
 
 		return $item;
