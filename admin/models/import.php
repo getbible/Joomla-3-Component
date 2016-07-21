@@ -207,7 +207,7 @@ class GetbibleModelImport extends JModelLegacy
 							}
 						}
 						// set data
-						if($verse[3]){
+						if(isset($verse[3]) && $verse[3]){
 							$Bible[$verse[0]][$verse[1]][$verse[2]] = $verse[3];
 
 							// Create a new query object for this verse.
@@ -229,11 +229,13 @@ class GetbibleModelImport extends JModelLegacy
 				// clear from memory
 				unset($file);
 				// save complete books & chapters
-				foreach ($books as $book){
-
-					$this->saveChapter($version, $book["nr"], $Bible[$book["nr"]]);
-					$this->saveBooks($version, $book["nr"], $Bible[$book["nr"]]);
-
+				foreach ($books as $book)
+				{
+					if (isset($book["nr"]) && isset($Bible[$book["nr"]]))
+					{
+						$this->saveChapter($version, $book["nr"], $Bible[$book["nr"]]);
+						$this->saveBooks($version, $book["nr"], $Bible[$book["nr"]]);
+					}
 				}
 				// clear from memory
 				unset($books);
