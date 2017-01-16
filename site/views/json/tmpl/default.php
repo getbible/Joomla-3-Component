@@ -22,6 +22,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		// set the headers
 		$app->setHeader('Content-Disposition','attachment;filename="gebible.json"');
 		$app->setHeader("Access-Control-Allow-Origin", "*");
+		// check if we should return raw
+		$returnRaw = $jinput->get('raw', false, 'BOOLEAN');
 		// set the call back
 		if($callback = $jinput->get('getbible', null, 'CMD'))
 		{
@@ -30,7 +32,13 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		elseif($callback = $jinput->get('callback', null, 'CMD'))
 		{
 			echo $callback . '(' . $this->item . ');';
-		} else {
+		} 
+		elseif($returnRaw)
+		{
+			echo $this->item;
+		}
+		else
+		{
 			echo '(' . $this->item . ');';
 		}
 	}
